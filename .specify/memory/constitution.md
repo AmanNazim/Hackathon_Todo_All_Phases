@@ -1,7 +1,12 @@
 <!--
 Sync Impact Report:
-Version change: 1.0.0 → 1.0.0 (initial creation)
-Added sections: All sections added as this is the initial constitution
+Version change: 1.0.0 → 1.0.1 (patch update)
+Added sections:
+- XVIII. Commit and Push Protocol (NON-NEGOTIABLE)
+- XIX. Commit Attribution and Co-Authorship
+Modified sections:
+- XX. Safety and Reliability Standards (reindexed to XX from XVIII)
+- Final Authority Statement (reindexed principles)
 Removed sections: None
 Templates requiring updates:
 - .specify/templates/plan-template.md: ✅ to be updated
@@ -144,9 +149,17 @@ All deliverables must demonstrate compliance with this constitution. Evaluation 
 - Multi-environment deployment strategies
 - Cost optimization considerations
 
+## Change Management and Commitment Rules
+
+### XVIII. Commit and Push Protocol (NON-NEGOTIABLE)
+All changes MUST be committed and pushed to the remote repository after task completion. No work shall remain uncommitted or unpushed to the remote repository. This ensures continuous integration, maintains project integrity, and preserves all development history. All team members must follow this protocol consistently.
+
+### XIX. Commit Attribution and Co-Authorship
+Commits generated through AI assistance MUST follow proper attribution practices. When Claude Code assists in generating changes, the commit message MUST include appropriate attribution acknowledging both the human developer and Claude Code as co-authors. This ensures proper credit attribution while maintaining development workflow integrity.
+
 ## Ethical and Safety Guidelines
 
-### XVIII. Safety and Reliability Standards
+### XX. Safety and Reliability Standards
 - No hallucinated features beyond specifications
 - Deterministic output requirements
 - Reproducible builds and deployments
@@ -188,4 +201,4 @@ project-root/
     └── adr/
 ```
 
-**Version**: 1.0.0 | **Ratified**: 2026-01-02 | **Last Amended**: 2026-01-02
+**Version**: 1.0.1 | **Ratified**: 2026-01-02 | **Last Amended**: 2026-01-02
