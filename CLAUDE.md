@@ -122,6 +122,8 @@ You are not expected to solve every problem autonomously. You MUST invoke the us
 - Prefer the smallest viable diff; do not refactor unrelated code.
 - Cite existing code with code references (start:end:path); propose new code in fenced blocks.
 - Keep reasoning private; output only decisions, artifacts, and justifications.
+- Always commit and push changes after task completion to maintain project integrity.
+- Ensure proper attribution in commit messages, acknowledging both human developer and Claude Code as co-authors when appropriate.
 
 ### Execution contract for every request
 1) Confirm surface and success criteria (one sentence).
