@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Normalized Task Schema",
+  "description": "Schema for the output of the Task Normalization Skill",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "The main action or task to be performed"
+    },
+    "description": {
+      "type": ["string", "null"],
+      "description": "Additional context or details about the task"
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["low", "normal", "high"],
+      "description": "The priority level of the task"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags associated with the task"
+    },
+    "due_date": {
+      "type": "null",
+      "description": "Due date for the task (reserved for future phase)"
+    },
+    "recurrence": {
+      "type": "null",
+      "description": "Recurrence pattern for the task (reserved for future phase)"
+    }
+  },
+  "required": [
+    "title",
+    "description",
+    "priority",
+    "tags",
+    "due_date",
+    "recurrence"
+  ]
+}
