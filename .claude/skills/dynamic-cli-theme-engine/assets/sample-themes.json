@@ -1,0 +1,208 @@
+{
+  "themes": {
+    "dark_modern": {
+      "name": "Dark Modern",
+      "background": "#1e1e1e",
+      "foreground": "#d4d4d4",
+      "primary": "#007acc",
+      "secondary": "#264f78",
+      "success": "#89d185",
+      "warning": "#d7ba7d",
+      "error": "#f48771",
+      "info": "#75beff",
+      "accent": "#d19a66",
+      "border": "#3c3c3c",
+      "highlight": "#264f78",
+      "styles": {
+        "header": {
+          "color": "primary",
+          "bold": true
+        },
+        "success": {
+          "color": "success",
+          "bold": false
+        },
+        "warning": {
+          "color": "warning",
+          "bold": true
+        },
+        "error": {
+          "color": "error",
+          "bold": true
+        },
+        "info": {
+          "color": "info",
+          "dim": false
+        }
+      },
+      "animations": {
+        "spinner": ["◐", "◓", "◑", "◒"],
+        "progress_char": "█",
+        "empty_progress_char": "░"
+      },
+      "emoji": {
+        "success": "✅",
+        "warning": "⚠️",
+        "error": "❌",
+        "info": "ℹ️",
+        "processing": "🔄",
+        "add": "➕",
+        "edit": "📝",
+        "delete": "🗑️"
+      }
+    },
+    "light_clean": {
+      "name": "Light Clean",
+      "background": "#ffffff",
+      "foreground": "#333333",
+      "primary": "#0066cc",
+      "secondary": "#e5f2ff",
+      "success": "#5cb85c",
+      "warning": "#f0ad4e",
+      "error": "#d9534f",
+      "info": "#5bc0de",
+      "accent": "#6f42c1",
+      "border": "#dddddd",
+      "highlight": "#f8f9fa",
+      "styles": {
+        "header": {
+          "color": "primary",
+          "bold": true
+        },
+        "success": {
+          "color": "success",
+          "bold": false
+        },
+        "warning": {
+          "color": "warning",
+          "bold": true
+        },
+        "error": {
+          "color": "error",
+          "bold": true
+        },
+        "info": {
+          "color": "info",
+          "dim": false
+        }
+      },
+      "animations": {
+        "spinner": ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
+        "progress_char": "█",
+        "empty_progress_char": "░"
+      },
+      "emoji": {
+        "success": "✅",
+        "warning": "⚠️",
+        "error": "❌",
+        "info": "ℹ️",
+        "processing": "🔄",
+        "add": "➕",
+        "edit": "📝",
+        "delete": "🗑️"
+      }
+    },
+    "solarized_dark": {
+      "name": "Solarized Dark",
+      "background": "#002b36",
+      "foreground": "#839496",
+      "primary": "#268bd2",
+      "secondary": "#073642",
+      "success": "#859900",
+      "warning": "#b58900",
+      "error": "#dc322f",
+      "info": "#2aa198",
+      "accent": "#d33682",
+      "border": "#586e75",
+      "highlight": "#073642",
+      "styles": {
+        "header": {
+          "color": "primary",
+          "bold": true
+        },
+        "success": {
+          "color": "success",
+          "bold": false
+        },
+        "warning": {
+          "color": "warning",
+          "bold": true
+        },
+        "error": {
+          "color": "error",
+          "bold": true
+        },
+        "info": {
+          "color": "info",
+          "dim": false
+        }
+      },
+      "animations": {
+        "spinner": ["|", "/", "-", "\\"],
+        "progress_char": "█",
+        "empty_progress_char": "░"
+      },
+      "emoji": {
+        "success": "✅",
+        "warning": "⚠️",
+        "error": "❌",
+        "info": "ℹ️",
+        "processing": "🔄",
+        "add": "➕",
+        "edit": "📝",
+        "delete": "🗑️"
+      }
+    },
+    "dracula": {
+      "name": "Dracula",
+      "background": "#282a36",
+      "foreground": "#f8f8f2",
+      "primary": "#50fa7b",
+      "secondary": "#44475a",
+      "success": "#50fa7b",
+      "warning": "#ffb86c",
+      "error": "#ff5555",
+      "info": "#8be9fd",
+      "accent": "#bd93f9",
+      "border": "#44475a",
+      "highlight": "#44475a",
+      "styles": {
+        "header": {
+          "color": "primary",
+          "bold": true
+        },
+        "success": {
+          "color": "success",
+          "bold": false
+        },
+        "warning": {
+          "color": "warning",
+          "bold": true
+        },
+        "error": {
+          "color": "error",
+          "bold": true
+        },
+        "info": {
+          "color": "info",
+          "dim": false
+        }
+      },
+      "animations": {
+        "spinner": ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
+        "progress_char": "█",
+        "empty_progress_char": "░"
+      },
+      "emoji": {
+        "success": "✅",
+        "warning": "⚠️",
+        "error": "❌",
+        "info": "ℹ️",
+        "processing": "🔄",
+        "add": "➕",
+        "edit": "📝",
+        "delete": "🗑️"
+      }
+    }
+  }
+}
