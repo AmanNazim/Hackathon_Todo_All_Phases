@@ -1,0 +1,29 @@
+{
+  "validation_rules": {
+    "title": {
+      "min_length": 1,
+      "max_length": 200,
+      "required": true
+    },
+    "id": {
+      "required": false,
+      "positive_only": true
+    },
+    "status": {
+      "valid_values": ["pending", "in_progress", "completed", "cancelled", "archived"],
+      "required": false
+    },
+    "priority": {
+      "valid_values": ["low", "medium", "high", "critical"],
+      "required": false
+    }
+  },
+  "error_format": {
+    "include_timestamp": true,
+    "severity_levels": ["error", "warning", "info"]
+  },
+  "validation_engine": {
+    "fail_fast": true,
+    "aggregate_all_errors": false
+  }
+}

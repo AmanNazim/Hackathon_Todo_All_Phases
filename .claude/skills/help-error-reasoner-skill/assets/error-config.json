@@ -1,0 +1,69 @@
+{
+  "error_reasoner": {
+    "max_suggestions": 5,
+    "similarity_threshold": 0.6,
+    "levenshtein_max_distance": 2,
+    "help_escalation": {
+      "show_detailed_help_after": 2,
+      "show_comprehensive_help_after": 3
+    },
+    "suggestion_ranking": {
+      "prefix_match_weight": 0.9,
+      "edit_distance_weight": 0.7,
+      "usage_frequency_weight": 0.5
+    },
+    "message_templates": {
+      "unknown_command": {
+        "pattern": "I don't recognize the command '{command}'.",
+        "suggestions": ["Try one of: {similar_commands}", "See 'help' for available commands"]
+      },
+      "missing_arguments": {
+        "pattern": "The '{command}' command needs more information.",
+        "suggestions": ["{command} {required_args}", "See '{command} --help' for details"]
+      },
+      "invalid_argument": {
+        "pattern": "The value '{value}' is not valid for {argument}.",
+        "suggestions": ["Try: {valid_examples}", "See 'help {command}' for valid options"]
+      },
+      "ambiguous_command": {
+        "pattern": "The command '{command}' is ambiguous.",
+        "suggestions": ["Did you mean: {possible_commands}"]
+      }
+    }
+  },
+  "command_patterns": {
+    "common_mistakes": {
+      "ls": "list",
+      "rm": "delete",
+      "mk": "add",
+      "done": "complete",
+      "finish": "complete",
+      "show": "list",
+      "get": "list"
+    },
+    "abbreviations": {
+      "l": "list",
+      "a": "add",
+      "c": "complete",
+      "d": "delete",
+      "h": "help"
+    }
+  },
+  "context_awareness": {
+    "recent_command_window": 10,
+    "failure_detection_window": {
+      "count": 3,
+      "minutes": 5
+    },
+    "context_preservation": {
+      "max_preserved_commands": 20,
+      "max_preserved_errors": 10
+    }
+  },
+  "formatting": {
+    "use_emojis": true,
+    "max_message_length": 500,
+    "max_suggestions_displayed": 5,
+    "indentation_spaces": 3
+  }
+}

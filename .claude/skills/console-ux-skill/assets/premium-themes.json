@@ -1,0 +1,280 @@
+{
+  "themes": {
+    "corporate": {
+      "name": "Corporate",
+      "description": "Professional corporate theme with sophisticated color palette",
+      "colors": {
+        "primary": "#2563eb",
+        "secondary": "#64748b",
+        "success": "#16a34a",
+        "warning": "#ca8a04",
+        "error": "#dc2626",
+        "info": "#0891b2",
+        "accent": "#7c3aed",
+        "background": "#ffffff",
+        "foreground": "#1e293b",
+        "border": "#cbd5e1",
+        "highlight": "#dbeafe"
+      },
+      "styles": {
+        "header": {
+          "color": "primary",
+          "bold": true,
+          "underline": true
+        },
+        "success": {
+          "color": "success",
+          "bold": false
+        },
+        "warning": {
+          "color": "warning",
+          "bold": true
+        },
+        "error": {
+          "color": "error",
+          "bold": true
+        },
+        "info": {
+          "color": "info",
+          "dim": false
+        }
+      },
+      "animations": {
+        "spinner": ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
+        "progress_char": "█",
+        "empty_progress_char": "░",
+        "success_animation": "pulse",
+        "error_animation": "shake"
+      },
+      "emoji": {
+        "success": "✅",
+        "warning": "⚠️",
+        "error": "❌",
+        "info": "ℹ️",
+        "processing": "🔄",
+        "add": "➕",
+        "edit": "📝",
+        "delete": "🗑️",
+        "menu": "📋",
+        "home": "🏠",
+        "settings": "⚙️"
+      },
+      "typography": {
+        "heading_size": "large",
+        "body_size": "medium",
+        "spacing": "comfortable",
+        "font_style": "default"
+      }
+    },
+    "modern": {
+      "name": "Modern",
+      "description": "Contemporary theme with vibrant colors and smooth transitions",
+      "colors": {
+        "primary": "#06b6d4",
+        "secondary": "#8b5cf6",
+        "success": "#22c55e",
+        "warning": "#f97316",
+        "error": "#ef4444",
+        "info": "#3b82f6",
+        "accent": "#ec4899",
+        "background": "#f8fafc",
+        "foreground": "#0f172a",
+        "border": "#e2e8f0",
+        "highlight": "#e0f2fe"
+      },
+      "styles": {
+        "header": {
+          "color": "primary",
+          "bold": true,
+          "italic": true
+        },
+        "success": {
+          "color": "success",
+          "bold": false
+        },
+        "warning": {
+          "color": "warning",
+          "bold": true
+        },
+        "error": {
+          "color": "error",
+          "bold": true
+        },
+        "info": {
+          "color": "info",
+          "dim": false
+        }
+      },
+      "animations": {
+        "spinner": ["◜", "◝", "◞", "◟"],
+        "progress_char": "▓",
+        "empty_progress_char": "░",
+        "success_animation": "bounce",
+        "error_animation": "flash"
+      },
+      "emoji": {
+        "success": "✨",
+        "warning": "⚡",
+        "error": "💥",
+        "info": "💡",
+        "processing": "⏳",
+        "add": "🌟",
+        "edit": "✏️",
+        "delete": "🔥",
+        "menu": "🚀",
+        "home": "🎯",
+        "settings": "🔧"
+      },
+      "typography": {
+        "heading_size": "x-large",
+        "body_size": "large",
+        "spacing": "compact",
+        "font_style": "default"
+      }
+    },
+    "enterprise": {
+      "name": "Enterprise",
+      "description": "Enterprise-grade theme with high contrast and accessibility features",
+      "colors": {
+        "primary": "#4f46e5",
+        "secondary": "#0f172a",
+        "success": "#059669",
+        "warning": "#d97706",
+        "error": "#b91c1c",
+        "info": "#0284c7",
+        "accent": "#7c2d12",
+        "background": "#ffffff",
+        "foreground": "#000000",
+        "border": "#94a3b8",
+        "highlight": "#f1f5f9"
+      },
+      "styles": {
+        "header": {
+          "color": "primary",
+          "bold": true,
+          "underline": true
+        },
+        "success": {
+          "color": "success",
+          "bold": true
+        },
+        "warning": {
+          "color": "warning",
+          "bold": true
+        },
+        "error": {
+          "color": "error",
+          "bold": true
+        },
+        "info": {
+          "color": "info",
+          "bold": true
+        }
+      },
+      "animations": {
+        "spinner": ["|", "/", "-", "\\"],
+        "progress_char": "█",
+        "empty_progress_char": "░",
+        "success_animation": "none",
+        "error_animation": "none"
+      },
+      "emoji": {
+        "success": "✅",
+        "warning": "⚠️",
+        "error": "❌",
+        "info": "ℹ️",
+        "processing": "⏳",
+        "add": "➕",
+        "edit": "📝",
+        "delete": "🗑️",
+        "menu": "📋",
+        "home": "⌂",
+        "settings": "⚙"
+      },
+      "typography": {
+        "heading_size": "large",
+        "body_size": "medium",
+        "spacing": "comfortable",
+        "font_style": "default"
+      }
+    },
+    "gradient": {
+      "name": "Gradient",
+      "description": "Premium theme with gradient color effects and sophisticated styling",
+      "colors": {
+        "primary": ["#667eea", "#764ba2"],
+        "secondary": ["#f093fb", "#f5576c"],
+        "success": ["#4facfe", "#00f2fe"],
+        "warning": ["#f6d365", "#fda085"],
+        "error": ["#fa709a", "#fee140"],
+        "info": ["#a6c0fe", "#f68084"],
+        "accent": ["#d4fc79", "#96e6a1"],
+        "background": "#ffffff",
+        "foreground": "#1a202c",
+        "border": "#e2e8f0",
+        "highlight": "#f7fafc"
+      },
+      "styles": {
+        "header": {
+          "color": "primary",
+          "bold": true,
+          "gradient": true
+        },
+        "success": {
+          "color": "success",
+          "gradient": true,
+          "bold": false
+        },
+        "warning": {
+          "color": "warning",
+          "gradient": true,
+          "bold": true
+        },
+        "error": {
+          "color": "error",
+          "gradient": true,
+          "bold": true
+        },
+        "info": {
+          "color": "info",
+          "gradient": true,
+          "dim": false
+        }
+      },
+      "animations": {
+        "spinner": ["◜ ", " ◝", " ◞", "◟ "],
+        "progress_char": "▓",
+        "empty_progress_char": "░",
+        "success_animation": "pulse",
+        "error_animation": "shake"
+      },
+      "emoji": {
+        "success": "🎯",
+        "warning": "🚦",
+        "error": "🚨",
+        "info": "🔍",
+        "processing": "💫",
+        "add": "✨",
+        "edit": "🎨",
+        "delete": "⌫",
+        "menu": "🎭",
+        "home": "🌈",
+        "settings": "⚙️"
+      },
+      "typography": {
+        "heading_size": "x-large",
+        "body_size": "large",
+        "spacing": "wide",
+        "font_style": "default"
+      }
+    }
+  },
+  "global_settings": {
+    "color_depth": "24bit",
+    "animation_enabled": true,
+    "accessibility_mode": false,
+    "responsive_layout": true,
+    "adaptive_typography": true,
+    "gradient_support": true
+  }
+}
