@@ -13,14 +13,14 @@ fi
 echo "Normalizing Task: '$INPUT'"
 echo "========================="
 
-# Remove polite prefixes
-NORMALIZED=$(echo "$INPUT" | sed -E 's/^(please |remind me to |help me to |can you |would you )//i')
+# Remove polite prefixes and priority indicators
+NORMALIZED=$(echo "$INPUT" | sed -E 's/^(please |remind me to |help me to |can you |would you )//i' | sed -E 's/^urgent: //i' | sed -E 's/^high priority: //i' | sed -E 's/^low priority: //i')
 
 # Extract potential temporal hints (these go to description)
 TEMPORAL_HINTS=$(echo "$NORMALIZED" | grep -oE "(before|after|on|by|until|during|for) [^,;]*" || echo "")
 
-# Extract title (main action)
-TITLE=$(echo "$NORMALIZED" | sed -E 's/(before|after|on|by|until|during|for) [^,;]*//g' | sed -E 's/[[:space:]]+/ /g' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+# Extract title (main action) - remove temporal hints and parentheses content
+TITLE=$(echo "$NORMALIZED" | sed -E 's/\([^)]*\)//g' | sed -E 's/(before|after|on|by|until|during|for) [^,;]*//g' | sed -E 's/[[:space:]]+/ /g' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 
 # Determine priority based on explicit indicators
 PRIORITY="normal"
