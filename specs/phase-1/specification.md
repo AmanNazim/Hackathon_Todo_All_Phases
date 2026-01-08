@@ -42,7 +42,7 @@ Users who switch between menu and natural-language modes depending on context. T
 ### Delete Task
 **User Intent**: User wants to remove a task from the system
 **Trigger**: User enters delete command with task ID
-**Trigger**: System validates existence, removes task from memory, records deletion event
+**System Behavior**: System validates existence, removes task from memory, records deletion event
 **Success Outcome**: Task no longer appears in task lists
 
 ### Mark Task Complete/Incomplete
@@ -54,62 +54,76 @@ Users who switch between menu and natural-language modes depending on context. T
 ## 5. Acceptance Criteria (MEASURABLE)
 
 ### Add
-- System accepts task with non-empty title
-- System stores task with unique identifier
+- System accepts task with non-empty title (max 256 chars)
+- System stores task with unique identifier in < 100ms
 - System assigns default pending status
-- System optionally accepts description field
-- System confirms successful addition
+- System optionally accepts description field (max 1024 chars)
+- System confirms successful addition within 100ms
+- System handles duplicate titles gracefully with appropriate message
+- System validates input for security (no command injection)
 
 ### View
-- System displays all tasks with clear status indicators
+- System displays all tasks with clear status indicators in < 200ms for up to 1000 tasks
 - System shows task ID, title, and description
-- System formats output in readable layout
+- System formats output in readable layout with pagination for >50 tasks
 - System shows completion status with visual indicators
+- System handles empty task list with appropriate message
+- System supports filtering by status (completed/pending/all) in < 50ms
 
 ### Update
-- System locates task by ID
+- System locates task by ID in < 50ms
 - System modifies specified fields only
 - System preserves unchanged fields
-- System confirms successful update
+- System confirms successful update within 100ms
+- System validates task exists before update
+- System handles concurrent modification attempts safely
 
 ### Delete
-- System locates task by ID
-- System removes task from memory
+- System locates task by ID in < 50ms
+- System removes task from memory in < 100ms
 - System confirms successful deletion
 - System no longer displays deleted task
+- System validates task exists before deletion
+- System handles invalid task IDs with appropriate error
 
 ### Complete/Uncomplete
-- System locates task by ID
-- System updates completion status
+- System locates task by ID in < 50ms
+- System updates completion status in < 100ms
 - System confirms status change
 - System reflects new status in subsequent views
+- System validates task exists before status change
+- System handles invalid task IDs with appropriate error
 
 ### Undo (if enabled)
-- System reverses last command
-- System restores previous state
+- System reverses last command in < 100ms
+- System restores previous state completely
 - System confirms undo operation
+- System validates undo availability before operation
+- System handles undo failure with appropriate error
 
 ### Exit Summary
-- System displays session statistics
+- System displays session statistics in < 50ms
 - System shows completed tasks count
 - System shows total tasks processed
+- System shows commands executed count
 
 ### Attach Tags with Tasks
-- System accepts optional tags during task creation
+- System accepts optional tags during task creation (max 10 tags per task)
 - System stores tags associated with task
 - System displays tags with task information
-- System allows filtering by tags
+- System allows filtering by tags in < 100ms
+- System validates tag format (alphanumeric with hyphens/underscores)
 
 ## 6. Domain Model Specification (DDD Lite)
 
 ### Task Entity
 - id: UUID (immutable, unique identifier)
-- title: String (required, non-empty)
-- description: String (optional, nullable)
+- title: String (required, non-empty, max 256 characters)
+- description: String (optional, nullable, max 1024 characters)
 - created_at: DateTime (timestamp of creation)
 - updated_at: DateTime (timestamp of last modification)
 - status: TaskStatus enum (PENDING, COMPLETED)
-- tags: List<String> (optional, for categorization)
+- tags: List<String> (optional, max 10 tags per task, alphanumeric with hyphens/underscores)
 
 ### TaskStatus Enum
 - PENDING: Task is awaiting completion
@@ -122,7 +136,47 @@ Users who switch between menu and natural-language modes depending on context. T
 - TaskCompleted: Recorded when task status changes to completed
 - TaskReopened: Recorded when task status changes to pending
 
-## 7. Event Sourcing Specification (In-Memory)
+## 7. Performance Requirements
+
+### Response Time Benchmarks
+- Add task: < 100ms
+- View tasks (up to 1000 tasks): < 200ms
+- Update task: < 100ms
+- Delete task: < 100ms
+- Complete/Incomplete task: < 100ms
+- List with filters: < 50ms
+- Undo operation: < 100ms
+
+### Memory Usage Limits
+- Maximum memory usage: < 100MB for typical usage (up to 1000 tasks)
+- Memory cleanup: Automatic cleanup of inactive objects
+- Large dataset handling: Pagination or performance degradation pattern for >1000 tasks
+
+### Scalability Thresholds
+- Optimal performance: Up to 1000 tasks
+- Degraded performance threshold: 1000-10000 tasks (with warnings)
+- Maximum supported tasks: 10000 tasks (with performance notices)
+
+## 8. Security Requirements
+
+### Input Validation
+- All user inputs must be validated for length, format, and content
+- Title field: maximum 256 characters, no control characters
+- Description field: maximum 1024 characters, no control characters
+- Tag validation: alphanumeric characters with hyphens and underscores only
+- Command injection protection: sanitize all command inputs
+
+### Sanitization
+- User content sanitized before display/rendering
+- Special characters properly escaped in all outputs
+- Prevent cross-scripting in text rendering
+
+### Access Control
+- Single-user application with no authentication required
+- No multi-user access controls needed for Phase I
+- Session isolation: each run is independent
+
+## 9. Event Sourcing Specification (In-Memory)
 
 ### Event Types
 - All operations create immutable event records stored in memory
@@ -153,7 +207,7 @@ Users who switch between menu and natural-language modes depending on context. T
 - Session restart begins with empty event store
 - Session state is completely isolated
 
-## 8. Command Interaction Model
+## 10. Command Interaction Model
 
 ### Menu Mode
 Structured interaction with numbered options:
@@ -197,7 +251,7 @@ System suggests corrections for unrecognized commands:
 Unknown command "complet". Did you mean "complete"?
 ```
 
-## 9. Command Grammar Specification (BNF-Style)
+## 11. Command Grammar Specification (BNF-Style)
 
 ```
 <command> ::= <add_command> | <list_command> | <update_command> | <delete_command> | <complete_command> | <undo_command> | <help_command> | <theme_command> | <snapshot_command> | <macro_command>
@@ -233,7 +287,7 @@ Unknown command "complet". Did you mean "complete"?
 <theme_name> ::= "minimal" | "emoji" | "hacker" | "professional"
 ```
 
-## 10. CLI State Machine Specification
+## 12. CLI State Machine Specification
 
 ### States
 - **MAIN_MENU**: Initial state, presents menu options
@@ -253,7 +307,7 @@ Unknown command "complet". Did you mean "complete"?
 - CONFIRMATION_DIALOG → previous_state: User confirms or cancels
 - Any state → EXITING: User selects exit option
 
-## 11. Middleware Command Pipeline
+## 13. Middleware Command Pipeline
 
 ### InputNormalizer
 - Standardizes command format
@@ -291,7 +345,7 @@ Unknown command "complet". Did you mean "complete"?
 - Handles pagination
 - Manages screen layout
 
-## 12. Plugin Architecture Specification
+## 14. Plugin Architecture Specification
 
 ### Plugin Categories
 - **RendererPlugin**: Modifies display/output formatting
@@ -317,7 +371,7 @@ Unknown command "complet". Did you mean "complete"?
 - Plugin failures don't crash system
 - Plugins can be disabled without data loss
 
-## 13. UI Rendering Specification (TEXTUAL)
+## 15. UI Rendering Specification (TEXTUAL)
 
 ### Task List Layout
 ```
@@ -350,7 +404,7 @@ Unknown command "complet". Did you mean "complete"?
 - **Hacker**: Monochrome with technical styling
 - **Professional**: Clean, business-oriented appearance
 
-## 14. UX Behavior Specification
+## 16. UX Behavior Specification
 
 ### Friendly Onboarding
 - Welcome message with brief introduction
@@ -378,7 +432,7 @@ Unknown command "complet". Did you mean "complete"?
 - Commands executed count
 - Helpful closing message
 
-## 15. Command Buffer & History Specification
+## 17. Command Buffer & History Specification
 
 ### What is Stored
 - All successfully executed commands
@@ -396,7 +450,7 @@ Unknown command "complet". Did you mean "complete"?
 - Macros record sequences of commands
 - Replay reconstructs session state
 
-## 16. Macro Command Specification
+## 18. Macro Command Specification
 
 ### Macro Recording Rules
 - User initiates recording with "macro record" command
@@ -416,7 +470,7 @@ Unknown command "complet". Did you mean "complete"?
 - Macros don't survive application restart
 - Limited to basic command sequences
 
-## 17. Snapshot System Specification
+## 19. Snapshot System Specification
 
 ### Snapshot Scope
 - Complete application state capture
@@ -436,7 +490,7 @@ Unknown command "complet". Did you mean "complete"?
 - No file system persistence
 - Limited by available memory
 
-## 18. Metadata Injection Rules
+## 20. Metadata Injection Rules
 
 ### What Metadata Exists
 - Command execution timestamps
@@ -456,7 +510,7 @@ Unknown command "complet". Did you mean "complete"?
 - User experience improvement
 - System debugging and monitoring
 
-## 19. Test Mode Specification
+## 21. Test Mode Specification
 
 ### --test-mode
 - Machine-readable output format
@@ -476,7 +530,7 @@ Unknown command "complet". Did you mean "complete"?
 - Predictable command execution
 - Reproducible test scenarios
 
-## 20. Error Handling & Recovery Rules
+## 22. Error Handling & Recovery Rules
 
 ### Invalid Commands
 - Clear error message identifying issue
@@ -508,7 +562,7 @@ Unknown command "complet". Did you mean "complete"?
 - Clear path to resume normal operation
 - No silent failures or data corruption
 
-## 21. Non-Goals (Explicit)
+## 23. Non-Goals (Explicit)
 
 Phase I MUST NOT implement:
 - File persistence or database storage
@@ -524,7 +578,7 @@ Phase I MUST NOT implement:
 - Advanced reporting or analytics
 - Backup and recovery to external storage
 
-## 22. Spec → Plan → Tasks Traceability Rules
+## 24. Spec → Plan → Tasks Traceability Rules
 
 ### Feature to Plan Mapping
 - Each specification requirement maps to one or more plan items
@@ -544,7 +598,7 @@ Phase I MUST NOT implement:
 - Scope creep identified and eliminated
 - All changes flow through specification update process
 
-## 23. Quality Gates
+## 25. Quality Gates
 
 ### Specification Completeness
 - All required sections present and populated
