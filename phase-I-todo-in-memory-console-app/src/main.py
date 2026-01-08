@@ -9,39 +9,19 @@ from datetime import datetime
 import uuid
 import json
 import os
-from enum import Enum
-from dataclasses import dataclass, asdict
 from typing import List, Optional, Dict, Any
 
 # Import configuration and logging infrastructure
 from .config import get_config
 from .logging_infrastructure import get_logger, handle_error, ValidationError, TaskNotFoundError
 
-
-class TaskStatus(Enum):
-    """Task status enumeration"""
-    PENDING = "PENDING"
-    COMPLETED = "COMPLETED"
-
-
-@dataclass
-class Task:
-    """Task entity as defined in specification section 6"""
-    id: str
-    title: str
-    description: Optional[str] = None
-    created_at: str = ""
-    updated_at: str = ""
-    status: TaskStatus = TaskStatus.PENDING
-    tags: List[str] = None
-
-    def __post_init__(self):
-        if not self.created_at:
-            self.created_at = datetime.now().isoformat()
-        if not self.updated_at:
-            self.updated_at = self.created_at
-        if self.tags is None:
-            self.tags = []
+# Import domain model components
+from .domain.entities import Task, TaskStatus
+from .domain.events import (
+    TaskCreatedEvent, TaskUpdatedEvent, TaskDeletedEvent,
+    TaskCompletedEvent, TaskReopenedEvent, EventType, TaskEvent
+)
+from .domain.validation import DomainValidator
 
 
 class TodoApp:
@@ -65,45 +45,35 @@ class TodoApp:
         start_time = datetime.now()
 
         try:
-            # Validate input according to spec section 6 using configuration
-            if not title or len(title.strip()) == 0:
-                raise ValidationError("Task title cannot be empty")
-            if len(title) > self.config.max_title_length:
-                raise ValidationError(f"Task title exceeds maximum length of {self.config.max_title_length} characters")
-            if description and len(description) > self.config.max_description_length:
-                raise ValidationError(f"Task description exceeds maximum length of {self.config.max_description_length} characters")
-
-            # Validate tags if provided
+            # Use domain validator for validation
+            DomainValidator.validate_task_title(title)
+            if description:
+                DomainValidator.validate_task_description(description)
             if tags:
-                if len(tags) > self.config.max_tags_per_task:
-                    raise ValidationError(f"Maximum of {self.config.max_tags_per_task} tags per task allowed")
-                for tag in tags:
-                    if not self._is_valid_tag(tag):
-                        raise ValidationError(f"Invalid tag format: {tag}. Tags must be alphanumeric with hyphens/underscores only.")
+                DomainValidator.validate_task_tags(tags)
 
-            task_id = str(uuid.uuid4())
-            task = Task(
-                id=task_id,
-                title=title.strip(),
-                description=description,
-                status=TaskStatus.PENDING,
-                tags=tags or []
-            )
+            # Create task using domain factory method
+            task = Task.create(title=title.strip(), description=description, tags=tags)
 
-            self.tasks[task_id] = task
+            # Store the task
+            self.tasks[task.id] = task
+
+            # Create and store the event
+            event = TaskCreatedEvent(task)
+            self._log_event(event)
 
             # Log the command for history and potential undo
             self._log_command("add_task", {
                 "title": title,
                 "description": description,
                 "tags": tags,
-                "task_id": task_id
+                "task_id": task.id
             })
 
             # Performance logging
             duration = (datetime.now() - start_time).total_seconds() * 1000
             self.logger.info(f"Task added successfully", extra={
-                "task_id": task_id,
+                "task_id": task.id,
                 "duration_ms": duration,
                 "title_length": len(title)
             })
@@ -114,22 +84,21 @@ class TodoApp:
                     "threshold_ms": self.config.add_task_timeout_ms
                 })
 
-            return task_id
+            return task.id
 
-        except ValidationError as e:
+        except ValueError as e:  # Domain validation raises ValueError
             self.logger.error(f"Validation error in add_task: {str(e)}", extra={
                 "title_length": len(title) if title else 0,
                 "has_description": description is not None
             })
+            raise ValidationError(str(e))
+        except ValidationError:
+            # Re-raise ValidationError as-is
             raise
         except Exception as e:
             error_info = handle_error(e, "add_task")
             raise ValidationError(f"Failed to add task: {error_info.get('message', str(e))}")
 
-    def _is_valid_tag(self, tag: str) -> bool:
-        """Validate tag format according to spec section 6"""
-        import re
-        return bool(re.match(r'^[a-zA-Z0-9_-]+$', tag))
 
     def list_tasks(self, status_filter: Optional[str] = None) -> List[Task]:
         """List tasks with optional status filtering"""
@@ -176,28 +145,23 @@ class TodoApp:
 
             task = self.tasks[task_id]
 
-            # Validate new values if provided
-            if title is not None:
-                if not title or len(title.strip()) == 0:
-                    raise ValidationError("Task title cannot be empty")
-                if len(title) > self.config.max_title_length:
-                    raise ValidationError(f"Task title exceeds maximum length of {self.config.max_title_length} characters")
-                task.title = title.strip()
+            # Store old values for the event
+            old_values = {
+                'title': task.title,
+                'description': task.description,
+                'status': task.status.value,
+                'tags': task.tags.copy() if task.tags else []
+            }
 
-            if description is not None:
-                if len(description) > self.config.max_description_length:
-                    raise ValidationError(f"Task description exceeds maximum length of {self.config.max_description_length} characters")
-                task.description = description
+            # Use domain validation for update parameters
+            DomainValidator.validate_task_update(title, description, tags)
 
-            if tags is not None:
-                if len(tags) > self.config.max_tags_per_task:
-                    raise ValidationError(f"Maximum of {self.config.max_tags_per_task} tags per task allowed")
-                for tag in tags:
-                    if not self._is_valid_tag(tag):
-                        raise ValidationError(f"Invalid tag format: {tag}. Tags must be alphanumeric with hyphens/underscores only.")
-                task.tags = tags
+            # Perform the update using the domain method
+            task.update(title=title, description=description, tags=tags)
 
-            task.updated_at = datetime.now().isoformat()
+            # Create and store the event
+            event = TaskUpdatedEvent(task, old_values)
+            self._log_event(event)
 
             # Log the command for history and potential undo
             self._log_command("update_task", {
@@ -222,6 +186,11 @@ class TodoApp:
 
             return True
 
+        except ValueError as e:  # Domain validation raises ValueError
+            self.logger.error(f"Validation error in update_task: {str(e)}", extra={
+                "task_id": task_id
+            })
+            raise ValidationError(str(e))
         except TaskNotFoundError as e:
             self.logger.error(f"Task not found in update_task: {str(e)}", extra={
                 "task_id": task_id
@@ -244,15 +213,20 @@ class TodoApp:
             if task_id not in self.tasks:
                 raise TaskNotFoundError(task_id)
 
-            # Store the task data for potential undo
-            task_data = asdict(self.tasks[task_id])
+            # Get the task to be deleted
+            task_to_delete = self.tasks[task_id]
 
+            # Create and store the event before deletion
+            event = TaskDeletedEvent(task_to_delete)
+            self._log_event(event)
+
+            # Remove the task from storage
             del self.tasks[task_id]
 
             # Log the command for history and potential undo
             self._log_command("delete_task", {
                 "task_id": task_id,
-                "original_task_data": task_data
+                "original_task_data": task_to_delete.to_dict()
             })
 
             # Performance logging
@@ -287,8 +261,14 @@ class TodoApp:
             if task_id not in self.tasks:
                 raise TaskNotFoundError(task_id)
 
-            self.tasks[task_id].status = TaskStatus.COMPLETED
-            self.tasks[task_id].updated_at = datetime.now().isoformat()
+            task = self.tasks[task_id]
+
+            # Use domain method to mark as completed
+            task.mark_completed()
+
+            # Create and store the event
+            event = TaskCompletedEvent(task, previous_status=task.status.value)
+            self._log_event(event)
 
             # Log the command for history and potential undo
             self._log_command("complete_task", {
@@ -327,8 +307,14 @@ class TodoApp:
             if task_id not in self.tasks:
                 raise TaskNotFoundError(task_id)
 
-            self.tasks[task_id].status = TaskStatus.PENDING
-            self.tasks[task_id].updated_at = datetime.now().isoformat()
+            task = self.tasks[task_id]
+
+            # Use domain method to mark as pending
+            task.mark_pending()
+
+            # Create and store the event
+            event = TaskReopenedEvent(task, previous_status=task.status.value)
+            self._log_event(event)
 
             # Log the command for history and potential undo
             self._log_command("incomplete_task", {
@@ -368,6 +354,14 @@ class TodoApp:
             "timestamp": datetime.now().isoformat()
         }
         self.command_history.append(command_entry)
+
+    def _log_event(self, event: TaskEvent):
+        """Log event for event sourcing functionality"""
+        # We'll store events in a list for now, in a real implementation
+        # this would likely connect to an event store
+        if not hasattr(self, 'events'):
+            self.events = []
+        self.events.append(event)
 
     def get_session_summary(self) -> Dict[str, Any]:
         """Get session statistics for exit summary"""

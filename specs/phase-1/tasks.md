@@ -38,14 +38,14 @@ Dependencies: None
 Reference: Domain Model subsystem (Plan Section 5)
 Dependencies: Project Structure & Initialization
 
-- [ ] T010 Define Task entity with id, title, description, timestamps, status, tags (Plan 5.1) - Validate with unit tests achieving 100% coverage for all attributes and methods
-- [ ] T011 Implement TaskStatus enum with PENDING and COMPLETED values (Plan 5.1) - Include validation tests to ensure only valid statuses are accepted
-- [ ] T012 Create TaskCreated event class for event sourcing (Plan 5.2) - Add serialization/deserialization tests to ensure event integrity
-- [ ] T013 Create TaskUpdated event class for event sourcing (Plan 5.2) - Add serialization/deserialization tests to ensure event integrity
-- [ ] T014 Create TaskDeleted event class for event sourcing (Plan 5.2) - Add serialization/deserialization tests to ensure event integrity
-- [ ] T015 Create TaskCompleted event class for event sourcing (Plan 5.2) - Add serialization/deserialization tests to ensure event integrity
-- [ ] T016 Create TaskReopened event class for event sourcing (Plan 5.2) - Add serialization/deserialization tests to ensure event integrity
-- [ ] T017 Implement domain validation rules for Task entity (Plan 5.1) - Create comprehensive validation tests including edge cases for title length (≤256 chars), description length (≤1024 chars), and tag format validation
+- [x] T010 Define Task entity with id, title, description, timestamps, status, tags (Plan 5.1) - Validate with unit tests achieving 100% coverage for all attributes and methods
+- [x] T011 Implement TaskStatus enum with PENDING and COMPLETED values (Plan 5.1) - Include validation tests to ensure only valid statuses are accepted
+- [x] T012 Create TaskCreated event class for event sourcing (Plan 5.2) - Add serialization/deserialization tests to ensure event integrity
+- [x] T013 Create TaskUpdated event class for event sourcing (Plan 5.2) - Add serialization/deserialization tests to ensure event integrity
+- [x] T014 Create TaskDeleted event class for event sourcing (Plan 5.2) - Add serialization/deserialization tests to ensure event integrity
+- [x] T015 Create TaskCompleted event class for event sourcing (Plan 5.2) - Add serialization/deserialization tests to ensure event integrity
+- [x] T016 Create TaskReopened event class for event sourcing (Plan 5.2) - Add serialization/deserialization tests to ensure event integrity
+- [x] T017 Implement domain validation rules for Task entity (Plan 5.1) - Create comprehensive validation tests including edge cases for title length (≤256 chars), description length (≤1024 chars), and tag format validation
 
 ### In-Memory Repository
 Reference: Repository Layer (Plan Section 5)
