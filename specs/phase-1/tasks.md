@@ -99,12 +99,12 @@ Dependencies: Command Grammar & Parsing
 Reference: CLI State Machine subsystem (Plan Section 5)
 Dependencies: Command Grammar & Parsing, Middleware Pipeline
 
-- [ ] T060 Define CLI state enumeration with MAIN_MENU, ADDING_TASK, UPDATING_TASK, etc. (Plan 5.8) - Include tests to validate all state values and ensure no invalid states can be created
-- [ ] T061 Create state machine class to manage CLI states and transitions (Plan 5.8) - Add performance tests to ensure state transitions complete within 10ms
-- [ ] T062 Implement state transition rules as defined in specification (Plan 5.8) - Include comprehensive transition tests to validate all allowed and forbidden transitions
-- [ ] T063 Create state handlers for each CLI state (Plan 5.8) - Add integration tests to ensure state handlers respond correctly to inputs in each state
-- [ ] T064 Add state validation to prevent invalid transitions (Plan 5.8) - Include negative tests to verify invalid transitions are properly prevented
-- [ ] T065 Implement state persistence across operations (Plan 5.8) - Add tests to validate state is properly maintained during various operations and error conditions
+- [x] T060 Define CLI state enumeration with MAIN_MENU, ADDING_TASK, UPDATING_TASK, etc. (Plan 5.8) - Include tests to validate all state values and ensure no invalid states can be created
+- [x] T061 Create state machine class to manage CLI states and transitions (Plan 5.8) - Add performance tests to ensure state transitions complete within 10ms
+- [x] T062 Implement state transition rules as defined in specification (Plan 5.8) - Include comprehensive transition tests to validate all allowed and forbidden transitions
+- [x] T063 Create state handlers for each CLI state (Plan 5.8) - Add integration tests to ensure state handlers respond correctly to inputs in each state
+- [x] T064 Add state validation to prevent invalid transitions (Plan 5.8) - Include negative tests to verify invalid transitions are properly prevented
+- [x] T065 Implement state persistence across operations (Plan 5.8) - Add tests to validate state is properly maintained during various operations and error conditions
 
 ### Hybrid Interaction Modes
 Reference: Fuzzy Command Understanding subsystem (Plan Section 5)
