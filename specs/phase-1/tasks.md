@@ -72,15 +72,15 @@ Dependencies: Domain Model (Task, Status, Events), In-Memory Repository
 Reference: Command Parsing subsystem (Plan Section 5)
 Dependencies: None (standalone component)
 
-- [ ] T040 Define BNF grammar for add command with title and optional description (Plan 5.7) - Validate grammar with parsing tests for all valid and invalid input formats
-- [ ] T041 Define BNF grammar for list command with optional filters (Plan 5.7) - Validate grammar with parsing tests for all valid and invalid input formats
-- [ ] T042 Define BNF grammar for update command with task ID and new details (Plan 5.7) - Validate grammar with parsing tests for all valid and invalid input formats
-- [ ] T043 Define BNF grammar for delete command with task ID (Plan 5.7) - Validate grammar with parsing tests for all valid and invalid input formats
-- [ ] T044 Define BNF grammar for complete/incomplete commands with task ID (Plan 5.7) - Validate grammar with parsing tests for all valid and invalid input formats
-- [ ] T045 Define BNF grammar for undo, help, theme, snapshot, macro commands (Plan 5.7) - Validate grammar with parsing tests for all valid and invalid input formats
-- [ ] T046 Create command parser class to tokenize and parse user input (Plan 5.7) - Add performance tests to ensure parsing completes within 50ms for typical commands
-- [ ] T047 Implement quick action shortcuts (a, l, c, d) for common commands (Plan 5.7) - Include tests to validate shortcut functionality and prevent conflicts with other commands
-- [ ] T048 Create command parameter extractor for command arguments (Plan 5.7) - Add validation tests for parameter extraction accuracy and security validation to prevent injection
+- [x] T040 Define BNF grammar for add command with title and optional description (Plan 5.7) - Validate grammar with parsing tests for all valid and invalid input formats
+- [x] T041 Define BNF grammar for list command with optional filters (Plan 5.7) - Validate grammar with parsing tests for all valid and invalid input formats
+- [x] T042 Define BNF grammar for update command with task ID and new details (Plan 5.7) - Validate grammar with parsing tests for all valid and invalid input formats
+- [x] T043 Define BNF grammar for delete command with task ID (Plan 5.7) - Validate grammar with parsing tests for all valid and invalid input formats
+- [x] T044 Define BNF grammar for complete/incomplete commands with task ID (Plan 5.7) - Validate grammar with parsing tests for all valid and invalid input formats
+- [x] T045 Define BNF grammar for undo, help, theme, snapshot, macro commands (Plan 5.7) - Validate grammar with parsing tests for all valid and invalid input formats
+- [x] T046 Create command parser class to tokenize and parse user input (Plan 5.7) - Add performance tests to ensure parsing completes within 50ms for typical commands
+- [x] T047 Implement quick action shortcuts (a, l, c, d) for common commands (Plan 5.7) - Include tests to validate shortcut functionality and prevent conflicts with other commands
+- [x] T048 Create command parameter extractor for command arguments (Plan 5.7) - Add validation tests for parameter extraction accuracy and security validation to prevent injection
 
 ### Middleware Pipeline
 Reference: Middleware Pipeline subsystem (Plan Section 5)
