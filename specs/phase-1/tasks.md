@@ -110,11 +110,11 @@ Dependencies: Command Grammar & Parsing, Middleware Pipeline
 Reference: Fuzzy Command Understanding subsystem (Plan Section 5)
 Dependencies: Command Grammar & Parsing, CLI State Machine
 
-- [ ] T070 Implement menu mode with numbered options display (Plan 5.11) - Include UI validation tests to ensure proper display and response to numbered selections within 50ms
-- [ ] T071 Implement natural language mode with intelligent parsing (Plan 5.11) - Add accuracy tests for natural language command interpretation and performance tests to ensure parsing completes within 100ms
-- [ ] T072 Create hybrid mode switching mechanism (Plan 5.11) - Include mode transition tests to validate seamless switching between interaction modes
-- [ ] T073 Implement fuzzy command suggestions for unrecognized inputs (Plan 5.11) - Add accuracy tests for suggestion relevance and performance tests to ensure suggestions provided within 100ms
-- [ ] T074 Add confirmation prompts for critical operations (Plan 5.11) - Include tests to validate confirmation prompts appear for critical operations and system waits for user response
+- [x] T070 Implement menu mode with numbered options display (Plan 5.11) - Include UI validation tests to ensure proper display and response to numbered selections within 50ms
+- [x] T071 Implement natural language mode with intelligent parsing (Plan 5.11) - Add accuracy tests for natural language command interpretation and performance tests to ensure parsing completes within 100ms
+- [x] T072 Create hybrid mode switching mechanism (Plan 5.11) - Include mode transition tests to validate seamless switching between interaction modes
+- [x] T073 Implement fuzzy command suggestions for unrecognized inputs (Plan 5.11) - Add accuracy tests for suggestion relevance and performance tests to ensure suggestions provided within 100ms
+- [x] T074 Add confirmation prompts for critical operations (Plan 5.11) - Include tests to validate confirmation prompts appear for critical operations and system waits for user response
 
 ### Rendering & Themes
 Reference: Rendering Engine subsystem (Plan Section 5)
