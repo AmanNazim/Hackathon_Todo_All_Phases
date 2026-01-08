@@ -146,13 +146,13 @@ Dependencies: Rendering & Themes, Command Grammar & Parsing
 Reference: Command Buffer & History and Undo System subsystems (Plan Section 5)
 Dependencies: Event Sourcing System, Command Grammar & Parsing
 
-- [ ] T100 Create command history storage for tracking executed commands (Plan 5.12, 5.13) - Include performance tests to ensure history access completes within 50ms and memory usage tests to validate efficient storage
-- [ ] T101 Implement command timestamp tracking (Plan 5.12) - Add accuracy tests to validate timestamp precision and consistency across different operations
-- [ ] T102 Add command status tracking (success/failure) (Plan 5.12) - Include tests to validate accurate status recording for both successful and failed operations
-- [ ] T103 Create undo functionality to reverse last command (Plan 5.13) - Add functionality tests to ensure undo correctly reverses operations and performance tests to ensure completion within 100ms
-- [ ] T104 Implement undo validation to ensure safe reversals (Plan 5.13) - Include safety tests to validate undo operations don't cause system instability or data corruption
-- [ ] T105 Add undo availability checking (Plan 5.13) - Add validation tests to ensure undo availability is correctly determined for different command types
-- [ ] T106 Implement command replay capability (Plan 5.12) - Include accuracy tests to validate command replay reproduces original results and performance tests for replay efficiency
+- [x] T100 Create command history storage for tracking executed commands (Plan 5.12, 5.13) - Include performance tests to ensure history access completes within 50ms and memory usage tests to validate efficient storage
+- [x] T101 Implement command timestamp tracking (Plan 5.12) - Add accuracy tests to validate timestamp precision and consistency across different operations
+- [x] T102 Add command status tracking (success/failure) (Plan 5.12) - Include tests to validate accurate status recording for both successful and failed operations
+- [x] T103 Create undo functionality to reverse last command (Plan 5.13) - Add functionality tests to ensure undo correctly reverses operations and performance tests to ensure completion within 100ms
+- [x] T104 Implement undo validation to ensure safe reversals (Plan 5.13) - Include safety tests to validate undo operations don't cause system instability or data corruption
+- [x] T105 Add undo availability checking (Plan 5.13) - Add validation tests to ensure undo availability is correctly determined for different command types
+- [x] T106 Implement command replay capability (Plan 5.12) - Include accuracy tests to validate command replay reproduces original results and performance tests for replay efficiency
 
 ### Macro Engine
 Reference: Macro Engine subsystem (Plan Section 5)
