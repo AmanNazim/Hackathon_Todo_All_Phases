@@ -10,7 +10,8 @@ import uuid
 from .entities import Task
 
 
-@dataclass
+from enum import Enum, auto
+
 class EventType(Enum):
     """Enumeration of all possible event types"""
     TASK_CREATED = "TASK_CREATED"
@@ -18,6 +19,14 @@ class EventType(Enum):
     TASK_DELETED = "TASK_DELETED"
     TASK_COMPLETED = "TASK_COMPLETED"
     TASK_REOPENED = "TASK_REOPENED"
+
+    def __hash__(self):
+        return hash(self.value)
+
+    def __eq__(self, other):
+        if isinstance(other, EventType):
+            return self.value == other.value
+        return False
 
 
 @dataclass

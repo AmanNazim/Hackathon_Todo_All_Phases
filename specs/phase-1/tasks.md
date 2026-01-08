@@ -61,12 +61,12 @@ Dependencies: Domain Model (Task, Status, Events)
 Reference: Event System subsystem (Plan Section 5)
 Dependencies: Domain Model (Task, Status, Events), In-Memory Repository
 
-- [ ] T030 Create event store for in-memory event storage (Plan 5.2) - Validate with unit tests for storage/retrieval and memory usage tests to ensure efficient memory management
-- [ ] T031 Implement event store methods: append, get_events, get_events_by_aggregate (Plan 5.2) - Add performance tests to ensure operations complete within 50ms for typical usage
-- [ ] T032 Create event bus for publishing events within the system (Plan 5.2) - Include integration tests to validate event delivery and subscription mechanisms
-- [ ] T033 Implement event replay mechanism to rebuild state from events (Plan 5.2) - Create performance tests to validate replay completes within 200ms for 1000 events
-- [ ] T034 Add event validation and integrity checks (Plan 5.2) - Include tests for validation of event signatures and integrity checks under various error conditions
-- [ ] T035 Implement session-scoped event cleanup (Plan 5.2) - Add memory leak prevention tests to validate proper cleanup of events during session termination
+- [x] T030 Create event store for in-memory event storage (Plan 5.2) - Validate with unit tests for storage/retrieval and memory usage tests to ensure efficient memory management
+- [x] T031 Implement event store methods: append, get_events, get_events_by_aggregate (Plan 5.2) - Add performance tests to ensure operations complete within 50ms for typical usage
+- [x] T032 Create event bus for publishing events within the system (Plan 5.2) - Include integration tests to validate event delivery and subscription mechanisms
+- [x] T033 Implement event replay mechanism to rebuild state from events (Plan 5.2) - Create performance tests to validate replay completes within 200ms for 1000 events
+- [x] T034 Add event validation and integrity checks (Plan 5.2) - Include tests for validation of event signatures and integrity checks under various error conditions
+- [x] T035 Implement session-scoped event cleanup (Plan 5.2) - Add memory leak prevention tests to validate proper cleanup of events during session termination
 
 ### Command Grammar & Parsing
 Reference: Command Parsing subsystem (Plan Section 5)

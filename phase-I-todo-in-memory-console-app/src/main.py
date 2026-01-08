@@ -27,6 +27,9 @@ from .domain.validation import DomainValidator
 from .repository.factory import RepositoryFactory
 from .repository.interface import TaskRepository
 
+# Import event sourcing components
+from .events import EventStore, EventValidator, EventBus, EventPublisher, EventReplayService
+
 
 class TodoApp:
     """Main CLI Todo Application class"""
@@ -36,6 +39,14 @@ class TodoApp:
         self.logger = get_logger()
         self.repository: TaskRepository = RepositoryFactory.create_task_repository()
         self.command_history: List[Dict[str, Any]] = []
+
+        # Initialize event sourcing components
+        self.event_store = EventStore()
+        self.event_bus = EventBus()
+        self.event_publisher = EventPublisher(self.event_bus)
+        self.event_validator = EventValidator()
+        self.event_replay_service = EventReplayService(self.event_store)
+
         self.session_start_time = datetime.now()
 
         self.logger.info("TodoApp initialized", extra={
@@ -59,12 +70,21 @@ class TodoApp:
             # Create task using domain factory method
             task = Task.create(title=title.strip(), description=description, tags=tags)
 
+            # Create and validate the event before storing
+            event = TaskCreatedEvent(task)
+
+            # Validate the event before storing
+            self.event_validator.validate_event(event)
+            self.event_validator.validate_event_signature(event)
+
+            # Store the event in the event store
+            self.event_store.append(event)
+
+            # Publish the event via the event bus
+            self.event_publisher.publish_event(event)
+
             # Store the task using repository
             self.repository.add(task)
-
-            # Create and store the event
-            event = TaskCreatedEvent(task)
-            self._log_event(event)
 
             # Log the command for history and potential undo
             self._log_command("add_task", {
@@ -166,14 +186,23 @@ class TodoApp:
             # Perform the update using the domain method
             task.update(title=title, description=description, tags=tags)
 
+            # Create and validate the event before storing
+            event = TaskUpdatedEvent(task, old_values)
+
+            # Validate the event before storing
+            self.event_validator.validate_event(event)
+            self.event_validator.validate_event_signature(event)
+
+            # Store the event in the event store
+            self.event_store.append(event)
+
+            # Publish the event via the event bus
+            self.event_publisher.publish_event(event)
+
             # Update the task in the repository
             success = self.repository.update(task)
             if not success:
                 raise TaskNotFoundError(task_id)
-
-            # Create and store the event
-            event = TaskUpdatedEvent(task, old_values)
-            self._log_event(event)
 
             # Log the command for history and potential undo
             self._log_command("update_task", {
@@ -227,9 +256,18 @@ class TodoApp:
             if task_to_delete is None:
                 raise TaskNotFoundError(task_id)
 
-            # Create and store the event before deletion
+            # Create and validate the event before storing
             event = TaskDeletedEvent(task_to_delete)
-            self._log_event(event)
+
+            # Validate the event before storing
+            self.event_validator.validate_event(event)
+            self.event_validator.validate_event_signature(event)
+
+            # Store the event in the event store
+            self.event_store.append(event)
+
+            # Publish the event via the event bus
+            self.event_publisher.publish_event(event)
 
             # Remove the task from the repository
             success = self.repository.delete(task_id)
@@ -282,14 +320,23 @@ class TodoApp:
             # Use domain method to mark as completed
             task.mark_completed()
 
+            # Create and validate the event before storing
+            event = TaskCompletedEvent(task, previous_status=previous_status)
+
+            # Validate the event before storing
+            self.event_validator.validate_event(event)
+            self.event_validator.validate_event_signature(event)
+
+            # Store the event in the event store
+            self.event_store.append(event)
+
+            # Publish the event via the event bus
+            self.event_publisher.publish_event(event)
+
             # Update the task in the repository
             success = self.repository.update(task)
             if not success:
                 raise TaskNotFoundError(task_id)
-
-            # Create and store the event
-            event = TaskCompletedEvent(task, previous_status=previous_status)
-            self._log_event(event)
 
             # Log the command for history and potential undo
             self._log_command("complete_task", {
@@ -336,14 +383,23 @@ class TodoApp:
             # Use domain method to mark as pending
             task.mark_pending()
 
+            # Create and validate the event before storing
+            event = TaskReopenedEvent(task, previous_status=previous_status)
+
+            # Validate the event before storing
+            self.event_validator.validate_event(event)
+            self.event_validator.validate_event_signature(event)
+
+            # Store the event in the event store
+            self.event_store.append(event)
+
+            # Publish the event via the event bus
+            self.event_publisher.publish_event(event)
+
             # Update the task in the repository
             success = self.repository.update(task)
             if not success:
                 raise TaskNotFoundError(task_id)
-
-            # Create and store the event
-            event = TaskReopenedEvent(task, previous_status=previous_status)
-            self._log_event(event)
 
             # Log the command for history and potential undo
             self._log_command("incomplete_task", {
@@ -384,24 +440,31 @@ class TodoApp:
         }
         self.command_history.append(command_entry)
 
-    def _log_event(self, event: TaskEvent):
-        """Log event for event sourcing functionality"""
-        # We'll store events in a list for now, in a real implementation
-        # this would likely connect to an event store
-        if not hasattr(self, 'events'):
-            self.events = []
-        self.events.append(event)
-
     def get_session_summary(self) -> Dict[str, Any]:
         """Get session statistics for exit summary"""
-        total_tasks = len(self.tasks)
-        completed_tasks = len([t for t in self.tasks.values() if t.status == TaskStatus.COMPLETED])
+        # Use the event store to get accurate task counts from events
+        all_events = self.event_store.get_events()
+
+        # Count tasks based on events
+        created_tasks = len([e for e in all_events if e.type == EventType.TASK_CREATED])
+        deleted_tasks = len([e for e in all_events if e.type == EventType.TASK_DELETED])
+        completed_tasks = len([e for e in all_events if e.type == EventType.TASK_COMPLETED])
+
+        # Calculate net tasks (created - deleted)
+        net_tasks = created_tasks - deleted_tasks
         commands_executed = len(self.command_history)
 
+        # Get memory usage stats from event store
+        memory_stats = self.event_store.get_memory_usage_stats()
+
         return {
-            "total_tasks_created": total_tasks,
+            "total_tasks_created": created_tasks,
+            "net_tasks": net_tasks,
+            "deleted_tasks_count": deleted_tasks,
             "completed_tasks_count": completed_tasks,
             "commands_executed": commands_executed,
+            "total_events_stored": len(all_events),
+            "event_store_memory_usage": memory_stats,
             "session_duration": str(datetime.now() - self.session_start_time)
         }
 
