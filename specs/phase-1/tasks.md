@@ -134,13 +134,13 @@ Dependencies: Domain Model (Task, Status, Events), CLI State Machine
 Reference: UX Systems subsystem (Plan Section 5)
 Dependencies: Rendering & Themes, Command Grammar & Parsing
 
-- [ ] T090 Create welcome message with brief introduction (Plan 5.10) - Include tests to validate message appears on first launch and timing tests to ensure display completes within 50ms
-- [ ] T091 Implement quick start guide for new users (Plan 5.10) - Add accessibility tests to ensure guide is helpful for new users and performance tests for quick display
-- [ ] T092 Create help system with command examples (Plan 5.10) - Include accuracy tests for command examples and search functionality tests to help users find relevant commands
-- [ ] T093 Implement contextual hints based on user patterns (Plan 5.10) - Add tests to validate hints appear appropriately based on user behavior patterns without being intrusive
-- [ ] T094 Add non-blocking tip display system (Plan 5.10) - Include tests to ensure tips don't block user operations and appear at appropriate intervals
-- [ ] T095 Create exit session summary with statistics (Plan 5.10) - Add accuracy tests for statistics calculation and display tests to ensure summary appears at session termination
-- [ ] T096 Implement adaptive help behavior (Plan 5.10) - Include tests to validate help adapts based on user experience level and usage patterns
+- [x] T090 Create welcome message with brief introduction (Plan 5.10) - Include tests to validate message appears on first launch and timing tests to ensure display completes within 50ms
+- [x] T091 Implement quick start guide for new users (Plan 5.10) - Add accessibility tests to ensure guide is helpful for new users and performance tests for quick display
+- [x] T092 Create help system with command examples (Plan 5.10) - Include accuracy tests for command examples and search functionality tests to help users find relevant commands
+- [x] T093 Implement contextual hints based on user patterns (Plan 5.10) - Add tests to validate hints appear appropriately based on user behavior patterns without being intrusive
+- [x] T094 Add non-blocking tip display system (Plan 5.10) - Include tests to ensure tips don't block user operations and appear at appropriate intervals
+- [x] T095 Create exit session summary with statistics (Plan 5.10) - Add accuracy tests for statistics calculation and display tests to ensure summary appears at session termination
+- [x] T096 Implement adaptive help behavior (Plan 5.10) - Include tests to validate help adapts based on user experience level and usage patterns
 
 ### Command History & Undo
 Reference: Command Buffer & History and Undo System subsystems (Plan Section 5)
