@@ -64,6 +64,21 @@ All code generation MUST be performed exclusively by Claude Code following appro
 
 A specification is acceptable ONLY if it contains clear acceptance criteria, comprehensive scope definition, explicit constraints, and verifiable requirements. Plans MUST be rejected if they exceed Phase I scope boundaries, violate architectural principles, or introduce unauthorized technologies. Tasks are considered incomplete if they lack clear dependencies, measurable acceptance criteria, or proper test definitions. Claude Code MUST self-correct outputs that violate architectural constraints, introduce unauthorized features, or fail to meet quality standards. Hallucinated features, unauthorized capabilities, or scope creep MUST be immediately identified and corrected as violations. Code quality MUST meet Python best practices including proper error handling, input validation, and maintainable structure.
 
+## Required Deliverables
+
+The constitution MUST enforce generation of the following deliverables:
+
+- `constitution.md` (this file)
+- `/specs/phase-1/specification.md` containing the Phase I specification
+- `/specs/phase-1/plan.md` containing the Phase I implementation plan
+- `/specs/phase-1/tasks.md` containing the Phase I tasks
+- `/specs/history/` containing all spec iterations
+- `/src/` Python source directory
+- `README.md` (setup + usage)
+- `CLAUDE.md` (Claude Code instructions)
+
+All deliverables MUST comply with the specifications, plans, and tasks defined in this constitution.
+
 ## Future Compatibility Guarantees
 
 The system architecture MUST maintain forward compatibility with future phases through proper abstraction layers and clean interfaces. Future compatibility is a design guarantee, not an implemented feature. The codebase MUST be structured to accommodate persistence, web interfaces, and advanced features in future phases without requiring fundamental architectural changes to the core domain model. Extension points MUST be planned with appropriate abstractions but remain unimplemented until required by future phases. The system MUST follow industry-standard patterns that enable seamless migration to Phase II+ architectures while maintaining current functionality. Dependency management using UV MUST support gradual evolution without breaking changes to core domain logic. Package structure and module organization MUST facilitate future expansion while maintaining current requirements.

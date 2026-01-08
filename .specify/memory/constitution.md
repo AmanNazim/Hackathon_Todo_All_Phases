@@ -36,6 +36,21 @@ Specifications MUST contain clear acceptance criteria, defined scope, explicit c
 
 The repository MUST follow the directory structure defined in the specification templates. All specifications must be stored in the `specs/` directory with proper versioning per feature. All implementation artifacts must be organized according to the established patterns. The file structure must support the multi-phase evolution requirements and maintain proper artifact organization. The repository structure must include specs, src, tests, docs, .specify, and history directories as defined in the standard template.
 
+## Required Deliverables
+
+The constitution MUST enforce generation of the following deliverables:
+
+- `constitution.md` (this file)
+- `/specs/{feature}/specification.md` containing the feature specification
+- `/specs/{feature}/plan.md` containing the implementation plan
+- `/specs/{feature}/tasks.md` containing the tasks
+- `/specs/history/` containing all spec iterations
+- `/src/` source code directory
+- `README.md` (setup + usage)
+- `CLAUDE.md` (Claude Code instructions)
+
+All deliverables MUST comply with the specifications, plans, and tasks defined in this constitution.
+
 ## Validation, Review, and Iteration Rules
 
 All implementations MUST pass validation against their corresponding specifications. Review processes must verify compliance with architectural principles. Iteration cycles must maintain traceability between specifications and implementations. All changes must be validated through appropriate testing strategies. The system must demonstrate compliance with all constitutional principles during validation. Acceptance criteria must be clearly defined and verifiable.
