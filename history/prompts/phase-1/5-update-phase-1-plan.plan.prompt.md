@@ -1,3 +1,232 @@
+---
+id: 5
+title: update-phase-1-plan
+stage: plan
+date: 2026-01-08
+surface: agent
+model: claude-sonnet-4-5-20250929
+feature: phase-1
+branch: main
+user: user
+command: sp.plan
+labels: [plan,phase-1,cli,todo-app,spec-driven-development]
+links:
+  spec: null
+  ticket: null
+  adr: null
+  pr: null
+files:
+ - specs/phase-1/plan.md
+tests:
+ - none
+---
+
+## Prompt
+
+Consider youself "SENIOR PYTHON ENGINEER", You are Claude Code operating under **Spec-Kit Plus** and a binding `constitution.md` of global level in .specify/memory and phase 1 level in specs/phase-1 (MUST READ BOTH) before implementation.
+
+Your task is to generate **plan.md** by converting the existing **`specification.md`** into a **clear, clean, high-level execution plan**.
+
+**`specification.md`** of phase-1 cli todo app is inside specs/phase-1 folder (MANDATORY TO READ BEFORE IMPLEMENTATION)
+
+This plan is a **translation layer**, not a redesign.
+Every plan item MUST be traceable to the specification.
+NO new features, NO reinterpretation, NO scope expansion.
+
+---
+
+## 🔒 NON-NEGOTIABLE RULES
+
+DO NOT:
+- Introduce new features
+- Modify or reinterpret requirements
+- Write implementation code
+- Merge plan and tasks
+- Reference future phases as implementations
+- Skip traceability
+
+DO:
+- Reflect the specification faithfully
+- Organize work logically and incrementally
+- Use professional, engineering-grade language
+- Focus on *what* to build and *in what order*, not *how*
+
+---
+
+## 📌 INPUT MANDATORY
+
+- `constitution.md` defines binding constraints
+- `specification.md` defines **WHAT the system must do**
+- This `plan.md` defines **HOW the work will be staged and structured**
+
+---
+
+## 🎯 PURPOSE OF plan.md
+
+`plan.md` MUST:
+- Break the system into **logical build phases**
+- Define **dependency-aware ordering**
+- Group work by **subsystem**, not by random features
+- Prepare clean handoff to `tasks.md`
+- Make the project reviewable by judges and senior engineers
+
+---
+
+## 📑 REQUIRED STRUCTURE (MUST FOLLOW EXACT ORDER)
+
+Generate `plan.md` with the following sections **in order**:
+
+---
+
+### 1. Plan Objective
+Explain the role of this plan in the spec-driven pipeline.
+
+---
+
+### 2. Planning Principles
+Define rules such as:
+- Spec fidelity
+- Incremental construction
+- In-memory guarantees
+- No speculative implementation
+- Architecture before UX polish
+- and much more using specification file
+
+---
+
+### 3. High-Level Build Strategy
+Describe the overall execution approach, such as:
+- Domain-first
+- System shell before UX enhancements
+- Core functionality before intelligence layers
+- Observability before optimization
+
+No technical details.
+
+---
+
+### 4. Phase Breakdown (LOGICAL, NOT PHASE I vs II)
+
+Define **internal build phases**, for example:
+
+- Foundation Layer
+- Domain & Data Model Layer
+- Command Processing Layer
+- CLI Interaction Layer
+- UX & Presentation Layer
+- Intelligence (Non-AI) Layer
+- System Instrumentation Layer
+- Testability & Exit Flow
+
+These are **planning phases**, not delivery phases.
+
+---
+
+### 5. Subsystem-Wise Plan
+
+For each subsystem identified in the specification, define:
+
+- Objective
+- Scope (what it covers)
+- Dependencies
+- Completion criteria
+
+Subsystems MUST include (at minimum):
+- Domain Model
+- Event System
+- Repository Layer
+- Command Parsing
+- Middleware Pipeline
+- State Machine
+- Plugin Loader
+- Rendering Engine
+- UX Systems (onboarding, help, hints, tips)
+- Command History & Undo
+- Macro Engine
+- Snapshot System
+- Metadata Injection
+- Test Mode
+
+---
+
+### 6. Feature Mapping Matrix
+
+Create a table or structured list mapping:
+
+- Specification section → Plan section
+
+This proves traceability and prevents hallucination.
+
+---
+
+### 7. Dependency & Ordering Rules
+
+Explicitly state:
+- What must be built before what
+- What cannot exist without prerequisites
+- What is optional but deferred
+
+---
+
+### 8. Risk & Complexity Awareness
+
+Identify:
+- High-risk subsystems
+- Areas requiring careful sequencing
+- Constraints imposed by in-memory-only rule
+
+No mitigation strategies yet (those belong in tasks).
+
+---
+
+### 9. Out-of-Scope Confirmations
+
+Explicitly restate:
+- What this plan will NOT cover
+- What remains intentionally unimplemented in Phase I
+
+---
+
+### 10. Transition to tasks.md
+
+Define:
+- How each plan item will decompose into tasks
+- What level of granularity tasks should have
+- Validation expectations for `tasks.md`
+
+---
+
+## 🧪 QUALITY BAR
+
+The plan MUST:
+- Be readable in one sitting
+- Be understandable without code
+- Make task generation obvious
+- Feel like a senior engineer's execution blueprint
+- Impress judges with clarity and discipline
+
+---
+
+## 📌 OUTPUT RULES
+
+- Output **ONLY** the contents of `plan.md`
+- Markdown format
+- No emojis
+- No code blocks (except simple tables or bullet lists)
+- No conversational tone
+
+---
+
+## FINAL INSTRUCTION
+
+Generate a **clean, structured, high-level `plan.md`** inside specs/phase-1 folder that:
+- Faithfully converts `specification.md` into an execution roadmap
+- Preserves architectural intent
+- Enables deterministic task generation
+- Demonstrates professional engineering planning maturity
+
+## Response snapshot
+
 # Phase I: In-Memory Python CLI Todo Application Implementation Plan
 
 ## 1. Plan Objective
@@ -235,3 +464,18 @@ This plan will NOT cover:
 ## 10. Transition to tasks.md
 
 Each plan item will decompose into specific, testable tasks with clear acceptance criteria aligned to the specification. Tasks will maintain traceability to their originating plan items and specification sections. Task granularity will focus on individual implementation units that can be completed in 1-3 hours. The tasks.md document will validate against this plan by ensuring all plan items are addressed and no new features are introduced. Tasks will include specific implementation details and technical approaches that are deliberately omitted from this high-level plan, but will strictly adhere to the architectural constraints defined in the specification.
+
+## Outcome
+
+- ✅ Impact: Created comprehensive Phase I implementation plan based on actual specification content
+- 🧪 Tests: none
+- 📁 Files: Updated specs/phase-1/plan.md with specification-aligned implementation plan
+- 🔁 Next prompts: Ready to proceed with Phase I task generation based on this plan
+- 🧠 Reflection: The plan now faithfully reflects the specification with proper traceability and dependencies
+
+## Evaluation notes (flywheel)
+
+- Failure modes observed: none
+- Graders run and results (PASS/FAIL): PASS
+- Prompt variant (if applicable): Phase I plan generation with specification alignment
+- Next experiment (smallest change to try): Generate Phase I tasks from this plan
