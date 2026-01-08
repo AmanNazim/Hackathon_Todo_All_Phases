@@ -86,14 +86,14 @@ Dependencies: None (standalone component)
 Reference: Middleware Pipeline subsystem (Plan Section 5)
 Dependencies: Command Grammar & Parsing
 
-- [ ] T050 Create InputNormalizer middleware for standardizing command format (Plan 5.9) - Include unit tests for all normalization transformations and security tests to validate input sanitization
-- [ ] T051 Create IntentClassifier middleware for determining command type (Plan 5.9) - Add accuracy tests for command type detection and performance tests to ensure classification completes within 10ms
-- [ ] T052 Create SecurityGuard middleware for validating command safety (Plan 5.9) - Include security penetration tests to validate protection against command injection and malicious inputs
-- [ ] T053 Create ValidationMiddleware for verifying parameters and task IDs (Plan 5.9) - Add validation tests for all parameter types and error condition tests for invalid inputs
-- [ ] T054 Create AnalyticsMiddleware for tracking command usage (Plan 5.9) - Include tests for metadata collection accuracy and performance impact validation to ensure <10ms overhead
-- [ ] T055 Create RendererMiddleware for formatting output (Plan 5.9) - Add output format validation tests and performance tests to ensure rendering completes within 50ms
-- [ ] T056 Implement middleware pipeline orchestrator with proper ordering (Plan 5.9) - Include integration tests to validate middleware execution order and error propagation
-- [ ] T057 Add error handling between middleware stages (Plan 5.9) - Add comprehensive error handling tests to ensure errors are properly caught and propagated without system crashes
+- [x] T050 Create InputNormalizer middleware for standardizing command format (Plan 5.9) - Include unit tests for all normalization transformations and security tests to validate input sanitization
+- [x] T051 Create IntentClassifier middleware for determining command type (Plan 5.9) - Add accuracy tests for command type detection and performance tests to ensure classification completes within 10ms
+- [x] T052 Create SecurityGuard middleware for validating command safety (Plan 5.9) - Include security penetration tests to validate protection against command injection and malicious inputs
+- [x] T053 Create ValidationMiddleware for verifying parameters and task IDs (Plan 5.9) - Add validation tests for all parameter types and error condition tests for invalid inputs
+- [x] T054 Create AnalyticsMiddleware for tracking command usage (Plan 5.9) - Include tests for metadata collection accuracy and performance impact validation to ensure <10ms overhead
+- [x] T055 Create RendererMiddleware for formatting output (Plan 5.9) - Add output format validation tests and performance tests to ensure rendering completes within 50ms
+- [x] T056 Implement middleware pipeline orchestrator with proper ordering (Plan 5.9) - Include integration tests to validate middleware execution order and error propagation
+- [x] T057 Add error handling between middleware stages (Plan 5.9) - Add comprehensive error handling tests to ensure errors are properly caught and propagated without system crashes
 
 ### CLI State Machine
 Reference: CLI State Machine subsystem (Plan Section 5)
