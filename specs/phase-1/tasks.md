@@ -120,15 +120,15 @@ Dependencies: Command Grammar & Parsing, CLI State Machine
 Reference: Rendering Engine subsystem (Plan Section 5)
 Dependencies: Domain Model (Task, Status, Events), CLI State Machine
 
-- [ ] T080 Create base renderer interface for output formatting (Plan 5.6) - Include interface compliance tests and rendering performance tests to ensure output formatting completes within 10ms
-- [ ] T081 Implement minimal theme with plain text formatting (Plan 5.6) - Add visual validation tests to ensure proper plain text rendering and readability
-- [ ] T082 Implement emoji theme with visual indicators (Plan 5.6) - Add visual validation tests to ensure proper emoji rendering and cross-platform compatibility
-- [ ] T083 Implement hacker theme with monochrome styling (Plan 5.6) - Add visual validation tests to ensure consistent monochrome styling and readability
-- [ ] T084 Implement professional theme with clean appearance (Plan 5.6) - Add visual validation tests to ensure professional styling and readability
-- [ ] T085 Create task list renderer with ID, title, status columns (Plan 5.6) - Add performance tests to ensure rendering completes within 50ms for up to 100 tasks and pagination tests for >50 tasks
-- [ ] T086 Implement status indicator rendering (pending/completed) (Plan 5.6) - Add visual validation tests to ensure clear status differentiation with appropriate indicators
-- [ ] T087 Add success/failure message formatting (Plan 5.6) - Include visual validation tests for message formatting and accessibility tests for color-blind friendly indicators
-- [ ] T088 Implement theme switching functionality (Plan 5.6) - Add theme switching tests to validate seamless transitions between themes and persistence of user preference
+- [x] T080 Create base renderer interface for output formatting (Plan 5.6) - Include interface compliance tests and rendering performance tests to ensure output formatting completes within 10ms
+- [x] T081 Implement minimal theme with plain text formatting (Plan 5.6) - Add visual validation tests to ensure proper plain text rendering and readability
+- [x] T082 Implement emoji theme with visual indicators (Plan 5.6) - Add visual validation tests to ensure proper emoji rendering and cross-platform compatibility
+- [x] T083 Implement hacker theme with monochrome styling (Plan 5.6) - Add visual validation tests to ensure consistent monochrome styling and readability
+- [x] T084 Implement professional theme with clean appearance (Plan 5.6) - Add visual validation tests to ensure professional styling and readability
+- [x] T085 Create task list renderer with ID, title, status columns (Plan 5.6) - Add performance tests to ensure rendering completes within 50ms for up to 100 tasks and pagination tests for >50 tasks
+- [x] T086 Implement status indicator rendering (pending/completed) (Plan 5.6) - Add visual validation tests to ensure clear status differentiation with appropriate indicators
+- [x] T087 Add success/failure message formatting (Plan 5.6) - Include visual validation tests for message formatting and accessibility tests for color-blind friendly indicators
+- [x] T088 Implement theme switching functionality (Plan 5.6) - Add theme switching tests to validate seamless transitions between themes and persistence of user preference
 
 ### UX Systems (onboarding, help, hints)
 Reference: UX Systems subsystem (Plan Section 5)
