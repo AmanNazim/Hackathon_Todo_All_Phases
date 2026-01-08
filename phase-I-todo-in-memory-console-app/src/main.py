@@ -23,6 +23,10 @@ from .domain.events import (
 )
 from .domain.validation import DomainValidator
 
+# Import repository components
+from .repository.factory import RepositoryFactory
+from .repository.interface import TaskRepository
+
 
 class TodoApp:
     """Main CLI Todo Application class"""
@@ -30,7 +34,7 @@ class TodoApp:
     def __init__(self):
         self.config = get_config()
         self.logger = get_logger()
-        self.tasks: Dict[str, Task] = {}
+        self.repository: TaskRepository = RepositoryFactory.create_task_repository()
         self.command_history: List[Dict[str, Any]] = []
         self.session_start_time = datetime.now()
 
@@ -55,8 +59,8 @@ class TodoApp:
             # Create task using domain factory method
             task = Task.create(title=title.strip(), description=description, tags=tags)
 
-            # Store the task
-            self.tasks[task.id] = task
+            # Store the task using repository
+            self.repository.add(task)
 
             # Create and store the event
             event = TaskCreatedEvent(task)
@@ -105,14 +109,17 @@ class TodoApp:
         start_time = datetime.now()
 
         try:
-            tasks = list(self.tasks.values())
-
             if status_filter:
                 if status_filter.lower() == "completed":
-                    tasks = [t for t in tasks if t.status == TaskStatus.COMPLETED]
+                    tasks = self.repository.list_by_status(TaskStatus.COMPLETED)
                 elif status_filter.lower() == "pending":
-                    tasks = [t for t in tasks if t.status == TaskStatus.PENDING]
-                # If filter is "all" or any other value, return all tasks
+                    tasks = self.repository.list_by_status(TaskStatus.PENDING)
+                else:
+                    # If filter is "all" or any other value, return all tasks
+                    tasks = self.repository.list_all()
+            else:
+                # No filter - return all tasks
+                tasks = self.repository.list_all()
 
             # Performance logging
             duration = (datetime.now() - start_time).total_seconds() * 1000
@@ -140,10 +147,10 @@ class TodoApp:
         start_time = datetime.now()
 
         try:
-            if task_id not in self.tasks:
+            # Get the task from the repository
+            task = self.repository.get(task_id)
+            if task is None:
                 raise TaskNotFoundError(task_id)
-
-            task = self.tasks[task_id]
 
             # Store old values for the event
             old_values = {
@@ -158,6 +165,11 @@ class TodoApp:
 
             # Perform the update using the domain method
             task.update(title=title, description=description, tags=tags)
+
+            # Update the task in the repository
+            success = self.repository.update(task)
+            if not success:
+                raise TaskNotFoundError(task_id)
 
             # Create and store the event
             event = TaskUpdatedEvent(task, old_values)
@@ -210,18 +222,19 @@ class TodoApp:
         start_time = datetime.now()
 
         try:
-            if task_id not in self.tasks:
+            # Get the task from the repository to create the event
+            task_to_delete = self.repository.get(task_id)
+            if task_to_delete is None:
                 raise TaskNotFoundError(task_id)
-
-            # Get the task to be deleted
-            task_to_delete = self.tasks[task_id]
 
             # Create and store the event before deletion
             event = TaskDeletedEvent(task_to_delete)
             self._log_event(event)
 
-            # Remove the task from storage
-            del self.tasks[task_id]
+            # Remove the task from the repository
+            success = self.repository.delete(task_id)
+            if not success:
+                raise TaskNotFoundError(task_id)
 
             # Log the command for history and potential undo
             self._log_command("delete_task", {
@@ -258,16 +271,24 @@ class TodoApp:
         start_time = datetime.now()
 
         try:
-            if task_id not in self.tasks:
+            # Get the task from the repository
+            task = self.repository.get(task_id)
+            if task is None:
                 raise TaskNotFoundError(task_id)
 
-            task = self.tasks[task_id]
+            # Store the previous status for the event
+            previous_status = task.status.value
 
             # Use domain method to mark as completed
             task.mark_completed()
 
+            # Update the task in the repository
+            success = self.repository.update(task)
+            if not success:
+                raise TaskNotFoundError(task_id)
+
             # Create and store the event
-            event = TaskCompletedEvent(task, previous_status=task.status.value)
+            event = TaskCompletedEvent(task, previous_status=previous_status)
             self._log_event(event)
 
             # Log the command for history and potential undo
@@ -304,16 +325,24 @@ class TodoApp:
         start_time = datetime.now()
 
         try:
-            if task_id not in self.tasks:
+            # Get the task from the repository
+            task = self.repository.get(task_id)
+            if task is None:
                 raise TaskNotFoundError(task_id)
 
-            task = self.tasks[task_id]
+            # Store the previous status for the event
+            previous_status = task.status.value
 
             # Use domain method to mark as pending
             task.mark_pending()
 
+            # Update the task in the repository
+            success = self.repository.update(task)
+            if not success:
+                raise TaskNotFoundError(task_id)
+
             # Create and store the event
-            event = TaskReopenedEvent(task, previous_status=task.status.value)
+            event = TaskReopenedEvent(task, previous_status=previous_status)
             self._log_event(event)
 
             # Log the command for history and potential undo

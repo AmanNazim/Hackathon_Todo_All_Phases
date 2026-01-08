@@ -51,11 +51,11 @@ Dependencies: Project Structure & Initialization
 Reference: Repository Layer (Plan Section 5)
 Dependencies: Domain Model (Task, Status, Events)
 
-- [ ] T020 Create in-memory repository interface for Task entities (Plan 5.3) - Validate with interface compliance tests and unit tests for all interface methods
-- [ ] T021 Implement concrete in-memory repository with thread-safe operations (Plan 5.3) - Include concurrency stress tests to validate thread safety under simultaneous operations
-- [ ] T022 Implement repository methods: add, get, update, delete, list all (Plan 5.3) - Add comprehensive CRUD operation tests with validation for each method's success and error conditions
-- [ ] T023 Add repository methods for filtering by status (Plan 5.3) - Create performance tests to validate filtering efficiency with large datasets (>1000 tasks)
-- [ ] T024 Implement repository validation for duplicate prevention (Plan 5.3) - Include integration tests to verify duplicate prevention logic works correctly under various scenarios
+- [x] T020 Create in-memory repository interface for Task entities (Plan 5.3) - Validate with interface compliance tests and unit tests for all interface methods
+- [x] T021 Implement concrete in-memory repository with thread-safe operations (Plan 5.3) - Include concurrency stress tests to validate thread safety under simultaneous operations
+- [x] T022 Implement repository methods: add, get, update, delete, list all (Plan 5.3) - Add comprehensive CRUD operation tests with validation for each method's success and error conditions
+- [x] T023 Add repository methods for filtering by status (Plan 5.3) - Create performance tests to validate filtering efficiency with large datasets (>1000 tasks)
+- [x] T024 Implement repository validation for duplicate prevention (Plan 5.3) - Include integration tests to verify duplicate prevention logic works correctly under various scenarios
 
 ### Event Sourcing System
 Reference: Event System subsystem (Plan Section 5)
