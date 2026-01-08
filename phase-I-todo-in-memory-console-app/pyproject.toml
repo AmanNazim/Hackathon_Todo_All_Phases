@@ -1,7 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools"
+
 [project]
-name = "phase-i-todo-in-memory-console-app"
+name = "cli-todo-app"
 version = "0.1.0"
-description = "Add your description here"
+description = "Phase I In-Memory Python CLI Todo Application"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
+authors = [
+    {name = "Development Team"},
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.13",
+]
 dependencies = []
+
+[project.scripts]
+cli-todo = "src.main:main"
+
+[tool.setuptools]
+py-modules = ["src"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

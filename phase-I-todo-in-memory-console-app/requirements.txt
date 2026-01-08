@@ -1,0 +1,7 @@
+# Core dependencies for Phase I In-Memory Python CLI Todo Application
+# Based on Python 3.13+ and Phase I specification requirements
+
+# Standard library dependencies (no external packages required per spec)
+# The application uses only Python standard library for Phase I
+# Additional packages may be added as needed for specific features
+# but Phase I is designed to work with standard library only
