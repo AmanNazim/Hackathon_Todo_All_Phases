@@ -53,6 +53,8 @@ This document provides specific instructions for Claude Code when generating cod
 - Include type hints for all public interfaces
 - Use dataclasses for value objects and entities
 - Implement proper error handling and logging
+- **Package Management**: Use UV package manager exclusively for all dependency management
+- **UV Usage Rule**: Always use UV instead of pip, conda, or other package managers for consistency
 
 ### CLI-Specific Guidelines
 
