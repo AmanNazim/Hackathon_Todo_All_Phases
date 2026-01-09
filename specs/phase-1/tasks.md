@@ -158,12 +158,12 @@ Dependencies: Event Sourcing System, Command Grammar & Parsing
 Reference: Macro Engine subsystem (Plan Section 5)
 Dependencies: Command History & Undo
 
-- [ ] T110 Create macro recorder for capturing command sequences (Plan 5.14) - Include functionality tests to validate accurate command sequence capture and performance tests for recording overhead
-- [ ] T111 Implement macro storage in memory (Plan 5.14) - Add memory usage tests to ensure efficient storage and validation tests for macro integrity during storage
-- [ ] T112 Create macro player for executing stored sequences (Plan 5.14) - Include accuracy tests to validate correct execution of stored command sequences and performance tests for execution speed
-- [ ] T113 Add macro naming and identification system (Plan 5.14) - Add validation tests to ensure unique naming and proper identification of macros
-- [ ] T114 Implement macro listing functionality (Plan 5.14) - Include tests to validate accurate listing of available macros and performance tests for listing speed
-- [ ] T115 Add macro interruption capability during playback (Plan 5.14) - Add functionality tests to ensure macros can be safely interrupted and system state remains consistent
+- [x] T110 Create macro recorder for capturing command sequences (Plan 5.14) - Include functionality tests to validate accurate command sequence capture and performance tests for recording overhead
+- [x] T111 Implement macro storage in memory (Plan 5.14) - Add memory usage tests to ensure efficient storage and validation tests for macro integrity during storage
+- [x] T112 Create macro player for executing stored sequences (Plan 5.14) - Include accuracy tests to validate correct execution of stored command sequences and performance tests for execution speed
+- [x] T113 Add macro naming and identification system (Plan 5.14) - Add validation tests to ensure unique naming and proper identification of macros
+- [x] T114 Implement macro listing functionality (Plan 5.14) - Include tests to validate accurate listing of available macros and performance tests for listing speed
+- [x] T115 Add macro interruption capability during playback (Plan 5.14) - Add functionality tests to ensure macros can be safely interrupted and system state remains consistent
 
 ### Snapshot System
 Reference: Snapshot System subsystem (Plan Section 5)
