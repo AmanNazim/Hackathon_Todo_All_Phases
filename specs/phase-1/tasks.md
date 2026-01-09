@@ -169,12 +169,12 @@ Dependencies: Command History & Undo
 Reference: Snapshot System subsystem (Plan Section 5)
 Dependencies: Domain Model (Task, Status, Events), Event Sourcing System, Command History & Undo
 
-- [ ] T120 Create snapshot capture functionality for complete state (Plan 5.15) - Include accuracy tests to validate complete state capture and performance tests to ensure capture completes within 500ms for 1000 tasks
-- [ ] T121 Implement in-memory snapshot storage (Plan 5.15) - Add memory usage tests to ensure efficient storage and validation tests for snapshot integrity during storage
-- [ ] T122 Create snapshot restoration mechanism (Plan 5.15) - Include accuracy tests to validate complete state restoration and performance tests to ensure restoration completes within 500ms for 1000 tasks
-- [ ] T123 Add snapshot naming with timestamps or user names (Plan 5.15) - Add validation tests to ensure unique naming and proper identification of snapshots
-- [ ] T124 Implement snapshot listing functionality (Plan 5.15) - Include tests to validate accurate listing of available snapshots and performance tests for listing speed
-- [ ] T125 Add multiple snapshot support in memory (Plan 5.15) - Add tests to validate multiple snapshot management and memory usage tests to ensure efficient handling of multiple snapshots
+- [x] T120 Create snapshot capture functionality for complete state (Plan 5.15) - Include accuracy tests to validate complete state capture and performance tests to ensure capture completes within 500ms for 1000 tasks
+- [x] T121 Implement in-memory snapshot storage (Plan 5.15) - Add memory usage tests to ensure efficient storage and validation tests for snapshot integrity during storage
+- [x] T122 Create snapshot restoration mechanism (Plan 5.15) - Include accuracy tests to validate complete state restoration and performance tests to ensure restoration completes within 500ms for 1000 tasks
+- [x] T123 Add snapshot naming with timestamps or user names (Plan 5.15) - Add validation tests to ensure unique naming and proper identification of snapshots
+- [x] T124 Implement snapshot listing functionality (Plan 5.15) - Include tests to validate accurate listing of available snapshots and performance tests for listing speed
+- [x] T125 Add multiple snapshot support in memory (Plan 5.15) - Add tests to validate multiple snapshot management and memory usage tests to ensure efficient handling of multiple snapshots
 
 ### Metadata Injection
 Reference: Metadata Injection subsystem (Plan Section 5)
