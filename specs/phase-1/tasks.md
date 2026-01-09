@@ -211,13 +211,13 @@ Dependencies: UX Systems (onboarding, help, hints)
 Reference: Error Handling & Recovery subsystem (Plan Section 5)
 Dependencies: Command Grammar & Parsing, ValidationMiddleware, Undo System
 
-- [ ] T160 Implement invalid command error handling with suggestions (Plan 5.18) - Include accuracy tests for error message clarity and suggestion relevance, performance tests to ensure error responses within 50ms
-- [ ] T161 Create ambiguous command disambiguation prompts (Plan 5.18) - Add clarity tests for disambiguation prompts and user experience tests to ensure prompts are helpful
-- [ ] T162 Implement confirmation failure handling (Plan 5.18) - Include tests to validate proper state restoration after confirmation failures and user experience tests for clear messaging
-- [ ] T163 Add undo failure handling with state preservation (Plan 5.18) - Add safety tests to ensure state preservation during undo failures and validation tests for error reporting
-- [ ] T164 Create safe recovery behavior for error conditions (Plan 5.18) - Include robustness tests to validate safe recovery from various error conditions and data integrity tests
-- [ ] T165 Implement graceful degradation for error scenarios (Plan 5.18) - Add tests to validate system continues operating with reduced functionality during errors
-- [ ] T166 Add data integrity maintenance during errors (Plan 5.18) - Include data consistency tests to ensure no corruption during error conditions and recovery validation tests
+- [x] T160 Implement invalid command error handling with suggestions (Plan 5.18) - Include accuracy tests for error message clarity and suggestion relevance, performance tests to ensure error responses within 50ms
+- [x] T161 Create ambiguous command disambiguation prompts (Plan 5.18) - Add clarity tests for disambiguation prompts and user experience tests to ensure prompts are helpful
+- [x] T162 Implement confirmation failure handling (Plan 5.18) - Include tests to validate proper state restoration after confirmation failures and user experience tests for clear messaging
+- [x] T163 Add undo failure handling with state preservation (Plan 5.18) - Add safety tests to ensure state preservation during undo failures and validation tests for error reporting
+- [x] T164 Create safe recovery behavior for error conditions (Plan 5.18) - Include robustness tests to validate safe recovery from various error conditions and data integrity tests
+- [x] T165 Implement graceful degradation for error scenarios (Plan 5.18) - Add tests to validate system continues operating with reduced functionality during errors
+- [x] T166 Add data integrity maintenance during errors (Plan 5.18) - Include data consistency tests to ensure no corruption during error conditions and recovery validation tests
 
 ### Plugin Architecture (Phase I constraints)
 Reference: Plugin Architecture subsystem (Plan Section 5)
