@@ -201,11 +201,11 @@ Dependencies: Rendering & Themes, Command Grammar & Parsing
 Reference: UX Systems subsystem (Plan Section 5)
 Dependencies: UX Systems (onboarding, help, hints)
 
-- [ ] T150 Implement session statistics tracking (Plan 5.10) - Include accuracy tests to validate correct statistic calculation and performance tests to ensure tracking doesn't impact system performance
-- [ ] T151 Create total tasks created counter (Plan 5.10) - Add validation tests to ensure counter accuracy and tests to verify counter resets appropriately between sessions
-- [ ] T152 Implement tasks completed counter (Plan 5.10) - Add accuracy tests for completion tracking and validation tests to ensure correct counting
-- [ ] T153 Add commands executed counter (Plan 5.10) - Include accuracy tests for command counting and validation tests to ensure correct tracking across different command types
-- [ ] T154 Create exit summary display at application termination (Plan 5.10) - Add display tests to validate summary appears correctly and accuracy tests to ensure statistics are current at exit
+- [x] T150 Implement session statistics tracking (Plan 5.10) - Include accuracy tests to validate correct statistic calculation and performance tests to ensure tracking doesn't impact system performance
+- [x] T151 Create total tasks created counter (Plan 5.10) - Add validation tests to ensure counter accuracy and tests to verify counter resets appropriately between sessions
+- [x] T152 Implement tasks completed counter (Plan 5.10) - Add accuracy tests for completion tracking and validation tests to ensure correct counting
+- [x] T153 Add commands executed counter (Plan 5.10) - Include accuracy tests for command counting and validation tests to ensure correct tracking across different command types
+- [x] T154 Create exit summary display at application termination (Plan 5.10) - Add display tests to validate summary appears correctly and accuracy tests to ensure statistics are current at exit
 
 ### Error Handling & Recovery
 Reference: Error Handling & Recovery subsystem (Plan Section 5)
