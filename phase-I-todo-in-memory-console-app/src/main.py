@@ -33,6 +33,9 @@ from .events import EventStore, EventValidator, EventBus, EventPublisher, EventR
 # Import core operations
 from .core_operations.core_task_operations import CoreTaskOperations, TaskConfirmation
 
+# Import plugin architecture
+from .plugin_architecture import PluginLoader, PluginValidator
+
 
 class TodoApp:
     """Main CLI Todo Application class"""
@@ -57,6 +60,24 @@ class TodoApp:
             event_publisher=self.event_publisher,
             event_validator=self.event_validator
         )
+
+        # Initialize plugin architecture
+        self.plugin_loader = PluginLoader()
+        self.plugin_validator = PluginValidator()
+
+        # Load and validate plugins
+        try:
+            loaded_plugins = self.plugin_loader.load_all_plugins()
+            self.logger.info(f"Loaded {len(loaded_plugins)} plugins successfully")
+
+            # Check for failed plugins
+            failed_plugins = self.plugin_loader.get_failed_plugins()
+            if failed_plugins:
+                self.logger.warning(f"Failed to load {len(failed_plugins)} plugins")
+                for plugin_info in failed_plugins:
+                    self.logger.warning(f"Failed plugin: {plugin_info.name} - {plugin_info.error_message}")
+        except Exception as e:
+            self.logger.error(f"Error initializing plugin system: {str(e)}")
 
         self.session_start_time = datetime.now()
 
@@ -238,6 +259,10 @@ class TodoApp:
         # Get memory usage stats from event store
         memory_stats = self.event_store.get_memory_usage_stats()
 
+        # Include plugin information in session summary
+        loaded_plugins_count = len(self.plugin_loader.get_loaded_plugins())
+        failed_plugins_count = len(self.plugin_loader.get_failed_plugins())
+
         return {
             "total_tasks_created": created_tasks,
             "net_tasks": net_tasks,
@@ -246,7 +271,20 @@ class TodoApp:
             "commands_executed": commands_executed,
             "total_events_stored": len(all_events),
             "event_store_memory_usage": memory_stats,
+            "loaded_plugins_count": loaded_plugins_count,
+            "failed_plugins_count": failed_plugins_count,
             "session_duration": str(datetime.now() - self.session_start_time)
+        }
+
+    def get_plugins(self):
+        """Get all loaded plugins"""
+        return self.plugin_loader.get_loaded_plugins()
+
+    def get_plugin_info(self):
+        """Get information about all plugins (both loaded and failed)"""
+        return {
+            "loaded_plugins": self.plugin_loader.get_loaded_plugins(),
+            "failed_plugins": self.plugin_loader.get_failed_plugins()
         }
 
 
