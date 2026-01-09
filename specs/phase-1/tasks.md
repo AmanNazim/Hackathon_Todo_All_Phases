@@ -190,12 +190,12 @@ Dependencies: Command Grammar & Parsing, AnalyticsMiddleware
 Reference: Test Mode subsystem (Plan Section 5)
 Dependencies: Rendering & Themes, Command Grammar & Parsing
 
-- [ ] T140 Implement --test-mode flag for machine-readable output (Plan 5.17) - Include tests to validate flag activation and deactivation, and performance tests to ensure mode switching completes within 50ms
-- [ ] T141 Create JSON output formatter for all responses (Plan 5.17) - Add schema validation tests to ensure all JSON outputs conform to specification and correctness tests for content accuracy
-- [ ] T142 Add standardized field names for JSON output (Plan 5.17) - Include validation tests to ensure consistent field naming and backward compatibility tests
-- [ ] T143 Implement consistent error reporting in JSON format (Plan 5.17) - Add error format validation tests and consistency tests across different error types
-- [ ] T144 Add deterministic ordering for test mode output (Plan 5.17) - Include reproducibility tests to ensure identical inputs produce identical outputs across runs
-- [ ] T145 Create test automation support features (Plan 5.17) - Add integration tests to validate automation compatibility and performance tests for automated test execution
+- [x] T140 Implement --test-mode flag for machine-readable output (Plan 5.17) - Include tests to validate flag activation and deactivation, and performance tests to ensure mode switching completes within 50ms
+- [x] T141 Create JSON output formatter for all responses (Plan 5.17) - Add schema validation tests to ensure all JSON outputs conform to specification and correctness tests for content accuracy
+- [x] T142 Add standardized field names for JSON output (Plan 5.17) - Include validation tests to ensure consistent field naming and backward compatibility tests
+- [x] T143 Implement consistent error reporting in JSON format (Plan 5.17) - Add error format validation tests and consistency tests across different error types
+- [x] T144 Add deterministic ordering for test mode output (Plan 5.17) - Include reproducibility tests to ensure identical inputs produce identical outputs across runs
+- [x] T145 Create test automation support features (Plan 5.17) - Add integration tests to validate automation compatibility and performance tests for automated test execution
 
 ### Exit Summary
 Reference: UX Systems subsystem (Plan Section 5)
