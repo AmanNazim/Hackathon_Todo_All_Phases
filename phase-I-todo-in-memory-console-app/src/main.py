@@ -30,6 +30,9 @@ from .repository.interface import TaskRepository
 # Import event sourcing components
 from .events import EventStore, EventValidator, EventBus, EventPublisher, EventReplayService
 
+# Import core operations
+from .core_operations.core_task_operations import CoreTaskOperations, TaskConfirmation
+
 
 class TodoApp:
     """Main CLI Todo Application class"""
@@ -47,6 +50,14 @@ class TodoApp:
         self.event_validator = EventValidator()
         self.event_replay_service = EventReplayService(self.event_store)
 
+        # Initialize core operations
+        self.core_operations = CoreTaskOperations(
+            repository=self.repository,
+            event_store=self.event_store,
+            event_publisher=self.event_publisher,
+            event_validator=self.event_validator
+        )
+
         self.session_start_time = datetime.now()
 
         self.logger.info("TodoApp initialized", extra={
@@ -57,153 +68,66 @@ class TodoApp:
 
     def add_task(self, title: str, description: Optional[str] = None, tags: Optional[List[str]] = None) -> str:
         """Add a new task to the application"""
-        start_time = datetime.now()
+        result = self.core_operations.add_task(title, description, tags)
 
-        try:
-            # Use domain validator for validation
-            DomainValidator.validate_task_title(title)
-            if description:
-                DomainValidator.validate_task_description(description)
-            if tags:
-                DomainValidator.validate_task_tags(tags)
-
-            # Create task using domain factory method
-            task = Task.create(title=title.strip(), description=description, tags=tags)
-
-            # Create and validate the event before storing
-            event = TaskCreatedEvent(task)
-
-            # Validate the event before storing
-            self.event_validator.validate_event(event)
-            self.event_validator.validate_event_signature(event)
-
-            # Store the event in the event store
-            self.event_store.append(event)
-
-            # Publish the event via the event bus
-            self.event_publisher.publish_event(event)
-
-            # Store the task using repository
-            self.repository.add(task)
-
+        if result.success:
             # Log the command for history and potential undo
             self._log_command("add_task", {
                 "title": title,
                 "description": description,
                 "tags": tags,
-                "task_id": task.id
+                "task_id": result.task_id
             })
 
-            # Performance logging
-            duration = (datetime.now() - start_time).total_seconds() * 1000
             self.logger.info(f"Task added successfully", extra={
-                "task_id": task.id,
-                "duration_ms": duration,
+                "task_id": result.task_id,
                 "title_length": len(title)
             })
 
-            if duration > self.config.add_task_timeout_ms:
-                self.logger.warning(f"Add task operation took longer than expected", extra={
-                    "duration_ms": duration,
-                    "threshold_ms": self.config.add_task_timeout_ms
-                })
-
-            return task.id
-
-        except ValueError as e:  # Domain validation raises ValueError
-            self.logger.error(f"Validation error in add_task: {str(e)}", extra={
+            return result.task_id
+        else:
+            self.logger.error(f"Failed to add task: {result.message}", extra={
                 "title_length": len(title) if title else 0,
                 "has_description": description is not None
             })
-            raise ValidationError(str(e))
-        except ValidationError:
-            # Re-raise ValidationError as-is
-            raise
-        except Exception as e:
-            error_info = handle_error(e, "add_task")
-            raise ValidationError(f"Failed to add task: {error_info.get('message', str(e))}")
-
+            raise ValidationError(result.message)
 
     def list_tasks(self, status_filter: Optional[str] = None) -> List[Task]:
         """List tasks with optional status filtering"""
-        start_time = datetime.now()
+        result = self.core_operations.list_tasks(status_filter)
 
-        try:
-            if status_filter:
-                if status_filter.lower() == "completed":
-                    tasks = self.repository.list_by_status(TaskStatus.COMPLETED)
-                elif status_filter.lower() == "pending":
-                    tasks = self.repository.list_by_status(TaskStatus.PENDING)
-                else:
-                    # If filter is "all" or any other value, return all tasks
-                    tasks = self.repository.list_all()
-            else:
-                # No filter - return all tasks
-                tasks = self.repository.list_all()
+        if result.success:
+            # Convert dict back to Task objects if needed
+            tasks = []
+            for task_data in result.task_data or []:
+                # Create a temporary task object from the data
+                # Note: In a real scenario, we'd want to deserialize properly
+                task = Task(
+                    id=task_data['id'],
+                    title=task_data['title'],
+                    description=task_data['description'],
+                    created_at=task_data['created_at'],
+                    updated_at=task_data['updated_at'],
+                    status=TaskStatus(task_data['status']),
+                    tags=task_data['tags']
+                )
+                tasks.append(task)
 
-            # Performance logging
-            duration = (datetime.now() - start_time).total_seconds() * 1000
             self.logger.info(f"Tasks listed successfully", extra={
                 "task_count": len(tasks),
-                "filter": status_filter,
-                "duration_ms": duration
+                "filter": status_filter
             })
 
-            if duration > self.config.list_with_filters_timeout_ms:
-                self.logger.warning(f"List tasks operation took longer than expected", extra={
-                    "duration_ms": duration,
-                    "threshold_ms": self.config.list_with_filters_timeout_ms,
-                    "task_count": len(tasks)
-                })
-
             return tasks
-
-        except Exception as e:
-            error_info = handle_error(e, "list_tasks")
-            raise ValidationError(f"Failed to list tasks: {error_info.get('message', str(e))}")
+        else:
+            self.logger.error(f"Failed to list tasks: {result.message}")
+            raise ValidationError(result.message)
 
     def update_task(self, task_id: str, title: Optional[str] = None, description: Optional[str] = None, tags: Optional[List[str]] = None) -> bool:
         """Update an existing task"""
-        start_time = datetime.now()
+        result = self.core_operations.update_task(task_id, title, description, tags)
 
-        try:
-            # Get the task from the repository
-            task = self.repository.get(task_id)
-            if task is None:
-                raise TaskNotFoundError(task_id)
-
-            # Store old values for the event
-            old_values = {
-                'title': task.title,
-                'description': task.description,
-                'status': task.status.value,
-                'tags': task.tags.copy() if task.tags else []
-            }
-
-            # Use domain validation for update parameters
-            DomainValidator.validate_task_update(title, description, tags)
-
-            # Perform the update using the domain method
-            task.update(title=title, description=description, tags=tags)
-
-            # Create and validate the event before storing
-            event = TaskUpdatedEvent(task, old_values)
-
-            # Validate the event before storing
-            self.event_validator.validate_event(event)
-            self.event_validator.validate_event_signature(event)
-
-            # Store the event in the event store
-            self.event_store.append(event)
-
-            # Publish the event via the event bus
-            self.event_publisher.publish_event(event)
-
-            # Update the task in the repository
-            success = self.repository.update(task)
-            if not success:
-                raise TaskNotFoundError(task_id)
-
+        if result.success:
             # Log the command for history and potential undo
             self._log_command("update_task", {
                 "task_id": task_id,
@@ -212,223 +136,80 @@ class TodoApp:
                 "tags": tags
             })
 
-            # Performance logging
-            duration = (datetime.now() - start_time).total_seconds() * 1000
             self.logger.info(f"Task updated successfully", extra={
-                "task_id": task_id,
-                "duration_ms": duration
+                "task_id": task_id
             })
-
-            if duration > self.config.update_task_timeout_ms:
-                self.logger.warning(f"Update task operation took longer than expected", extra={
-                    "duration_ms": duration,
-                    "threshold_ms": self.config.update_task_timeout_ms
-                })
 
             return True
-
-        except ValueError as e:  # Domain validation raises ValueError
-            self.logger.error(f"Validation error in update_task: {str(e)}", extra={
+        else:
+            self.logger.error(f"Failed to update task: {result.message}", extra={
                 "task_id": task_id
             })
-            raise ValidationError(str(e))
-        except TaskNotFoundError as e:
-            self.logger.error(f"Task not found in update_task: {str(e)}", extra={
-                "task_id": task_id
-            })
-            raise
-        except ValidationError as e:
-            self.logger.error(f"Validation error in update_task: {str(e)}", extra={
-                "task_id": task_id
-            })
-            raise
-        except Exception as e:
-            error_info = handle_error(e, "update_task")
-            raise ValidationError(f"Failed to update task: {error_info.get('message', str(e))}")
+            raise ValidationError(result.message)
 
     def delete_task(self, task_id: str) -> bool:
         """Delete a task from the application"""
-        start_time = datetime.now()
+        result = self.core_operations.delete_task(task_id)
 
-        try:
-            # Get the task from the repository to create the event
-            task_to_delete = self.repository.get(task_id)
-            if task_to_delete is None:
-                raise TaskNotFoundError(task_id)
-
-            # Create and validate the event before storing
-            event = TaskDeletedEvent(task_to_delete)
-
-            # Validate the event before storing
-            self.event_validator.validate_event(event)
-            self.event_validator.validate_event_signature(event)
-
-            # Store the event in the event store
-            self.event_store.append(event)
-
-            # Publish the event via the event bus
-            self.event_publisher.publish_event(event)
-
-            # Remove the task from the repository
-            success = self.repository.delete(task_id)
-            if not success:
-                raise TaskNotFoundError(task_id)
-
+        if result.success:
             # Log the command for history and potential undo
             self._log_command("delete_task", {
                 "task_id": task_id,
-                "original_task_data": task_to_delete.to_dict()
+                "original_task_data": result.task_data
             })
 
-            # Performance logging
-            duration = (datetime.now() - start_time).total_seconds() * 1000
             self.logger.info(f"Task deleted successfully", extra={
-                "task_id": task_id,
-                "duration_ms": duration
-            })
-
-            if duration > self.config.delete_task_timeout_ms:
-                self.logger.warning(f"Delete task operation took longer than expected", extra={
-                    "duration_ms": duration,
-                    "threshold_ms": self.config.delete_task_timeout_ms
-                })
-
-            return True
-
-        except TaskNotFoundError as e:
-            self.logger.error(f"Task not found in delete_task: {str(e)}", extra={
                 "task_id": task_id
             })
-            raise
-        except Exception as e:
-            error_info = handle_error(e, "delete_task")
-            raise ValidationError(f"Failed to delete task: {error_info.get('message', str(e))}")
+
+            return True
+        else:
+            self.logger.error(f"Failed to delete task: {result.message}", extra={
+                "task_id": task_id
+            })
+            raise ValidationError(result.message)
 
     def complete_task(self, task_id: str) -> bool:
         """Mark a task as completed"""
-        start_time = datetime.now()
+        result = self.core_operations.complete_task(task_id)
 
-        try:
-            # Get the task from the repository
-            task = self.repository.get(task_id)
-            if task is None:
-                raise TaskNotFoundError(task_id)
-
-            # Store the previous status for the event
-            previous_status = task.status.value
-
-            # Use domain method to mark as completed
-            task.mark_completed()
-
-            # Create and validate the event before storing
-            event = TaskCompletedEvent(task, previous_status=previous_status)
-
-            # Validate the event before storing
-            self.event_validator.validate_event(event)
-            self.event_validator.validate_event_signature(event)
-
-            # Store the event in the event store
-            self.event_store.append(event)
-
-            # Publish the event via the event bus
-            self.event_publisher.publish_event(event)
-
-            # Update the task in the repository
-            success = self.repository.update(task)
-            if not success:
-                raise TaskNotFoundError(task_id)
-
+        if result.success:
             # Log the command for history and potential undo
             self._log_command("complete_task", {
                 "task_id": task_id
             })
 
-            # Performance logging
-            duration = (datetime.now() - start_time).total_seconds() * 1000
             self.logger.info(f"Task completed successfully", extra={
-                "task_id": task_id,
-                "duration_ms": duration
-            })
-
-            if duration > self.config.complete_task_timeout_ms:
-                self.logger.warning(f"Complete task operation took longer than expected", extra={
-                    "duration_ms": duration,
-                    "threshold_ms": self.config.complete_task_timeout_ms
-                })
-
-            return True
-
-        except TaskNotFoundError as e:
-            self.logger.error(f"Task not found in complete_task: {str(e)}", extra={
                 "task_id": task_id
             })
-            raise
-        except Exception as e:
-            error_info = handle_error(e, "complete_task")
-            raise ValidationError(f"Failed to complete task: {error_info.get('message', str(e))}")
+
+            return True
+        else:
+            self.logger.error(f"Failed to complete task: {result.message}", extra={
+                "task_id": task_id
+            })
+            raise ValidationError(result.message)
 
     def incomplete_task(self, task_id: str) -> bool:
         """Mark a task as incomplete"""
-        start_time = datetime.now()
+        result = self.core_operations.incomplete_task(task_id)
 
-        try:
-            # Get the task from the repository
-            task = self.repository.get(task_id)
-            if task is None:
-                raise TaskNotFoundError(task_id)
-
-            # Store the previous status for the event
-            previous_status = task.status.value
-
-            # Use domain method to mark as pending
-            task.mark_pending()
-
-            # Create and validate the event before storing
-            event = TaskReopenedEvent(task, previous_status=previous_status)
-
-            # Validate the event before storing
-            self.event_validator.validate_event(event)
-            self.event_validator.validate_event_signature(event)
-
-            # Store the event in the event store
-            self.event_store.append(event)
-
-            # Publish the event via the event bus
-            self.event_publisher.publish_event(event)
-
-            # Update the task in the repository
-            success = self.repository.update(task)
-            if not success:
-                raise TaskNotFoundError(task_id)
-
+        if result.success:
             # Log the command for history and potential undo
             self._log_command("incomplete_task", {
                 "task_id": task_id
             })
 
-            # Performance logging
-            duration = (datetime.now() - start_time).total_seconds() * 1000
             self.logger.info(f"Task marked incomplete successfully", extra={
-                "task_id": task_id,
-                "duration_ms": duration
-            })
-
-            if duration > self.config.complete_task_timeout_ms:  # Using same timeout as complete
-                self.logger.warning(f"Incomplete task operation took longer than expected", extra={
-                    "duration_ms": duration,
-                    "threshold_ms": self.config.complete_task_timeout_ms
-                })
-
-            return True
-
-        except TaskNotFoundError as e:
-            self.logger.error(f"Task not found in incomplete_task: {str(e)}", extra={
                 "task_id": task_id
             })
-            raise
-        except Exception as e:
-            error_info = handle_error(e, "incomplete_task")
-            raise ValidationError(f"Failed to mark task as incomplete: {error_info.get('message', str(e))}")
+
+            return True
+        else:
+            self.logger.error(f"Failed to mark task as incomplete: {result.message}", extra={
+                "task_id": task_id
+            })
+            raise ValidationError(result.message)
 
     def _log_command(self, command_type: str, params: Dict[str, Any]):
         """Log command for history and potential undo functionality"""

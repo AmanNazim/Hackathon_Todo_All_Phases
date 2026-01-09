@@ -106,7 +106,11 @@ class Task:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert task to dictionary representation"""
-        return asdict(self)
+        result = asdict(self)
+        # Convert enum values to their string representations
+        if isinstance(result['status'], TaskStatus):
+            result['status'] = result['status'].value
+        return result
 
     @classmethod
     def create(cls, title: str, description: Optional[str] = None, tags: Optional[List[str]] = None) -> 'Task':
