@@ -4,7 +4,7 @@ T053: Create ValidationMiddleware for verifying parameters and task IDs
 """
 import re
 from typing import Dict, Any, Callable
-from src.middleware.pipeline import MiddlewareResult, MiddlewareResultStatus
+from .pipeline import MiddlewareResult, MiddlewareResultStatus
 
 
 class ValidationMiddleware:

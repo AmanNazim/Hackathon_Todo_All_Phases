@@ -4,12 +4,12 @@ Phase I: In-Memory Python CLI Todo Application
 """
 from typing import List, Dict, Type
 from datetime import datetime
-from src.domain.entities import Task
-from src.domain.events import (
+from ..domain.entities import Task
+from ..domain.events import (
     TaskEvent, EventType, TaskCreatedEvent, TaskUpdatedEvent,
     TaskDeletedEvent, TaskCompletedEvent, TaskReopenedEvent
 )
-from src.events.event_store import EventStore
+from .event_store import EventStore
 
 
 class EventReplayService:
@@ -58,8 +58,8 @@ class EventReplayService:
                 # or a different approach. Let's construct the task manually.
 
                 # Create a new task with the data from the event
-                from src.domain.entities import Task
-                from src.domain.status import TaskStatus
+                from ..domain.entities import Task
+                from ..domain.status import TaskStatus
 
                 # Create the task object directly, bypassing the factory method to set the ID
                 # Get the TaskStatus enum value based on the string from the event
@@ -120,8 +120,8 @@ class EventReplayService:
         if event.type == EventType.TASK_CREATED:
             if isinstance(event, TaskCreatedEvent):
                 # For TaskCreatedEvent, create a new task from the event data
-                from src.domain.entities import Task as TaskEntity
-                from src.domain.status import TaskStatus
+                from ..domain.entities import Task as TaskEntity
+                from ..domain.status import TaskStatus
 
                 # Get the TaskStatus enum value based on the string from the event
                 status_value = event.data['status']

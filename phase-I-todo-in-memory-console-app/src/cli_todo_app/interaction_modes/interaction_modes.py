@@ -5,9 +5,9 @@ Implements menu mode, natural language mode, and hybrid switching as specified i
 from enum import Enum
 from typing import Dict, Any, Callable, Optional, List
 from dataclasses import dataclass
-from src.state_machine.cli_state_machine import CLIStateMachine, StateHandler
-from src.parsers.command_parser import CommandParser
-from src.middleware.pipeline import MiddlewarePipeline
+from ..state_machine.cli_state_machine import CLIStateMachine, StateHandler
+from ..parsers.command_parser import CommandParser
+from ..middleware.pipeline import MiddlewarePipeline
 import re
 
 

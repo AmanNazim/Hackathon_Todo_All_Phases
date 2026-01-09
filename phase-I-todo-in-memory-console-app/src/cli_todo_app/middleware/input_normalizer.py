@@ -4,7 +4,7 @@ T050: Create InputNormalizer middleware for standardizing command format
 """
 import re
 from typing import Dict, Any, Callable
-from src.middleware.pipeline import MiddlewareResult
+from .pipeline import MiddlewareResult
 
 
 class InputNormalizer:

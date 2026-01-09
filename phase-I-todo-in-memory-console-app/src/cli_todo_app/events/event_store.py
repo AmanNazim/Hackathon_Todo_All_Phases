@@ -5,7 +5,7 @@ Phase I: In-Memory Python CLI Todo Application
 from typing import List, Dict, Any
 from datetime import datetime
 import threading
-from src.domain.events import TaskEvent
+from ..domain.events import TaskEvent
 
 
 class EventStore:
@@ -209,7 +209,7 @@ class EventValidator:
         """
         Validate that the event type is one of the allowed types
         """
-        from src.domain.events import EventType
+        from ..domain.events import EventType
         if event_type not in EventType.__members__.values():
             raise ValueError(f"Invalid event type: {event_type}")
         return True
@@ -250,7 +250,7 @@ class EventValidator:
         """
         Validate that the event data structure is appropriate for the event type
         """
-        from src.domain.events import EventType
+        from ..domain.events import EventType
 
         if event.type == EventType.TASK_CREATED:
             required_fields = ['title', 'description', 'created_at', 'status', 'tags']
@@ -278,7 +278,7 @@ class EventValidator:
         Validate that the event is consistent with existing events
         For example, check that a TASK_COMPLETED event is not applied to an already completed task
         """
-        from src.domain.events import EventType
+        from ..domain.events import EventType
 
         if event.type in [EventType.TASK_COMPLETED, EventType.TASK_REOPENED]:
             # Find the most recent state of this task

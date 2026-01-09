@@ -4,7 +4,7 @@ T052: Create SecurityGuard middleware for validating command safety
 """
 import re
 from typing import Dict, Any, Callable
-from src.middleware.pipeline import MiddlewareResult, MiddlewareResultStatus
+from .pipeline import MiddlewareResult, MiddlewareResultStatus
 
 
 class SecurityGuard:

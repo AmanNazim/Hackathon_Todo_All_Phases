@@ -3,7 +3,7 @@ Renderer Middleware for CLI Todo Application
 T055: Create RendererMiddleware for formatting output
 """
 from typing import Dict, Any, Callable
-from src.middleware.pipeline import MiddlewareResult, MiddlewareResultStatus
+from .pipeline import MiddlewareResult, MiddlewareResultStatus
 
 
 class BaseRenderer:

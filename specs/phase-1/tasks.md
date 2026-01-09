@@ -237,13 +237,13 @@ Dependencies: Rendering Engine, Command Parsing, ValidationMiddleware
 Reference: Core Task Operations subsystem (Plan Section 5)
 Dependencies: Domain Model (Task, Status, Events), In-Memory Repository, Command Parsing
 
-- [ ] T180 Implement Add Task functionality with title validation (Plan 5.20) - Include validation tests for title requirements (non-empty, ≤256 chars), performance tests to ensure completion within 100ms, and error handling tests for invalid inputs
-- [ ] T181 Implement View/List Tasks functionality with status indicators (Plan 5.20) - Add performance tests to ensure display completes within 200ms for up to 1000 tasks, pagination tests for >50 tasks, and visual validation tests for status indicators
-- [ ] T182 Implement Update Task functionality preserving unchanged fields (Plan 5.20) - Include validation tests to ensure unchanged fields remain unchanged, accuracy tests for field updates, and performance tests to ensure completion within 100ms
-- [ ] T183 Implement Delete Task functionality with ID validation (Plan 5.20) - Add validation tests for ID existence and format, accuracy tests to ensure only specified task is deleted, and performance tests to ensure completion within 100ms
-- [ ] T184 Implement Mark Task Complete/Incomplete functionality (Plan 5.20) - Include validation tests for ID existence, accuracy tests for status updates, and performance tests to ensure completion within 100ms
-- [ ] T185 Add task confirmation for successful operations (Plan 5.20) - Add user experience tests to validate clear confirmation messages and timing tests to ensure confirmations appear within 50ms
-- [ ] T186 Implement tags attachment to tasks functionality (Plan 5.20) - Include validation tests for tag format (alphanumeric with hyphens/underscores), accuracy tests for tag attachment and retrieval, and performance tests to ensure completion within 100ms
+- [x] T180 Implement Add Task functionality with title validation (Plan 5.20) - Include validation tests for title requirements (non-empty, ≤256 chars), performance tests to ensure completion within 100ms, and error handling tests for invalid inputs
+- [x] T181 Implement View/List Tasks functionality with status indicators (Plan 5.20) - Add performance tests to ensure display completes within 200ms for up to 1000 tasks, pagination tests for >50 tasks, and visual validation tests for status indicators
+- [x] T182 Implement Update Task functionality preserving unchanged fields (Plan 5.20) - Include validation tests to ensure unchanged fields remain unchanged, accuracy tests for field updates, and performance tests to ensure completion within 100ms
+- [x] T183 Implement Delete Task functionality with ID validation (Plan 5.20) - Add validation tests for ID existence and format, accuracy tests to ensure only specified task is deleted, and performance tests to ensure completion within 100ms
+- [x] T184 Implement Mark Task Complete/Incomplete functionality (Plan 5.20) - Include validation tests for ID existence, accuracy tests for status updates, and performance tests to ensure completion within 100ms
+- [x] T185 Add task confirmation for successful operations (Plan 5.20) - Add user experience tests to validate clear confirmation messages and timing tests to ensure confirmations appear within 50ms
+- [x] T186 Implement tags attachment to tasks functionality (Plan 5.20) - Include validation tests for tag format (alphanumeric with hyphens/underscores), accuracy tests for tag attachment and retrieval, and performance tests to ensure completion within 100ms
 
 ## 5. Required Task Groups
 

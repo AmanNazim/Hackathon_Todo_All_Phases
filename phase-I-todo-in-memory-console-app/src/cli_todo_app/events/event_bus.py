@@ -4,7 +4,7 @@ Phase I: In-Memory Python CLI Todo Application
 """
 from typing import Dict, List, Callable, Any, Type
 from threading import RLock
-from src.domain.events import TaskEvent, EventType
+from ..domain.events import TaskEvent, EventType
 
 
 class EventBus:

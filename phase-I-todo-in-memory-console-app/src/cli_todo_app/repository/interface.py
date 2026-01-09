@@ -4,8 +4,8 @@ Phase I: In-Memory Python CLI Todo Application
 """
 from abc import ABC, abstractmethod
 from typing import List, Optional, Protocol
-from src.domain.entities import Task
-from src.domain.status import TaskStatus
+from ..domain.entities import Task
+from ..domain.status import TaskStatus
 
 
 class TaskRepository(Protocol):

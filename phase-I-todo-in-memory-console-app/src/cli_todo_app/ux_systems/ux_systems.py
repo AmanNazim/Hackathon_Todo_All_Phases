@@ -7,9 +7,9 @@ from datetime import datetime
 import time
 from enum import Enum
 from dataclasses import dataclass
-from src.rendering.rendering_engine import BaseRenderer, MessageFormatter
-from src.parsers.command_parser import CommandParser
-from src.state_machine.cli_state_machine import CLIState
+from ..rendering.rendering_engine import BaseRenderer, MessageFormatter
+from ..parsers.command_parser import CommandParser
+from ..state_machine.cli_state_machine import CLIState
 
 
 class HelpTopic(Enum):

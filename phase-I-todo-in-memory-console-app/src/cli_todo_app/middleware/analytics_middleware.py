@@ -5,7 +5,7 @@ T054: Create AnalyticsMiddleware for tracking command usage
 import time
 from datetime import datetime
 from typing import Dict, Any, Callable
-from src.middleware.pipeline import MiddlewareResult, MiddlewareResultStatus
+from .pipeline import MiddlewareResult, MiddlewareResultStatus
 
 
 class AnalyticsMiddleware:

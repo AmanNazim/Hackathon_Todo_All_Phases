@@ -4,7 +4,7 @@ T051: Create IntentClassifier middleware for determining command type
 """
 import re
 from typing import Dict, Any, Callable
-from src.middleware.pipeline import MiddlewareResult
+from .pipeline import MiddlewareResult
 
 
 class IntentClassifier:
