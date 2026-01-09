@@ -180,11 +180,11 @@ Dependencies: Domain Model (Task, Status, Events), Event Sourcing System, Comman
 Reference: Metadata Injection subsystem (Plan Section 5)
 Dependencies: Command Grammar & Parsing, AnalyticsMiddleware
 
-- [ ] T130 Create metadata collector for command execution timestamps (Plan 5.16) - Include accuracy tests for timestamp precision and performance tests to ensure collection adds <10ms overhead
-- [ ] T131 Implement user interaction pattern tracking (Plan 5.16) - Add privacy compliance tests to ensure tracking respects user privacy and accuracy tests for pattern detection
-- [ ] T132 Add performance metric collection (Plan 5.16) - Include accuracy tests for metric measurements and performance tests to ensure collection doesn't impact system performance
-- [ ] T133 Create system health indicator tracking (Plan 5.16) - Add accuracy tests for health indicators and validation tests for health threshold detection
-- [ ] T134 Implement metadata injection points in command flow (Plan 5.16) - Include integration tests to validate proper injection points and performance tests to ensure injection doesn't slow down command processing
+- [x] T130 Create metadata collector for command execution timestamps (Plan 5.16) - Include accuracy tests for timestamp precision and performance tests to ensure collection adds <10ms overhead
+- [x] T131 Implement user interaction pattern tracking (Plan 5.16) - Add privacy compliance tests to ensure tracking respects user privacy and accuracy tests for pattern detection
+- [x] T132 Add performance metric collection (Plan 5.16) - Include accuracy tests for metric measurements and performance tests to ensure collection doesn't impact system performance
+- [x] T133 Create system health indicator tracking (Plan 5.16) - Add accuracy tests for health indicators and validation tests for health threshold detection
+- [x] T134 Implement metadata injection points in command flow (Plan 5.16) - Include integration tests to validate proper injection points and performance tests to ensure injection doesn't slow down command processing
 
 ### Test Mode
 Reference: Test Mode subsystem (Plan Section 5)
