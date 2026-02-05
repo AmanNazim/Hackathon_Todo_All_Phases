@@ -10,15 +10,25 @@ This repository contains the complete implementation of the 5-phase "Evolution o
 - `.specify/` - Spec-Kit Plus configuration and templates
 - `.claude/` - Claude Code configuration and commands
 
-## Phase I: CLI Todo Application
+## Phase I: CLI Todo Application (Complete)
 
-The current implementation includes:
+Phase I implementation includes:
 
 - **CLI Interface**: Hybrid interaction modes (menu-based and command-based)
 - **Improved UI**: Enhanced spacing and formatting for better readability
 - **Task Management**: Add, list, update, delete, complete/incomplete tasks
 - **Event Sourcing**: In-memory event tracking for all operations
 - **Plugin Architecture**: Extensible system with various plugin types
+
+## Phase II: Full-Stack Web Application (In Progress)
+
+Current work on Phase II: Transforming the CLI app into a modern multi-user web application with persistent storage:
+
+- **Frontend**: Next.js 16+ with App Router
+- **Backend**: Python FastAPI API
+- **Database**: Neon Serverless PostgreSQL with SQLModel ORM
+- **Authentication**: Better Auth with JWT tokens
+- **Features**: Multi-user support, persistent storage, responsive UI
 
 ### Running the Application
 
