@@ -35,33 +35,72 @@ A sophisticated command-line todo application that provides complete task manage
 
 3. Run the application:
    ```bash
-   python -m src.main
+   # Direct Python execution
+   python -m src.cli_todo_app.main
+
+   # Or using UV run (recommended)
+   uv run cli-todo
+   ```
+
+4. For test mode (machine-readable JSON output):
+   ```bash
+   python -m src.cli_todo_app.main --test-mode
    ```
 
 ## Usage
 
+### Initial Selection
+When starting the application, you'll be prompted to choose an interface mode:
+```
+==================================================
+CLI Todo Application - Phase I
+==================================================
+
+Choose interface mode:
+1. Command-based (type commands directly)
+2. Menu-based (select options from numbered menu)
+Type '1' or '2', or press Enter for command-based (default)
+```
+
 ### Menu Mode
 Start the application in menu mode for guided interaction:
 ```
-CLI Todo App
+-------------------------
+         MENU
+-------------------------
 1. Add Task
-2. View Tasks
+2. List Tasks
 3. Update Task
 4. Delete Task
-5. Mark Complete
-6. Help
-7. Exit
-Choose option: _
+5. Complete Task
+6. Mark Task Incomplete
+7. Help
+8. Exit
+-------------------------
+Select option (1-8):
 ```
 
-### Natural Language Mode
-Use natural language commands for quick task management:
+### Command-Based Mode
+Use command-based interface for quick task management:
+```
+========================================
+Command-based mode activated
+Type 'help' for available commands or 'exit' to quit
+========================================
+>
+```
+
+Example commands:
 ```
 > add Buy groceries
+> add Buy groceries | Need to buy milk, bread, eggs
 > list
-> complete 1
+> list completed
 > update 1 Buy organic groceries
+> complete 1
 > delete 2
+> help
+> exit
 ```
 
 ### Quick Actions
@@ -81,18 +120,16 @@ Single-character shortcuts for common operations:
 ## Command Reference
 
 ### Task Management
-- `add "task title" [description]` - Add a new task
+- `add <title> [ | description]` - Add a new task (use ' | ' to separate title and description)
 - `list [completed|pending|all]` - View tasks with filters
-- `update <id> "new title" [new description]` - Update a task
-- `delete <id>` - Remove a task
-- `complete <id>` or `done <id>` - Mark task as complete
-- `undo` - Reverse the last command
+- `update <number_or_id> <new_title> [ | new_description]` - Update a task by number or ID
+- `delete <number_or_id>` - Remove a task by number or ID
+- `complete <number_or_id>` - Mark task as complete by number or ID
+- `incomplete <number_or_id>` - Mark task as incomplete by number or ID
 
 ### System Features
 - `help` - Show available commands
-- `theme <name>` - Change display theme
-- `macro record|play|list` - Manage command macros
-- `snapshot save|load|list` - Manage application snapshots
+- `exit` or `quit` - Exit the application
 
 ## Architecture
 

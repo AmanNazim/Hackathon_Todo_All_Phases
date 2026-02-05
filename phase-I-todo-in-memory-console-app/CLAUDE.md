@@ -133,6 +133,13 @@ src/
 - Include appropriate logging
 - Follow security best practices for input validation
 
+## Documentation and Process Requirements
+
+- After completing any significant work, create a Prompt History Record (PHR) in the `history/prompts/` directory
+- PHRs should capture the work done, changes made, and lessons learned
+- Update README files to reflect new features and usage instructions
+- Ensure all changes are documented and traceable
+
 ## Common Patterns to Use
 
 - Factory patterns for object creation

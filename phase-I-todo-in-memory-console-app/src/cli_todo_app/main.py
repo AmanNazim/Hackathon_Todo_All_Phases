@@ -302,8 +302,223 @@ def main():
         print(json.dumps({"status": "ready", "mode": "test"}))
         return
 
+    print("\n" + "="*50)
     print("CLI Todo Application - Phase I")
+    print("="*50)
+    print("\nChoose interface mode:")
+    print("1. Command-based (type commands directly)")
+    print("2. Menu-based (select options from numbered menu)")
+    print("Type '1' or '2', or press Enter for command-based (default)\n")
+
+    mode_choice = input("> ").strip().lower()
+
+    if mode_choice == '2':
+        # Menu-based interface
+        menu_based_interface(app)
+    else:
+        # Command-based interface (default)
+        command_based_interface(app)
+
+
+def menu_based_interface(app):
+    """Menu-based interface for the CLI Todo Application"""
+    while True:
+        try:
+            print("\n" + "-"*25)
+            print("         MENU")
+            print("-"*25)
+            print("1. Add Task")
+            print("2. List Tasks")
+            print("3. Update Task")
+            print("4. Delete Task")
+            print("5. Complete Task")
+            print("6. Mark Task Incomplete")
+            print("7. Help")
+            print("8. Exit")
+            print("-"*25)
+
+            choice = input("Select option (1-8): ").strip()
+
+            if choice == '1':
+                title = input("Enter task title: ").strip()
+                if title:
+                    description_input = input("Enter description (optional, press Enter to skip): ").strip()
+                    description = description_input if description_input else None
+
+                    task_id = app.add_task(title, description)
+                    print(f"Task added with ID: {task_id}")
+                else:
+                    print("Title cannot be empty.")
+
+            elif choice == '2':
+                print("Filter options: 1. All, 2. Pending, 3. Completed (press Enter for All)")
+                filter_choice = input("Select filter: ").strip()
+
+                filter_map = {'1': None, '2': 'pending', '3': 'completed'}
+                filter_status = filter_map.get(filter_choice, None)
+
+                tasks = app.list_tasks(filter_status)
+
+                if not tasks:
+                    print("No tasks found.\n")
+                else:
+                    print("\n" + "-" * 58)
+                    print(f"{'#':<3} {'Title':<40} {'Status':<10}")
+                    print("-" * 58)
+                    for i, task in enumerate(tasks, 1):
+                        status_str = "COMPLETED" if task.status == TaskStatus.COMPLETED else "PENDING"
+                        print(f"{i:<3} {task.title[:40]:<40} {status_str:<10}")
+                    print("-" * 58)
+                    print(f"Total: {len(tasks)} tasks\n")
+
+            elif choice == '3':
+                tasks = app.list_tasks()
+                if not tasks:
+                    print("No tasks available to update.")
+                    continue
+
+                print(f"{'#':<3} {'Title':<40} {'Status':<10}")
+                print("-" * 58)
+                for i, task in enumerate(tasks, 1):
+                    status_str = "COMPLETED" if task.status == TaskStatus.COMPLETED else "PENDING"
+                    print(f"{i:<3} {task.title[:40]:<40} {status_str:<10}")
+
+                task_num = input("Enter task number to update: ").strip()
+                if task_num.isdigit():
+                    index = int(task_num) - 1
+                    if 0 <= index < len(tasks):
+                        task = tasks[index]
+
+                        new_title = input(f"Enter new title (current: {task.title}): ").strip()
+                        new_title = new_title if new_title else task.title
+
+                        new_desc = input(f"Enter new description (current: {task.description or 'None'}): ").strip()
+                        new_desc = new_desc if new_desc else task.description
+
+                        app.update_task(task.id, new_title, new_desc)
+                        print("Task updated successfully")
+                    else:
+                        print("Invalid task number.")
+                else:
+                    print("Invalid input. Please enter a number.")
+
+            elif choice == '4':
+                tasks = app.list_tasks()
+                if not tasks:
+                    print("No tasks available to delete.")
+                    continue
+
+                print(f"{'#':<3} {'Title':<40} {'Status':<10}")
+                print("-" * 58)
+                for i, task in enumerate(tasks, 1):
+                    status_str = "COMPLETED" if task.status == TaskStatus.COMPLETED else "PENDING"
+                    print(f"{i:<3} {task.title[:40]:<40} {status_str:<10}")
+
+                task_num = input("Enter task number to delete: ").strip()
+                if task_num.isdigit():
+                    index = int(task_num) - 1
+                    if 0 <= index < len(tasks):
+                        task = tasks[index]
+                        confirm = input(f"Are you sure you want to delete '{task.title}'? (y/N): ").strip().lower()
+                        if confirm in ['y', 'yes']:
+                            app.delete_task(task.id)
+                            print("Task deleted successfully")
+                        else:
+                            print("Deletion cancelled.")
+                    else:
+                        print("Invalid task number.")
+                else:
+                    print("Invalid input. Please enter a number.")
+
+            elif choice == '5':
+                tasks = app.list_tasks()
+                pending_tasks = [t for t in tasks if t.status == TaskStatus.PENDING]
+                if not pending_tasks:
+                    print("No pending tasks to complete.")
+                    continue
+
+                print(f"{'#':<3} {'Title':<40} {'Status':<10}")
+                print("-" * 58)
+                for i, task in enumerate(pending_tasks, 1):
+                    print(f"{i:<3} {task.title[:40]:<40} {'PENDING':<10}")
+
+                task_num = input("Enter task number to complete: ").strip()
+                if task_num.isdigit():
+                    index = int(task_num) - 1
+                    if 0 <= index < len(pending_tasks):
+                        task = pending_tasks[index]
+                        app.complete_task(task.id)
+                        print("Task marked as complete")
+                    else:
+                        print("Invalid task number.")
+                else:
+                    print("Invalid input. Please enter a number.")
+
+            elif choice == '6':
+                tasks = app.list_tasks()
+                completed_tasks = [t for t in tasks if t.status == TaskStatus.COMPLETED]
+                if not completed_tasks:
+                    print("No completed tasks to mark incomplete.")
+                    continue
+
+                print(f"{'#':<3} {'Title':<40} {'Status':<10}")
+                print("-" * 58)
+                for i, task in enumerate(completed_tasks, 1):
+                    print(f"{i:<3} {task.title[:40]:<40} {'COMPLETED':<10}")
+
+                task_num = input("Enter task number to mark incomplete: ").strip()
+                if task_num.isdigit():
+                    index = int(task_num) - 1
+                    if 0 <= index < len(completed_tasks):
+                        task = completed_tasks[index]
+                        app.incomplete_task(task.id)
+                        print("Task marked as incomplete")
+                    else:
+                        print("Invalid task number.")
+                else:
+                    print("Invalid input. Please enter a number.")
+
+            elif choice == '7':
+                print("\n" + "="*50)
+                print("Help Information:")
+                print("1. Add Task - Add a new task with title and optional description")
+                print("2. List Tasks - Display all tasks with their status")
+                print("3. Update Task - Modify an existing task's title or description")
+                print("4. Delete Task - Remove a task from the list")
+                print("5. Complete Task - Mark a pending task as completed")
+                print("6. Mark Task Incomplete - Reopen a completed task")
+                print("7. Help - Show this help information")
+                print("8. Exit - Close the application")
+                print("="*50)
+
+            elif choice == '8':
+                # Show session summary before exiting
+                summary = app.get_session_summary()
+                print("\n" + "="*30)
+                print("Session Summary:")
+                print(f"  Total tasks: {summary['total_tasks_created']}")
+                print(f"  Completed: {summary['completed_tasks_count']}")
+                print(f"  Commands executed: {summary['commands_executed']}")
+                print("="*30)
+                print("Goodbye!")
+                break
+
+            else:
+                print("Invalid choice. Please select a number between 1-8.")
+
+        except KeyboardInterrupt:
+            print("\nReceived interrupt signal. Exiting...")
+            break
+        except Exception as e:
+            print(f"Error: {str(e)}")
+
+
+def command_based_interface(app):
+    """Command-based interface for the CLI Todo Application"""
+    print("\n" + "="*40)
+    print("Command-based mode activated")
     print("Type 'help' for available commands or 'exit' to quit")
+    print("="*40)
 
     while True:
         try:
@@ -312,71 +527,162 @@ def main():
             if user_input.lower() in ['exit', 'quit']:
                 # Show session summary before exiting
                 summary = app.get_session_summary()
-                print("\nSession Summary:")
+                print("\n" + "="*30)
+                print("Session Summary:")
                 print(f"  Total tasks: {summary['total_tasks_created']}")
                 print(f"  Completed: {summary['completed_tasks_count']}")
                 print(f"  Commands executed: {summary['commands_executed']}")
+                print("="*30)
                 print("Goodbye!")
                 break
 
             elif user_input.lower() == 'help':
+                print("\n" + "="*60)
                 print("Available commands:")
-                print("  add <title> [description] - Add a new task")
-                print("  list [completed|pending|all] - List tasks")
-                print("  update <id> <title> [description] - Update a task")
-                print("  delete <id> - Delete a task")
-                print("  complete <id> - Mark task as complete")
-                print("  incomplete <id> - Mark task as incomplete")
+                print("  add <title> [ | description] - Add a new task (use ' | ' to separate title and description)")
+                print("  list [completed|pending|all] - List tasks with numbering")
+                print("  update <number_or_id> <new_title> [ | new_description] - Update a task by number or ID")
+                print("  delete <number_or_id> - Delete a task by number or ID")
+                print("  complete <number_or_id> - Mark task as complete by number or ID")
+                print("  incomplete <number_or_id> - Mark task as incomplete by number or ID")
                 print("  exit - Exit the application")
+                print("-"*60)
+                print("Examples:")
+                print("  add Buy groceries")
+                print("  add Buy groceries | Need to buy milk, bread, eggs")
+                print("  list")
+                print("  update 1 New task title | Updated description")
+                print("  delete 1")
+                print("="*60)
 
             elif user_input.startswith('add '):
-                parts = user_input[4:].split(' ', 1)
-                title = parts[0]
-                description = parts[1] if len(parts) > 1 else None
+                # Improved parsing: treat everything after 'add ' as the title, and allow description after a delimiter
+                content = user_input[4:].strip()
+
+                # Split by special delimiter (e.g., ' | ') for title/description
+                if ' | ' in content:
+                    title, description = content.split(' | ', 1)
+                else:
+                    title = content
+                    description = None
 
                 task_id = app.add_task(title, description)
                 print(f"Task added with ID: {task_id}")
 
             elif user_input.startswith('list'):
-                parts = user_input.split(' ')
+                parts = user_input.split(' ', 1)
                 filter_status = parts[1] if len(parts) > 1 else None
 
                 tasks = app.list_tasks(filter_status)
 
                 if not tasks:
-                    print("No tasks found.")
+                    print("No tasks found.\n")
                 else:
-                    print(f"{'ID':<36} {'Title':<30} {'Status':<10}")
-                    print("-" * 78)
-                    for task in tasks:
+                    print("\n" + "-" * 58)
+                    print(f"{'#':<3} {'Title':<40} {'Status':<10}")
+                    print("-" * 58)
+                    for i, task in enumerate(tasks, 1):
                         status_str = "COMPLETED" if task.status == TaskStatus.COMPLETED else "PENDING"
-                        print(f"{task.id:<36} {task.title[:30]:<30} {status_str:<10}")
+                        print(f"{i:<3} {task.title[:40]:<40} {status_str:<10}")
+                    print("-" * 58)
+                    print(f"Total: {len(tasks)} tasks\n")
 
             elif user_input.startswith('update '):
-                parts = user_input[7:].split(' ', 2)
-                if len(parts) >= 2:
-                    task_id, title = parts[0], parts[1]
-                    description = parts[2] if len(parts) > 2 else None
+                # Allow updating by number or by ID
+                parts = user_input[7:].split(' ', 1)
+                if len(parts) < 1:
+                    print("Usage: update <task_number_or_id> [new_title | new_title | new_description]")
+                    continue
 
-                    app.update_task(task_id, title, description)
-                    print(f"Task {task_id} updated successfully")
+                identifier = parts[0]
+                new_content = parts[1] if len(parts) > 1 else ""
+
+                # Check if the identifier is a number (list index)
+                if identifier.isdigit():
+                    tasks = app.list_tasks()
+                    index = int(identifier) - 1
+                    if 0 <= index < len(tasks):
+                        task = tasks[index]
+                        task_id = task.id
+                    else:
+                        print(f"Invalid task number: {identifier}")
+                        continue
                 else:
-                    print("Usage: update <id> <title> [description]")
+                    # Assume it's a task ID
+                    task_id = identifier
+
+                # Parse new content for title/description
+                if ' | ' in new_content:
+                    new_title, new_description = new_content.split(' | ', 1)
+                elif new_content:
+                    new_title = new_content
+                    new_description = None
+                else:
+                    print("Please provide new title for the task")
+                    continue
+
+                app.update_task(task_id, new_title, new_description)
+                print(f"Task updated successfully")
 
             elif user_input.startswith('delete '):
-                task_id = user_input[7:]
+                identifier = user_input[7:].strip()
+
+                # Check if the identifier is a number (list index)
+                if identifier.isdigit():
+                    tasks = app.list_tasks()
+                    index = int(identifier) - 1
+                    if 0 <= index < len(tasks):
+                        task = tasks[index]
+                        task_id = task.id
+                    else:
+                        print(f"Invalid task number: {identifier}")
+                        continue
+                else:
+                    # Assume it's a task ID
+                    task_id = identifier
+
                 app.delete_task(task_id)
-                print(f"Task {task_id} deleted successfully")
+                print(f"Task deleted successfully")
 
             elif user_input.startswith('complete '):
-                task_id = user_input[9:]
+                identifier = user_input[9:].strip()
+
+                # Check if the identifier is a number (list index)
+                if identifier.isdigit():
+                    tasks = app.list_tasks()
+                    index = int(identifier) - 1
+                    if 0 <= index < len(tasks):
+                        task = tasks[index]
+                        task_id = task.id
+                    else:
+                        print(f"Invalid task number: {identifier}")
+                        continue
+                else:
+                    # Assume it's a task ID
+                    task_id = identifier
+
                 app.complete_task(task_id)
-                print(f"Task {task_id} marked as complete")
+                print(f"Task marked as complete")
 
             elif user_input.startswith('incomplete '):
-                task_id = user_input[11:]
+                identifier = user_input[11:].strip()
+
+                # Check if the identifier is a number (list index)
+                if identifier.isdigit():
+                    tasks = app.list_tasks()
+                    index = int(identifier) - 1
+                    if 0 <= index < len(tasks):
+                        task = tasks[index]
+                        task_id = task.id
+                    else:
+                        print(f"Invalid task number: {identifier}")
+                        continue
+                else:
+                    # Assume it's a task ID
+                    task_id = identifier
+
                 app.incomplete_task(task_id)
-                print(f"Task {task_id} marked as incomplete")
+                print(f"Task marked as incomplete")
 
             else:
                 print(f"Unknown command: {user_input}. Type 'help' for available commands.")

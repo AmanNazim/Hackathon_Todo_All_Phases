@@ -4,7 +4,7 @@ Implements the BNF grammar specified in specification section 11
 Following CLI Parser Skill guidelines
 """
 import re
-from typing import NamedTuple, Optional, Dict, Any, List
+from typing import NamedTuple, Optional, Dict, Any, List, Tuple
 from enum import Enum
 
 
@@ -21,6 +21,79 @@ class CommandType(Enum):
     THEME = "THEME"
     SNAPSHOT = "SNAPSHOT"
     MACRO = "MACRO"
+
+
+def tokenize_command(command_str: str) -> List[str]:
+    """
+    Robust tokenizer that handles different quote types and angle bracket tags.
+    Similar to shlex but extended to support backticks and angle brackets for tags.
+
+    Args:
+        command_str: The command string to tokenize
+
+    Returns:
+        List of tokens extracted from the command string
+    """
+    tokens = []
+    i = 0
+    while i < len(command_str):
+        # Skip whitespace
+        while i < len(command_str) and command_str[i].isspace():
+            i += 1
+
+        if i >= len(command_str):
+            break
+
+        # Check for different quote types or angle brackets for tags
+        if command_str[i] in ['"', "'", '`']:
+            quote_char = command_str[i]
+            i += 1  # Move past opening quote
+            start = i
+            token = ""
+
+            # Extract content until matching closing quote
+            while i < len(command_str):
+                if command_str[i] == quote_char:
+                    # Found closing quote
+                    token = command_str[start:i]
+                    i += 1  # Move past closing quote
+                    break
+                elif command_str[i] == '\\' and i + 1 < len(command_str):
+                    # Handle escaped characters
+                    token += command_str[i + 1]
+                    i += 2
+                else:
+                    token += command_str[i]
+                    i += 1
+            tokens.append(token)
+        elif command_str[i] == '<':
+            # Handle angle bracket tags
+            i += 1  # Move past opening angle bracket
+            start = i
+            token = ""
+
+            # Extract content until closing angle bracket
+            while i < len(command_str):
+                if command_str[i] == '>':
+                    # Found closing bracket
+                    token = command_str[start:i]
+                    i += 1  # Move past closing bracket
+                    break
+                else:
+                    token += command_str[i]
+                    i += 1
+            # Only add non-empty tags
+            if token.strip():
+                tokens.append('<' + token + '>')
+        else:
+            # Regular token (not quoted, not a tag)
+            start = i
+            while i < len(command_str) and not command_str[i].isspace() and command_str[i] not in ['"', "'", '`', '<']:
+                i += 1
+            token = command_str[start:i]
+            tokens.append(token)
+
+    return tokens
 
 
 class ParseResult(NamedTuple):
@@ -53,10 +126,10 @@ class CommandParser:
         self.valid_macro_actions = {'record', 'play', 'list'}
 
         # Command patterns following BNF grammar from spec
-        # More comprehensive patterns to match the command structure properly
+        # Updated to be more restrictive for proper validation
         self.command_patterns = {
             'add': [
-                r'^(?:add|a)\s+.*',  # Match add command, params handled separately
+                r'^(?:add|a)\s+.*',  # Match add command, params handled separately with tokenizer
             ],
             'list': [
                 r'^(?:list|view|l)(?:\s+(\w+))?$',    # list [filter]
@@ -270,33 +343,44 @@ class CommandParser:
             'titles': [],
             'descriptions': [],
             'flags': [],
-            'parameters': {}
+            'parameters': {},
+            'tags': []
         }
 
         if command_name == 'add':
-            # Extract title and description
+            # Extract title, description, and tags
             title = parameters.get('title')
             if title:
                 entities['titles'].append(title)
             description = parameters.get('description')
             if description:
                 entities['descriptions'].append(description)
+            tags = parameters.get('tags', [])
+            if tags:
+                entities['tags'].extend(tags)
         elif command_name in ['delete', 'complete', 'incomplete']:
-            # Extract task ID
-            task_id = parameters.get('task_id')
-            if task_id:
-                entities['ids'].append(task_id)
+            # Extract identifier (can be task number, title, or UUID) - check both new and legacy names for backward compatibility
+            identifier = parameters.get('identifier')
+            if not identifier:
+                identifier = parameters.get('task_id')
+            if identifier:
+                entities['ids'].append(identifier)
         elif command_name == 'update':
-            # Extract task ID, title, and description
-            task_id = parameters.get('task_id')
-            if task_id:
-                entities['ids'].append(task_id)
+            # Extract identifier, title, description, and tags - check both new and legacy names for backward compatibility
+            identifier = parameters.get('identifier')
+            if not identifier:
+                identifier = parameters.get('task_id')
+            if identifier:
+                entities['ids'].append(identifier)
             title = parameters.get('title')
             if title:
                 entities['titles'].append(title)
             description = parameters.get('description')
             if description:
                 entities['descriptions'].append(description)
+            tags = parameters.get('tags')
+            if tags is not None:  # Only add tags if explicitly provided
+                entities['tags'].extend(tags)
         elif command_name == 'list':
             # Extract filter
             filter_val = parameters.get('filter')
@@ -324,182 +408,108 @@ class CommandParser:
         return entities
 
     def _build_parameters(self, command_name: str, groups: tuple, original_input: str) -> Dict[str, Any]:
-        """Build structured parameters from matched groups and original input"""
+        """Build structured parameters from matched groups and original input using the new tokenizer"""
 
         if command_name == 'add':
-            # Handle add command with potential multi-word title and description
-            # Format: add <title> [description]
-            original_lower = original_input.lower()
+            # Use the new tokenizer to handle quoted titles and descriptions properly
+            tokens = tokenize_command(original_input)
 
-            if original_lower.startswith(('add ', 'a ')):
-                # Extract everything after the command word
-                command_word = 'add ' if 'add ' in original_lower else 'a '
-                remaining = original_input[len(command_word):].strip()
+            if not tokens or tokens[0].lower() not in ['add', 'a']:
+                return {'title': '', 'description': None, 'tags': []}
 
-                # The approach is to split the remainder into title and optional description
-                # We'll use a heuristic: if there are more than 2 words, consider first part as title
-                # and the rest as description (but we need a better approach)
+            # Remove the command token
+            param_tokens = tokens[1:] if len(tokens) > 0 else []
 
-                # Actually, let's just take the entire remaining part as title, and if there's a pattern
-                # like "add title - description" or "add title description", we could use that.
-                # For now, simplest approach: split by first space to separate title from description if present
-                parts = remaining.split(' ', 1)  # Split into at most 2 parts
-                title = parts[0].strip() if parts else ''
-                description = parts[1].strip() if len(parts) > 1 else None
-
-                # Better approach: if there's more than one word, assume the whole thing is the title
-                # unless there's a clear delimiter. For now, let's take everything as title if no clear split
-                # Actually, for "add Buy groceries", we want "Buy groceries" as title
-                # So we need to not split at all unless there's a clear indication of a description
-                # Let's reconsider: split into 2 parts max, first part is title, second part is description
-                # For "add Buy groceries" -> title="Buy", description="groceries" - WRONG
-                # For "add Buy groceries" -> we want title="Buy groceries", description=None
-
-                # The correct approach: don't split by first space, take everything as title
-                # UNLESS there's a specific delimiter indicating a description follows
-                # For now, let's assume the first word is not enough to be a title by itself,
-                # and we should take more context into account
-
-                # Actually, looking at the spec, the format is "add <task_title> [ <task_description>]"
-                # So we should take the longest reasonable title and whatever's left is the description
-                # For "add Buy groceries", we want title="Buy groceries"
-                # For "add Buy groceries Buy organic items", we want title="Buy groceries", description="Buy organic items"
-
-                # For the test case "add Buy groceries Buy organic items", the expected result is:
-                # Title: "Buy groceries", Description: "Buy organic items"
-                # This suggests looking for a repeated pattern in the sentence
-
-                words = remaining.split()
-                if len(words) == 0:
-                    title = ''
-                    description = None
-                elif len(words) == 1:
-                    title = words[0]
-                    description = None
-                elif len(words) == 2:
-                    title = ' '.join(words)
-                    description = None
+            # Extract tags (tokens starting with '<' and ending with '>')
+            tags = []
+            remaining_tokens = []
+            for token in param_tokens:
+                if token.startswith('<') and token.endswith('>'):
+                    tag_content = token[1:-1].strip()
+                    if tag_content:  # Only add non-empty tags
+                        tags.append(tag_content.lower())  # Tags are lowercase internally
                 else:
-                    # Look for potential natural split points
-                    # In "Buy groceries Buy organic items", "Buy" repeats at position 2
-                    title = remaining
-                    description = None
+                    remaining_tokens.append(token)
 
-                    # Look for the first word appearing again later in the sequence
-                    first_word = words[0].lower()
-                    split_point = -1
+            # Now process the remaining tokens for title and description
+            title = ""
+            description = None
 
-                    # Look for the first word repeated later in the sequence
-                    for i in range(2, len(words)):  # Start from index 2 to avoid immediate repetition
-                        if words[i].lower() == first_word:
-                            split_point = i
-                            break
+            if len(remaining_tokens) >= 1:
+                # The first token should be the title (which must be quoted per requirements)
+                title = remaining_tokens[0].strip()
 
-                    if split_point != -1:
-                        # Found a potential split point
-                        title = ' '.join(words[:split_point])
-                        description = ' '.join(words[split_point:])
-                    else:
-                        # If no repeating pattern found, use a simple heuristic
-                        # For 3 words: take all as title
-                        # For 4+ words: maybe take first 2 as title, rest as description
-                        if len(words) >= 4:
-                            title = ' '.join(words[:2])
-                            description = ' '.join(words[2:])
+                # Validate that title is not empty
+                if not title:
+                    return {'title': '', 'description': None, 'tags': tags}
 
-                return {'title': title, 'description': description}
-            return {'title': '', 'description': None}
+                # If there's a second token, it's the description
+                if len(remaining_tokens) >= 2:
+                    description = remaining_tokens[1].strip()
 
-        elif command_name == 'update':
-            # Handle update command with task ID and potential multi-word title and description
-            # Format: update <task_id> <title> [description]
-            original_lower = original_input.lower()
+            return {'title': title, 'description': description, 'tags': tags}
 
-            if original_lower.startswith(('update ', 'edit ')):
-                # Extract everything after the command word
-                command_word = 'update ' if 'update ' in original_lower else 'edit '
-                remaining = original_input[len(command_word):].strip()
+        elif command_name in ['update']:
+            # Use the new tokenizer to handle quoted titles and descriptions properly
+            tokens = tokenize_command(original_input)
 
-                # Split by first space to get task_id, then split the rest by first space to get title and description
-                parts = remaining.split(' ', 1)  # Split into task_id and the rest
-                if len(parts) < 2:
-                    return {'task_id': parts[0] if parts else '', 'title': '', 'description': None}
+            if not tokens or tokens[0].lower() not in ['update', 'edit']:
+                return {'identifier': '', 'task_id': '', 'title': '', 'description': None, 'tags': None}
 
-                task_id = parts[0]
-                rest = parts[1]  # Everything after task_id
+            # Remove the command token
+            param_tokens = tokens[1:] if len(tokens) > 0 else []
 
-                # Handle the rest part like we do for add command
-                # For "update 123 New title New description", we want:
-                # task_id: "123", title: "New title", description: "New description"
+            # Extract tags (tokens starting with '<' and ending with '>')
+            tags = None  # tags are optional and only replace if explicitly provided
+            remaining_tokens = []
+            for token in param_tokens:
+                if token.startswith('<') and token.endswith('>'):
+                    if tags is None:
+                        tags = []
+                    tag_content = token[1:-1].strip()
+                    if tag_content:  # Only add non-empty tags
+                        tags.append(tag_content.lower())  # Tags are lowercase internally
+                else:
+                    remaining_tokens.append(token)
 
-                title = rest
-                description = None
+            # Process the remaining tokens for identifier, title and description
+            identifier = ""
+            title = ""
+            description = None
 
-                # For cases like "update 123 New title New description", we want to split appropriately
-                words = rest.split()
-                if len(words) >= 4:
-                    # Look for potential natural split points similar to add command
-                    # In "New title New description", "New" repeats at position 2
-                    first_word = words[0].lower()
-                    split_point = -1
+            if len(remaining_tokens) >= 1:
+                identifier = remaining_tokens[0].strip()
 
-                    # Look for the first word repeated later in the sequence
-                    for i in range(2, len(words)):  # Start from index 2 to avoid immediate repetition
-                        if words[i].lower() == first_word:
-                            split_point = i
-                            break
+            if len(remaining_tokens) >= 2:
+                title = remaining_tokens[1].strip()
 
-                    if split_point != -1:
-                        # Found a potential split point
-                        title = ' '.join(words[:split_point])
-                        description = ' '.join(words[split_point:])
-                    else:
-                        # If no repeating pattern found, use a simple heuristic
-                        # For 4+ words: take first 2 as title, rest as description
-                        if len(words) >= 4:
-                            title = ' '.join(words[:2])
-                            description = ' '.join(words[2:])
+            if len(remaining_tokens) >= 3:
+                description = remaining_tokens[2].strip()
 
-                return {'task_id': task_id, 'title': title, 'description': description}
-            return {'task_id': '', 'title': '', 'description': None}
+            return {'identifier': identifier, 'task_id': identifier, 'title': title, 'description': description, 'tags': tags}  # Keep task_id for backward compatibility
+
+        elif command_name in ['delete', 'complete', 'incomplete']:
+            # Use the new tokenizer to handle task identifiers properly
+            tokens = tokenize_command(original_input)
+
+            if not tokens:
+                return {'identifier': '', 'task_id': ''}
+
+            command_token = tokens[0].lower()
+            if command_token not in ['delete', 'remove', 'del', 'd', 'complete', 'done', 'finish', 'c', 'incomplete', 'reopen', 'open', 'i']:
+                return {'identifier': '', 'task_id': ''}
+
+            # The identifier can be a task number, title, or UUID
+            identifier = ''
+            if len(tokens) > 1:
+                identifier = tokens[1].strip()
+
+            return {'identifier': identifier, 'task_id': identifier}  # Keep task_id for backward compatibility
 
         elif command_name == 'list':
             # Use groups for filter since the pattern already captures it
             filter_type = groups[0].lower() if groups and groups[0] else None
             return {'filter': filter_type}
-
-        elif command_name in ['delete', 'complete', 'incomplete']:
-            # For these commands, we need to extract the task_id from the original input
-            original_lower = original_input.lower()
-
-            # Extract the command word to get the remaining part
-            if command_name == 'delete':
-                prefixes = ['delete ', 'remove ', 'del ', 'd ']
-            elif command_name == 'complete':
-                prefixes = ['complete ', 'done ', 'finish ', 'c ']
-            elif command_name == 'incomplete':
-                prefixes = ['incomplete ', 'reopen ', 'open ', 'i ']
-            else:
-                prefixes = []
-
-            remaining = ''
-            for prefix in prefixes:
-                if original_lower.startswith(prefix):
-                    remaining = original_input[len(prefix):].strip()
-                    break
-
-            # Extract task_id from the remaining part
-            if remaining:
-                # Get the first word as task_id
-                parts = remaining.split(' ', 1)
-                task_id = parts[0].strip()
-
-                # Validate task_id format (could be a UUID or numeric ID)
-                # For now, accept any non-empty string, but the validation will check later
-                return {'task_id': task_id}
-            else:
-                # No ID provided, return empty task_id to trigger validation
-                return {'task_id': ''}
 
         elif command_name == 'undo':
             return {}
@@ -570,35 +580,92 @@ class CommandParser:
         result = {'is_valid': True, 'error': None, 'missing': [], 'ambiguities': [], 'suggestions': [], 'reason': ''}
 
         if command_name == 'add':
-            if not parameters.get('title'):
+            title = parameters.get('title', '').strip()
+
+            # Title must be wrapped in quotes and cannot be empty
+            if not title:
                 result['is_valid'] = False
-                result['error'] = "Add command requires a title"
-                result['missing'] = ['title']
-                result['suggestions'] = ["Provide a title for the task: add <title>"]
+                result['error'] = "❌ Invalid add command format"
+                result['suggestions'] = [
+                    "💡 Correct usage:",
+                    "   add \"Title\" \"Description\"",
+                    "   add 'Title'",
+                    "   add `Title` <tag>",
+                    "   Title MUST be wrapped in quotes"
+                ]
+            else:
+                # Validate title length
+                if len(title) > 256:  # Assuming 256 char limit from spec
+                    result['is_valid'] = False
+                    result['error'] = "Title length exceeds 256 characters"
+                    result['suggestions'] = ["Use a shorter title (≤256 characters)"]
+
+                # Validate description length if present
+                description = parameters.get('description', '')
+                if description and len(description) > 1024:  # Assuming 1024 char limit from spec
+                    result['is_valid'] = False
+                    result['error'] = "Description length exceeds 1024 characters"
+                    result['suggestions'] = ["Use a shorter description (≤1024 characters)"]
+
+                # Validate tags if present
+                tags = parameters.get('tags', [])
+                for tag in tags:
+                    if not tag.strip():
+                        result['is_valid'] = False
+                        result['error'] = "❌ Invalid tag format - empty tags not allowed"
+                        result['suggestions'] = [
+                            "💡 Correct usage:",
+                            "   add \"Title\" <tag1> <tag2>",
+                            "   Tags must not be empty: <> is invalid"
+                        ]
+                        break
         elif command_name in ['delete', 'complete', 'incomplete']:
-            if not parameters.get('task_id'):
+            # Check both new 'identifier' and legacy 'task_id' for backward compatibility
+            identifier = parameters.get('identifier', '').strip()
+            if not identifier:
+                identifier = parameters.get('task_id', '').strip()
+
+            if not identifier:
                 result['is_valid'] = False
-                result['error'] = f"{command_name.capitalize()} command requires a task ID"
-                result['missing'] = ['task_id']
-                result['suggestions'] = [f"Provide a task ID: {command_name} <task_id>"]
+                result['error'] = f"{command_name.capitalize()} command requires an identifier"
+                result['suggestions'] = [
+                    f"💡 Correct usage:",
+                    f"   {command_name} 1",
+                    f"   {command_name} \"Task Title\"",
+                    f"   {command_name} <task_uuid>"
+                ]
         elif command_name == 'update':
-            if not parameters.get('task_id'):
+            # Check both new 'identifier' and legacy 'task_id' for backward compatibility
+            identifier = parameters.get('identifier', '').strip()
+            if not identifier:
+                identifier = parameters.get('task_id', '').strip()
+
+            if not identifier:
                 result['is_valid'] = False
-                result['error'] = "Update command requires a task ID"
-                result['missing'] = ['task_id']
-                result['suggestions'] = ["Provide a task ID: update <task_id> <new_title>"]
-            elif not parameters.get('title'):
-                result['is_valid'] = False
-                result['error'] = "Update command requires a new title"
-                result['missing'] = ['title']
-                result['suggestions'] = ["Provide a new title: update <task_id> <new_title>"]
-            # Additional validation: check if task_id is a valid format (not just "New")
-            # In the test case "update New title", "New" is not a valid task ID
-            elif parameters.get('task_id') and not self._is_valid_task_id(parameters.get('task_id')):
-                result['is_valid'] = False
-                result['error'] = "Update command requires a task ID"
-                result['missing'] = ['task_id']
-                result['suggestions'] = ["Provide a task ID: update <task_id> <new_title>"]
+                result['error'] = "Update command requires an identifier"
+                result['suggestions'] = [
+                    "💡 Correct usage:",
+                    "   update 1 \"New title\" \"New description\" <tag1> <tag2>",
+                    "   update \"Old title\" \"New title\" \"New description\"",
+                    "   update <task_uuid> \"New title\""
+                ]
+            else:
+                # Check if any update fields are provided (at least one must be provided)
+                title = parameters.get('title', '').strip()
+                description = parameters.get('description', '')
+                tags = parameters.get('tags', None)  # None means tags not specified
+
+                # If no update fields are provided, it's invalid
+                if not title and description is None and tags is None:
+                    result['is_valid'] = False
+                    result['error'] = "Update command requires at least one field to update"
+                    result['suggestions'] = [
+                        "💡 Correct usage:",
+                        "   update 1 \"New title\"",
+                        "   update 1 \"New title\" \"New description\"",
+                        "   update 1 \"New title\" <tag1> <tag2>",
+                        "   Empty quotes (\"\") mean clear field"
+                    ]
         elif command_name == 'list':
             filter_type = parameters.get('filter')
             if filter_type and filter_type not in self.valid_filters:
@@ -611,7 +678,6 @@ class CommandParser:
             if theme_name is None:  # This means the original input was just "theme"
                 result['is_valid'] = False
                 result['error'] = "Theme command requires a theme name"
-                result['missing'] = ['theme_name']
                 result['suggestions'] = [f"Provide a theme: theme <{'|'.join(self.valid_themes)}"]
             elif theme_name not in self.valid_themes:
                 result['is_valid'] = False
@@ -630,7 +696,6 @@ class CommandParser:
                 if not parameters.get('name'):
                     result['is_valid'] = False
                     result['error'] = f"Macro {action} requires a macro name"
-                    result['missing'] = ['name']
                     result['suggestions'] = [f"Provide a macro name: macro {action} <name>"]
             elif action == 'record':
                 # Record action might work with or without a name, depending on implementation
@@ -676,6 +741,66 @@ class CommandParser:
             return True
 
         return False
+
+    def resolve_identifier_to_uuid(self, identifier: str, task_repository) -> str:
+        """
+        Resolve an identifier (task number, exact title match, or UUID) to a UUID.
+        This method needs to be called after parsing to resolve the identifier.
+        """
+        if not identifier:
+            return identifier
+
+        # If it looks like a UUID, return it as is
+        import uuid
+        try:
+            uuid.UUID(identifier)
+            return identifier
+        except ValueError:
+            pass  # Not a UUID, continue with other resolution methods
+
+        # If it's a number, try to resolve it as a task number
+        if identifier.isdigit():
+            # Get all tasks and find the one at the specified index
+            all_tasks = task_repository.list_all()
+            task_index = int(identifier) - 1  # 1-based indexing to 0-based
+
+            if 0 <= task_index < len(all_tasks):
+                return all_tasks[task_index].id
+            else:
+                raise ValueError(f"Task number {identifier} is out of range. There are {len(all_tasks)} tasks.")
+
+        # If it's a quoted string, treat as exact title match
+        if (identifier.startswith('"') and identifier.endswith('"')) or \
+           (identifier.startswith("'") and identifier.endswith("'")) or \
+           (identifier.startswith("`") and identifier.endswith("`")):
+            # Remove quotes
+            title = identifier[1:-1]
+            # Find exact title match (case-insensitive)
+            all_tasks = task_repository.list_all()
+            matches = [task for task in all_tasks if task.title.lower() == title.lower()]
+
+            if not matches:
+                raise ValueError(f"No task found with title '{title}'")
+            elif len(matches) > 1:
+                # Multiple matches - need disambiguation
+                match_titles = [f"'{task.title}' (ID: {task.id})" for task in matches]
+                raise ValueError(f"Multiple tasks match title '{title}': {', '.join(match_titles)}")
+            else:
+                return matches[0].id
+        else:
+            # If it's not quoted, also try exact title match (for backward compatibility)
+            all_tasks = task_repository.list_all()
+            matches = [task for task in all_tasks if task.title.lower() == identifier.lower()]
+
+            if len(matches) == 1:
+                return matches[0].id
+            elif len(matches) > 1:
+                # Multiple matches - need disambiguation
+                match_titles = [f"'{task.title}' (ID: {task.id})" for task in matches]
+                raise ValueError(f"Multiple tasks match title '{identifier}': {', '.join(match_titles)}")
+
+        # If we get here, no match was found
+        raise ValueError(f"No task found with identifier '{identifier}'")
 
     def _validate_and_enhance_parse(self, result: ParseResult) -> ParseResult:
         """Additional validation and enhancement of the parse result"""
