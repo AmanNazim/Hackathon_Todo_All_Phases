@@ -6,6 +6,8 @@ This repository contains the complete implementation of the 5-phase "Evolution o
 
 - `phase-I-todo-in-memory-console-app/` - Phase I: In-Memory Python CLI Todo Application
 - `phase-I-todo-in-memory-console-app/specs/` - Phase I specifications (constitution, spec, plan, tasks)
+- `phase-II-todo-full-stack-web-app/` - Phase II: Full-Stack Web Application with Next.js, FastAPI, SQLModel
+- `phase-II-todo-full-stack-web-app/specs/` - Phase II specifications (spec, plan, tasks)
 - `history/` - Prompt History Records and Architectural Decision Records
 - `.specify/` - Spec-Kit Plus configuration and templates
 - `.claude/` - Claude Code configuration and commands
@@ -20,18 +22,20 @@ Phase I implementation includes:
 - **Event Sourcing**: In-memory event tracking for all operations
 - **Plugin Architecture**: Extensible system with various plugin types
 
-## Phase II: Full-Stack Web Application (In Progress)
+## Phase II: Full-Stack Web Application (Complete)
 
-Current work on Phase II: Transforming the CLI app into a modern multi-user web application with persistent storage:
+Phase II successfully transformed the CLI app into a modern multi-user web application with persistent storage:
 
-- **Frontend**: Next.js 16+ with App Router
-- **Backend**: Python FastAPI API
+- **Frontend**: Next.js 16+ with App Router, TypeScript, Tailwind CSS
+- **Backend**: Python FastAPI API with comprehensive endpoints
 - **Database**: Neon Serverless PostgreSQL with SQLModel ORM
-- **Authentication**: Better Auth with JWT tokens
-- **Features**: Multi-user support, persistent storage, responsive UI
+- **Authentication**: JWT-based authentication with user isolation
+- **Features**: Complete task management (CRUD), multi-user support, responsive UI
+- **Architecture**: Clean separation of concerns with secure API design
 
-### Running the Application
+### Running the Applications
 
+#### Phase I: CLI Application
 Navigate to the Phase I directory and run:
 
 ```bash
@@ -40,6 +44,23 @@ python -m src.cli_todo_app.main
 
 # Or using UV (recommended):
 uv run cli-todo
+```
+
+#### Phase II: Web Application
+Navigate to the Phase II directory and run:
+
+```bash
+# Backend (FastAPI):
+cd phase-II-todo-full-stack-web-app/backend
+uv venv
+source .venv/bin/activate
+uv pip install -r requirements.txt
+python run.py
+
+# Frontend (Next.js):
+cd phase-II-todo-full-stack-web-app/frontend
+npm install
+npm run dev
 ```
 
 ## Project Goals
