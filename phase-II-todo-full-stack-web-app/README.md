@@ -103,6 +103,7 @@ Phase II transforms the in-memory CLI todo application from Phase I into a full-
 ```
 phase-II-todo-full-stack-web-app/
 ├── backend/
+│   ├── CLAUDE.md               # Claude Code instructions for backend
 │   ├── main.py                 # Main FastAPI application
 │   ├── run.py                  # Script to run the application
 │   ├── models.py               # SQLModel database models
@@ -118,6 +119,7 @@ phase-II-todo-full-stack-web-app/
 │   ├── requirements.txt        # Python dependencies
 │   └── alembic/                # Database migration files
 ├── frontend/
+│   ├── CLAUDE.md               # Claude Code instructions for frontend
 │   ├── src/
 │   │   ├── app/                # Next.js App Router pages
 │   │   ├── components/         # React components
