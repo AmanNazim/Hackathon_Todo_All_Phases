@@ -1,0 +1,8 @@
+{
+  "name": "nextjs-16-frontend-engineer-skill",
+  "version": "1.0.0",
+  "description": "Senior Expert Next.js 16+ Frontend Engineer skill for Claude",
+  "keywords": ["nextjs", "frontend", "typescript", "tailwind", "app-router"],
+  "author": "Senior Next.js Engineer",
+  "license": "MIT"
+}

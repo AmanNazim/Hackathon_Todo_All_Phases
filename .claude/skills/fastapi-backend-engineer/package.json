@@ -1,0 +1,8 @@
+{
+  "name": "fastapi-backend-engineer-skill",
+  "version": "1.0.0",
+  "description": "Senior Expert FastAPI Python Backend Engineer skill for Claude",
+  "keywords": ["fastapi", "backend", "python", "api", "database", "authentication"],
+  "author": "Senior FastAPI Engineer",
+  "license": "MIT"
+}
