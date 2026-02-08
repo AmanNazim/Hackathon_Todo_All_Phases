@@ -25,15 +25,32 @@ Detailed UX specification outlining:
 - Success metrics and KPIs
 - Quality assurance and review processes
 
+### [plan.md](./plan.md)
+Implementation plan describing:
+- Architecture overview and scope
+- Technology stack decisions and rationale
+- User research and persona validation
+- Information architecture implementation
+- Interaction design patterns and workflows
+- Microinteraction and animation implementation
+- Usability heuristics implementation
+- Accessibility and inclusive design implementation
+- Performance and engagement optimization
+- Mobile UX considerations and patterns
+- Testing and validation procedures
+- Implementation phases and timeline
+- Quality assurance and review processes
+
 ## Getting Started
 
 To begin implementation based on these specifications:
 
 1. Review the [spec.md](./spec.md) for overall UX strategy and user research
-2. Understand the user personas and journey maps
-3. Follow the interaction design patterns for consistency
-4. Implement microinteractions and feedback mechanisms
-5. Apply the animation design system for smooth transitions
+2. Study the [plan.md](./plan.md) for implementation approach and phases
+3. Understand the user personas and journey maps
+4. Follow the interaction design patterns for consistency
+5. Implement microinteractions and feedback mechanisms
+6. Apply the animation design system for smooth transitions
 
 ## Key Features
 
@@ -55,3 +72,4 @@ The UX implements:
 - React 18+ (facilitates smooth updates)
 - Web Animations API
 - CSS Transitions and Transforms
+- React Aria (accessibility)
