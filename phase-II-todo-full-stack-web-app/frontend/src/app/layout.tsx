@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/providers/better-auth-provider";
+import { ThemeProvider } from "@/providers/theme-provider";
+import { ToastProvider } from "@/providers/toast-provider";
+import ErrorBoundary from "@/components/ui/ErrorBoundary";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,7 +18,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Todo Application",
-  description: "A full-stack todo application with user authentication",
+  description: "A full-stack todo application with Better Auth authentication",
 };
 
 export default function RootLayout({
@@ -25,11 +29,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 dark:bg-gray-900`}
       >
-        <div className="min-h-screen bg-gray-50">
-          {children}
-        </div>
+        <ThemeProvider>
+          <AuthProvider>
+            <ToastProvider>
+              <ErrorBoundary>
+                <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+                  {children}
+                </div>
+              </ErrorBoundary>
+            </ToastProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
