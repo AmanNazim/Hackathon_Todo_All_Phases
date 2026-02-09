@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useAuth } from '@/providers/auth-provider';
+import { useUser } from '@/providers/better-auth-provider';
 import { useRouter } from 'next/navigation';
 
 export default function AuthLayout({
@@ -9,7 +9,7 @@ export default function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user } = useAuth();
+  const { data: user } = useUser();
   const router = useRouter();
 
   // If user is already authenticated, redirect to dashboard
