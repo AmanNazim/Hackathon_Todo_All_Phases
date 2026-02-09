@@ -183,7 +183,7 @@ export default function TimeTracker({
             <Button
               onClick={handleStopTimer}
               disabled={isProcessing}
-              variant="danger"
+              variant="destructive"
               className="w-full"
             >
               <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">

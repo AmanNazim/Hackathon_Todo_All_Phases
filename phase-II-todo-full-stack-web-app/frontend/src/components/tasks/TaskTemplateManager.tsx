@@ -431,7 +431,7 @@ export default function TaskTemplateManager({
                   </Button>
                   <Button
                     onClick={() => handleDeleteTemplate(template.id)}
-                    variant="danger"
+                    variant="destructive"
                     size="sm"
                     disabled={isProcessing}
                   >
