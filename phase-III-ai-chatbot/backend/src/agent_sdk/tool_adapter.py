@@ -6,7 +6,7 @@ Converts MCP tools to OpenAI Agents SDK function tools with user_id context inje
 
 from agents.decorators import function_tool
 from typing import List, Optional, Dict
-from src.mcp.tools import add_task, list_tasks, complete_task, delete_task, update_task
+from src.services.task_service import TaskService
 
 
 def create_function_tools(user_id: str) -> List:
@@ -23,7 +23,7 @@ def create_function_tools(user_id: str) -> List:
     @function_tool
     async def add_task_tool(title: str, description: Optional[str] = None) -> Dict:
         """Create a new task for the user."""
-        return await add_task.add_task(user_id, title, description)
+        return await TaskService.create_task(user_id, title, description)
 
     @function_tool
     async def list_tasks_tool(status: str = "all") -> List[Dict]:
@@ -33,31 +33,31 @@ def create_function_tools(user_id: str) -> List:
         Args:
             status: Filter by status - "all", "pending", or "completed"
         """
-        return await list_tasks.list_tasks(user_id, status)
+        return await TaskService.list_tasks(user_id, status)
 
     @function_tool
-    async def complete_task_tool(task_id: str) -> Dict:
+    async def complete_task_tool(task_id: int) -> Dict:
         """
         Mark a task as completed.
 
         Args:
-            task_id: ID of the task to complete
+            task_id: ID of the task to complete (integer)
         """
-        return await complete_task.complete_task(user_id, task_id)
+        return await TaskService.complete_task(user_id, task_id)
 
     @function_tool
-    async def delete_task_tool(task_id: str) -> Dict:
+    async def delete_task_tool(task_id: int) -> Dict:
         """
         Delete a task.
 
         Args:
-            task_id: ID of the task to delete
+            task_id: ID of the task to delete (integer)
         """
-        return await delete_task.delete_task(user_id, task_id)
+        return await TaskService.delete_task(user_id, task_id)
 
     @function_tool
     async def update_task_tool(
-        task_id: str,
+        task_id: int,
         title: Optional[str] = None,
         description: Optional[str] = None
     ) -> Dict:
@@ -65,11 +65,11 @@ def create_function_tools(user_id: str) -> List:
         Update task title or description.
 
         Args:
-            task_id: ID of the task to update
+            task_id: ID of the task to update (integer)
             title: New task title (optional)
             description: New task description (optional)
         """
-        return await update_task.update_task(user_id, task_id, title, description)
+        return await TaskService.update_task(user_id, task_id, title, description)
 
     # Return all tools
     return [
