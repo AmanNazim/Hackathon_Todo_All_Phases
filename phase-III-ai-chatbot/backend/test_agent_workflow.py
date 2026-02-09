@@ -45,8 +45,12 @@ async def test_agent_add_task():
     test_user_id = f"test_user_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
     chat_request = {
-        "message": "Add a task to buy groceries for dinner tonight",
-        "user_id": test_user_id
+        "message": "Add a task to buy groceries for dinner tonight"
+    }
+
+    # Authentication header (placeholder auth accepts any token)
+    headers = {
+        "Authorization": "Bearer test-token-for-development"
     }
 
     print(f"   User ID: {test_user_id}")
@@ -58,7 +62,8 @@ async def test_agent_add_task():
             print("   Sending request to agent...")
             response = await client.post(
                 f"{base_url}/api/chat",
-                json=chat_request
+                json=chat_request,
+                headers=headers
             )
 
             if response.status_code == 200:
@@ -104,9 +109,9 @@ async def test_agent_add_task():
             response = await client.post(
                 f"{base_url}/api/chat",
                 json={
-                    "message": "Show me all my tasks",
-                    "user_id": test_user_id
-                }
+                    "message": "Show me all my tasks"
+                },
+                headers=headers
             )
 
             if response.status_code == 200:
