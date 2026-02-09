@@ -42,7 +42,7 @@ const RegisterPage = () => {
       const result = await signUp.email({
         email,
         password,
-        name: name || undefined,
+        name: name || '',
       });
 
       if (result.error) {
