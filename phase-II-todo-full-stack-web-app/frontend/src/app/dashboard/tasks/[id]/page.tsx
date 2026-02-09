@@ -235,7 +235,7 @@ export default function TaskDetailPage() {
             <Button
               onClick={handleToggleStatus}
               className="w-full"
-              variant={task.status === 'completed' ? 'outline' : 'default'}
+              variant={task.status === 'completed' ? 'outline' : 'primary'}
             >
               {task.status === 'completed' ? 'Mark as Incomplete' : 'Mark as Complete'}
             </Button>
