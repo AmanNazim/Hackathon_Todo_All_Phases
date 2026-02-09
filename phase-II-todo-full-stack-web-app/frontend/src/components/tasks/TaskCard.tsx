@@ -7,9 +7,13 @@ import Badge from '@/components/ui/Badge';
 
 interface TaskCardProps {
   task: Task;
+  onClick?: () => void;
+  onComplete?: (completed: boolean) => void;
+  onDelete?: () => void;
+  onEdit?: () => void;
 }
 
-export const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
+export const TaskCard: React.FC<TaskCardProps> = ({ task, onClick, onComplete, onDelete, onEdit }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description || '');
