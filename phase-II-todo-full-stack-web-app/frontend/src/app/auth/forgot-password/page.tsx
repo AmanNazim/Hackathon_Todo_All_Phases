@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { forgotPassword } from '@/lib/auth-client';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
@@ -19,13 +18,21 @@ const ForgotPasswordPage = () => {
     setError('');
 
     try {
-      const result = await forgotPassword({
-        email,
-        redirectTo: `${window.location.origin}/auth/reset-password`,
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/forgot-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          redirectTo: `${window.location.origin}/auth/reset-password`,
+        }),
       });
 
-      if (result.error) {
-        setError(result.error.message || 'Failed to send reset email');
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || 'Failed to send reset email');
       } else {
         setIsSubmitted(true);
       }

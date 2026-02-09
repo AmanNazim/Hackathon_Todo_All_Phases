@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { resetPassword } from '@/lib/auth-client';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
@@ -51,13 +50,21 @@ const ResetPasswordPage = () => {
     }
 
     try {
-      const result = await resetPassword({
-        newPassword: password,
-        token,
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/reset-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          newPassword: password,
+          token,
+        }),
       });
 
-      if (result.error) {
-        setError(result.error.message || 'Failed to reset password');
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || 'Failed to reset password');
       } else {
         setIsSuccess(true);
         // Redirect to login after 2 seconds
