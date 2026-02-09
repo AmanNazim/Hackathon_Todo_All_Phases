@@ -15,7 +15,7 @@ from datetime import datetime
 async def test_agent_add_task():
     """Test the complete workflow of adding a task through the agent"""
 
-    base_url = "http://localhost:8000"
+    base_url = "http://localhost:8001"
 
     print("=" * 60)
     print("Testing Phase III AI Chatbot - Complete Workflow")

@@ -4,7 +4,6 @@
 sqlmodel==0.0.14
 sqlalchemy[asyncio]==2.0.25
 asyncpg==0.29.0
-psycopg2-binary==2.9.9
 
 # Database Migrations
 alembic==1.13.1
@@ -12,11 +11,11 @@ alembic==1.13.1
 # FastAPI
 fastapi==0.109.0
 uvicorn[standard]==0.27.0
-pydantic==2.5.3
-pydantic-settings==2.1.0
+pydantic>=2.12.3
+pydantic-settings>=2.1.0
 
 # OpenAI
-openai==1.10.0
+openai>=2.9.0
 
 # OpenAI Agents SDK with LiteLLM
 openai-agents[litellm]>=0.1.0
@@ -25,14 +24,14 @@ openai-agents[litellm]>=0.1.0
 mcp>=0.1.0
 fastmcp>=0.1.0
 
-# Async Support
-asyncio==3.4.3
+# Async Support (built into Python 3, no need for separate package)
+# asyncio==3.4.3
 
 # Environment Variables
 python-dotenv==1.0.0
 
 # Type Checking
-typing-extensions==4.9.0
+typing-extensions>=4.12.2
 
 # ChatKit
 openai-chatkit>=0.1.0
