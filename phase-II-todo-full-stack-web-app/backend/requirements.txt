@@ -5,6 +5,19 @@ python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 python-multipart==0.0.20
 psycopg2-binary==2.9.10
+asyncpg>=0.30.0
 python-dotenv==1.0.1
 pydantic==2.10.0
+pydantic[email]==2.10.0
+pydantic-settings==2.6.1
 alembic==1.18.3
+sqlalchemy[asyncio]>=2.0.36
+redis==5.2.1
+aiosmtplib==3.0.2
+
+# Testing dependencies
+pytest==8.3.4
+pytest-asyncio==0.24.0
+pytest-cov==6.0.0
+httpx==0.28.1
+locust==2.32.3

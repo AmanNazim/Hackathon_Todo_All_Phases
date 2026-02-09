@@ -4,7 +4,7 @@ Authentication utilities for the Todo application.
 
 from datetime import datetime, timedelta
 from typing import Optional
-import jwt
+from jose import jwt, JWTError
 from passlib.context import CryptContext
 from fastapi import HTTPException, status, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -26,7 +26,7 @@ security = HTTPBearer()
 
 class TokenData(BaseModel):
     """Model for token data."""
-    user_id: Optional[int] = None
+    user_id: Optional[str] = None
     email: Optional[str] = None
 
 
@@ -91,15 +91,15 @@ def verify_token(token: str) -> Optional[TokenData]:
     """
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: int = payload.get("user_id")
+        user_id: str = payload.get("user_id")
         email: str = payload.get("email")
 
         if user_id is None or email is None:
             return None
 
-        token_data = TokenData(user_id=user_id, email=email)
+        token_data = TokenData(user_id=str(user_id), email=email)
         return token_data
-    except jwt.PyJWTError:
+    except JWTError:
         return None
 
 

@@ -36,16 +36,28 @@ Implementation plan describing:
 - Implementation phases and timeline
 - Quality assurance and testing procedures
 
+### [tasks.md](./tasks.md)
+Actionable task breakdown for implementation:
+- Foundation setup tasks for Next.js and Tailwind
+- Design system component implementation
+- Layout component creation
+- Task-specific component development
+- Page implementation tasks
+- Animation and microinteraction implementation
+- Testing and optimization tasks
+- Final implementation and documentation
+
 ## Getting Started
 
 To begin implementation based on these specifications:
 
 1. Review the [spec.md](./spec.md) for overall UI architecture and design system
 2. Study the [plan.md](./plan.md) for implementation approach and phases
-3. Understand the color palette and typography system
-4. Follow the component architecture patterns for development
-5. Implement the page layouts and responsive design
-6. Apply the animation and microinteraction design
+3. Follow the [tasks.md](./tasks.md) for step-by-step implementation guidance
+4. Understand the color palette and typography system
+5. Follow the component architecture patterns for development
+6. Implement the page layouts and responsive design
+7. Apply the animation and microinteraction design
 
 ## Key Features
 

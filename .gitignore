@@ -30,3 +30,8 @@ MANIFEST
 # OS
 .DS_Store
 Thumbs.db
+
+# Deployment secrets
+.deployment-secrets.txt
+*.env.local
+*.env.production.local
