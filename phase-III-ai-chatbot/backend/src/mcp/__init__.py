@@ -1,5 +1,6 @@
-"""MCP package"""
+"""MCP package - FastMCP Task Management Server"""
 
-from .server import get_mcp_tools, get_mcp_schemas, MCP_TOOLS
+from src.mcp.server import mcp, get_mcp_server
 
-__all__ = ["get_mcp_tools", "get_mcp_schemas", "MCP_TOOLS"]
+__all__ = ["mcp", "get_mcp_server"]
+
