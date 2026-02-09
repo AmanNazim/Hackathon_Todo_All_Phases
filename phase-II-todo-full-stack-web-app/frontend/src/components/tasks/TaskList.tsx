@@ -10,18 +10,7 @@ import React from 'react';
 import { TaskCard } from './TaskCard';
 import EmptyState from '../ui/EmptyState';
 import Skeleton from '../ui/Skeleton';
-
-export interface Task {
-  id: string;
-  title: string;
-  description?: string;
-  completed: boolean;
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  status: 'todo' | 'in_progress' | 'review' | 'done' | 'blocked';
-  due_date?: string;
-  created_at: string;
-  updated_at: string;
-}
+import { Task } from '@/types';
 
 export interface TaskListProps {
   tasks: Task[];
