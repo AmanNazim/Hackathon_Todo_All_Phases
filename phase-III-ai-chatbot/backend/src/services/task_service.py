@@ -19,11 +19,12 @@ class TaskService:
             description: Optional task description
 
         Returns:
-            dict with task_id, status, and title
+            dict with task_id (integer), status, and title
         """
         # TODO: Integrate with Phase II task database
-        # For now, return mock response
-        task_id = str(uuid4())
+        # For now, return mock response with integer task_id
+        import random
+        task_id = random.randint(1, 100000)
 
         return {
             "task_id": task_id,
@@ -41,28 +42,28 @@ class TaskService:
             status: Filter by status ("all", "pending", "completed")
 
         Returns:
-            List of task dictionaries
+            List of task dictionaries with integer ids
         """
         # TODO: Query Phase II task database
-        # For now, return mock response
+        # For now, return mock response with integer id
+        import random
         return [
             {
-                "id": str(uuid4()),
+                "id": random.randint(1, 100000),
                 "title": "Sample Task",
                 "description": "This is a sample task",
-                "status": "pending",
-                "created_at": datetime.utcnow().isoformat()
+                "completed": False
             }
         ]
 
     @staticmethod
-    async def complete_task(user_id: str, task_id: str) -> Dict:
+    async def complete_task(user_id: str, task_id: int) -> Dict:
         """
         Mark task as complete
 
         Args:
             user_id: User identifier
-            task_id: Task identifier
+            task_id: Task identifier (integer)
 
         Returns:
             dict with task_id, status, and title
@@ -79,13 +80,13 @@ class TaskService:
         }
 
     @staticmethod
-    async def delete_task(user_id: str, task_id: str) -> Dict:
+    async def delete_task(user_id: str, task_id: int) -> Dict:
         """
         Delete task
 
         Args:
             user_id: User identifier
-            task_id: Task identifier
+            task_id: Task identifier (integer)
 
         Returns:
             dict with task_id, status, and title
@@ -104,7 +105,7 @@ class TaskService:
     @staticmethod
     async def update_task(
         user_id: str,
-        task_id: str,
+        task_id: int,
         title: Optional[str] = None,
         description: Optional[str] = None
     ) -> Dict:
@@ -113,7 +114,7 @@ class TaskService:
 
         Args:
             user_id: User identifier
-            task_id: Task identifier
+            task_id: Task identifier (integer)
             title: New task title (optional)
             description: New task description (optional)
 

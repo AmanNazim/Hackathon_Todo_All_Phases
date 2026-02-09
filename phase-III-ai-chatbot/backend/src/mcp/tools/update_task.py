@@ -6,7 +6,7 @@ from src.services.task_service import TaskService
 
 async def update_task(
     user_id: str,
-    task_id: str,
+    task_id: int,
     title: Optional[str] = None,
     description: Optional[str] = None
 ) -> Dict:
@@ -15,7 +15,7 @@ async def update_task(
 
     Args:
         user_id: User identifier
-        task_id: Task identifier
+        task_id: Task identifier (integer)
         title: New task title (optional)
         description: New task description (optional)
 
@@ -37,7 +37,7 @@ update_task_schema = {
                 "description": "User identifier"
             },
             "task_id": {
-                "type": "string",
+                "type": "integer",
                 "description": "Task identifier"
             },
             "title": {

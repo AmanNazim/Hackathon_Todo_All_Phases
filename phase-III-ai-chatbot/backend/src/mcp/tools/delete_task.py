@@ -4,13 +4,13 @@ from typing import Dict
 from src.services.task_service import TaskService
 
 
-async def delete_task(user_id: str, task_id: str) -> Dict:
+async def delete_task(user_id: str, task_id: int) -> Dict:
     """
     Delete a task.
 
     Args:
         user_id: User identifier
-        task_id: Task identifier
+        task_id: Task identifier (integer)
 
     Returns:
         dict with task_id, status, and title
@@ -30,7 +30,7 @@ delete_task_schema = {
                 "description": "User identifier"
             },
             "task_id": {
-                "type": "string",
+                "type": "integer",
                 "description": "Task identifier"
             }
         },

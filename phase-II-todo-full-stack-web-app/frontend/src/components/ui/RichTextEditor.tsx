@@ -94,8 +94,11 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, placeh
         onPaste={handlePaste}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        placeholder={placeholder}
+        data-placeholder={placeholder}
         suppressContentEditableWarning={true}
+        style={{
+          position: 'relative'
+        }}
       />
     </div>
   );

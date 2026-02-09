@@ -4,13 +4,13 @@ from typing import Dict
 from src.services.task_service import TaskService
 
 
-async def complete_task(user_id: str, task_id: str) -> Dict:
+async def complete_task(user_id: str, task_id: int) -> Dict:
     """
     Mark a task as completed.
 
     Args:
         user_id: User identifier
-        task_id: Task identifier
+        task_id: Task identifier (integer)
 
     Returns:
         dict with task_id, status, and title
@@ -30,7 +30,7 @@ complete_task_schema = {
                 "description": "User identifier"
             },
             "task_id": {
-                "type": "string",
+                "type": "integer",
                 "description": "Task identifier"
             }
         },

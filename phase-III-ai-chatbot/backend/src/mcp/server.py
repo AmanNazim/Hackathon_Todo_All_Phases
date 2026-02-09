@@ -1,53 +1,55 @@
-"""MCP server for registering and managing tools"""
+"""
+MCP Server for Task Management Tools using FastMCP
 
-from src.mcp.tools.add_task import add_task, add_task_schema
-from src.mcp.tools.list_tasks import list_tasks, list_tasks_schema
-from src.mcp.tools.complete_task import complete_task, complete_task_schema
-from src.mcp.tools.delete_task import delete_task, delete_task_schema
-from src.mcp.tools.update_task import update_task, update_task_schema
+This server exposes task management capabilities to AI agents through
+the Model Context Protocol.
+"""
+
+import sys
+import logging
+from fastmcp import FastMCP
+
+# Configure logging to stderr only (STDIO constraint)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[logging.StreamHandler(sys.stderr)]
+)
+
+logger = logging.getLogger(__name__)
+
+# Initialize FastMCP server
+mcp = FastMCP("Task Management Server")
+
+# Import and register tools
+from src.mcp.tools.add_task import register_add_task
+from src.mcp.tools.list_tasks import register_list_tasks
+from src.mcp.tools.complete_task import register_complete_task
+from src.mcp.tools.delete_task import register_delete_task
+from src.mcp.tools.update_task import register_update_task
+
+# Register all tools with the MCP server
+register_add_task(mcp)
+register_list_tasks(mcp)
+register_complete_task(mcp)
+register_delete_task(mcp)
+register_update_task(mcp)
 
 
-# MCP tools registry
-MCP_TOOLS = [
-    {"function": add_task, "schema": add_task_schema},
-    {"function": list_tasks, "schema": list_tasks_schema},
-    {"function": complete_task, "schema": complete_task_schema},
-    {"function": delete_task, "schema": delete_task_schema},
-    {"function": update_task, "schema": update_task_schema},
-]
-
-
-def get_mcp_tools():
+def get_mcp_server():
     """
-    Get all MCP tool functions for agent registration.
+    Get the FastMCP server instance.
 
     Returns:
-        List of tool functions
+        FastMCP server instance
     """
-    return [tool["function"] for tool in MCP_TOOLS]
+    return mcp
 
 
-def get_mcp_schemas():
-    """
-    Get all MCP tool schemas for documentation.
+if __name__ == "__main__":
+    logger.info("Starting Task Management MCP Server")
+    logger.info("Available tools: add_task, list_tasks, complete_task, delete_task, update_task")
 
-    Returns:
-        List of tool schemas
-    """
-    return [tool["schema"] for tool in MCP_TOOLS]
+    # Run the MCP server with STDIO transport
+    mcp.run()
 
-
-def get_tool_by_name(name: str):
-    """
-    Get a specific tool by name.
-
-    Args:
-        name: Tool name
-
-    Returns:
-        Tool function or None if not found
-    """
-    for tool in MCP_TOOLS:
-        if tool["schema"]["name"] == name:
-            return tool["function"]
-    return None

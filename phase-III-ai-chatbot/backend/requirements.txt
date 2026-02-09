@@ -21,6 +21,10 @@ openai==1.10.0
 # OpenAI Agents SDK with LiteLLM
 openai-agents[litellm]>=0.1.0
 
+# MCP SDK
+mcp>=0.1.0
+fastmcp>=0.1.0
+
 # Async Support
 asyncio==3.4.3
 
