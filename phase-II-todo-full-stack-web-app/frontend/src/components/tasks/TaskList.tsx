@@ -7,7 +7,7 @@
 'use client';
 
 import React from 'react';
-import TaskCard from './TaskCard';
+import { TaskCard } from './TaskCard';
 import EmptyState from '../ui/EmptyState';
 import Skeleton from '../ui/Skeleton';
 
