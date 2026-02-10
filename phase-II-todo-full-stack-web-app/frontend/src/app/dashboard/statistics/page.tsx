@@ -15,15 +15,23 @@ export const runtime = 'nodejs';
 export default function StatisticsPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
   const [chartData, setChartData] = useState<any>(null);
 
-  const { get, set } = useQueryClient();
+  // Only access context after mount
+  const queryClient = mounted ? useQueryClient() : null;
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
     const fetchTasks = async () => {
       try {
         // Check if data is in cache
-        const cachedTasks = get<Task[]>('tasks');
+        const cachedTasks = queryClient?.get<Task[]>('tasks');
         if (cachedTasks) {
           setTasks(cachedTasks);
           generateChartData(cachedTasks);
@@ -32,7 +40,7 @@ export default function StatisticsPage() {
           const response = await apiClient.getTasks();
           if (response.data) {
             setTasks(response.data);
-            set('tasks', response.data, 5 * 60 * 1000); // Cache for 5 minutes
+            queryClient?.set('tasks', response.data, 5 * 60 * 1000); // Cache for 5 minutes
             generateChartData(response.data);
           }
         }
@@ -44,7 +52,7 @@ export default function StatisticsPage() {
     };
 
     fetchTasks();
-  }, []);
+  }, [mounted]);
 
   const generateChartData = (tasks: Task[]) => {
     // Count tasks by priority

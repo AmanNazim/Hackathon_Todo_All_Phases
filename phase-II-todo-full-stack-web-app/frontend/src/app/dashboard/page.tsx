@@ -16,6 +16,7 @@ export default function DashboardPage() {
   const pathname = usePathname();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
   const [stats, setStats] = useState({
     total: 0,
     completed: 0,
@@ -23,13 +24,20 @@ export default function DashboardPage() {
     overdue: 0
   });
 
-  const { get, set } = useQueryClient();
+  // Only access context after mount
+  const queryClient = mounted ? useQueryClient() : null;
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
     const fetchDashboardData = async () => {
       try {
         // Check if data is in cache
-        const cachedTasks = get<Task[]>('tasks');
+        const cachedTasks = queryClient?.get<Task[]>('tasks');
         if (cachedTasks) {
           setTasks(cachedTasks);
           calculateStats(cachedTasks);
@@ -38,7 +46,7 @@ export default function DashboardPage() {
           const response = await apiClient.getTasks();
           if (response.data) {
             setTasks(response.data);
-            set('tasks', response.data, 5 * 60 * 1000); // Cache for 5 minutes
+            queryClient?.set('tasks', response.data, 5 * 60 * 1000); // Cache for 5 minutes
             calculateStats(response.data);
           }
         }
@@ -50,7 +58,7 @@ export default function DashboardPage() {
     };
 
     fetchDashboardData();
-  }, []);
+  }, [mounted]);
 
   const calculateStats = (tasks: Task[]) => {
     const total = tasks.length;

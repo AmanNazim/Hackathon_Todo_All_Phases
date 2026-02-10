@@ -8,18 +8,26 @@ export const useTasks = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
 
-  const { get, set, invalidate } = useQueryClient();
+  // Only access context after mount
+  const queryClient = mounted ? useQueryClient() : null;
   const { addToast } = useToast();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Fetch all tasks
   const fetchTasks = async () => {
+    if (!mounted) return;
+
     try {
       setLoading(true);
       setError(null);
 
       // Check if data is in cache
-      const cachedTasks = get<Task[]>('tasks');
+      const cachedTasks = queryClient?.get<Task[]>('tasks');
       if (cachedTasks) {
         setTasks(cachedTasks);
       } else {
@@ -27,7 +35,7 @@ export const useTasks = () => {
         const response = await apiClient.getTasks();
         if (response.data) {
           setTasks(response.data);
-          set('tasks', response.data, 5 * 60 * 1000); // Cache for 5 minutes
+          queryClient?.set('tasks', response.data, 5 * 60 * 1000); // Cache for 5 minutes
         } else {
           const errorMsg = response.error || 'Failed to fetch tasks';
           setError(errorMsg);
@@ -45,6 +53,8 @@ export const useTasks = () => {
 
   // Create a new task
   const createTask = async (taskData: Partial<Task>): Promise<Task | null> => {
+    if (!mounted) return null;
+
     try {
       setLoading(true);
       setError(null);
@@ -56,7 +66,7 @@ export const useTasks = () => {
         setTasks(prev => [...prev, newTask]);
 
         // Update cache
-        set('tasks', [...tasks, newTask], 5 * 60 * 1000);
+        queryClient?.set('tasks', [...tasks, newTask], 5 * 60 * 1000);
 
         addToast('Task created successfully!', 'success');
         return newTask;
@@ -78,6 +88,8 @@ export const useTasks = () => {
 
   // Update a task
   const updateTask = async (id: string, taskData: Partial<Task>): Promise<Task | null> => {
+    if (!mounted) return null;
+
     try {
       setLoading(true);
       setError(null);
@@ -93,7 +105,7 @@ export const useTasks = () => {
         setTasks(updatedTasks);
 
         // Update cache
-        set('tasks', updatedTasks, 5 * 60 * 1000);
+        queryClient?.set('tasks', updatedTasks, 5 * 60 * 1000);
 
         addToast('Task updated successfully!', 'success');
         return updatedTask;
@@ -115,6 +127,8 @@ export const useTasks = () => {
 
   // Toggle task completion status
   const toggleTaskStatus = async (id: string): Promise<Task | null> => {
+    if (!mounted) return null;
+
     try {
       setLoading(true);
       setError(null);
@@ -139,7 +153,7 @@ export const useTasks = () => {
         setTasks(updatedTasks);
 
         // Update cache
-        set('tasks', updatedTasks, 5 * 60 * 1000);
+        queryClient?.set('tasks', updatedTasks, 5 * 60 * 1000);
 
         addToast(`Task marked as ${!currentTask.completed ? 'completed' : 'incomplete'}!`, 'success');
         return updatedTask;
@@ -161,6 +175,8 @@ export const useTasks = () => {
 
   // Delete a task
   const deleteTask = async (id: string): Promise<boolean> => {
+    if (!mounted) return false;
+
     try {
       setLoading(true);
       setError(null);
@@ -172,7 +188,7 @@ export const useTasks = () => {
         setTasks(updatedTasks);
 
         // Update cache
-        set('tasks', updatedTasks, 5 * 60 * 1000);
+        queryClient?.set('tasks', updatedTasks, 5 * 60 * 1000);
 
         addToast('Task deleted successfully!', 'success');
         return true;
