@@ -10,6 +10,10 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import MobileMenu from '@/components/ui/MobileMenu';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
+// Force dynamic rendering for all dashboard routes
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export default function DashboardLayout({
   children,
 }: {
