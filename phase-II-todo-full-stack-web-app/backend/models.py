@@ -1,22 +1,85 @@
 """
 Database models for the Todo application using SQLModel.
 
-Note: User authentication is handled by Better Auth on the frontend.
-The backend only references Better Auth's user table via user_id (TEXT).
+Note: This file includes Better Auth tables created by SQLModel.
+Better Auth will use these tables for authentication.
 """
 
 from datetime import datetime
 from typing import Optional, List
 from uuid import UUID, uuid4
 from sqlmodel import SQLModel, Field, Column, Relationship
-from sqlalchemy import JSON
+from sqlalchemy import JSON, Text
 from pydantic import BaseModel, EmailStr
 
 
-# User profile models (for API responses only - Better Auth manages actual users)
+# ============================================================================
+# Better Auth Tables (Created by SQLModel)
+# ============================================================================
+
+class BetterAuthUser(SQLModel, table=True):
+    """Better Auth user table - created by SQLModel."""
+    __tablename__ = "user"
+
+    id: str = Field(sa_column=Column(Text, primary_key=True))
+    email: str = Field(sa_column=Column(Text, nullable=False, unique=True))
+    emailVerified: bool = Field(default=False, nullable=False)
+    name: Optional[str] = Field(default=None, sa_column=Column(Text))
+    image: Optional[str] = Field(default=None, sa_column=Column(Text))
+    createdAt: datetime = Field(default_factory=datetime.utcnow, nullable=False)
+    updatedAt: datetime = Field(default_factory=datetime.utcnow, nullable=False)
+
+
+class BetterAuthSession(SQLModel, table=True):
+    """Better Auth session table - created by SQLModel."""
+    __tablename__ = "session"
+
+    id: str = Field(sa_column=Column(Text, primary_key=True))
+    userId: str = Field(foreign_key="user.id", nullable=False, index=True, sa_column=Column(Text))
+    expiresAt: datetime = Field(nullable=False)
+    token: str = Field(sa_column=Column(Text, nullable=False, unique=True))
+    ipAddress: Optional[str] = Field(default=None, sa_column=Column(Text))
+    userAgent: Optional[str] = Field(default=None, sa_column=Column(Text))
+    createdAt: datetime = Field(default_factory=datetime.utcnow, nullable=False)
+    updatedAt: datetime = Field(default_factory=datetime.utcnow, nullable=False)
+
+
+class BetterAuthAccount(SQLModel, table=True):
+    """Better Auth account table - created by SQLModel."""
+    __tablename__ = "account"
+
+    id: str = Field(sa_column=Column(Text, primary_key=True))
+    userId: str = Field(foreign_key="user.id", nullable=False, index=True, sa_column=Column(Text))
+    accountId: str = Field(nullable=False, sa_column=Column(Text))
+    providerId: str = Field(nullable=False, sa_column=Column(Text))
+    accessToken: Optional[str] = Field(default=None, sa_column=Column(Text))
+    refreshToken: Optional[str] = Field(default=None, sa_column=Column(Text))
+    idToken: Optional[str] = Field(default=None, sa_column=Column(Text))
+    expiresAt: Optional[datetime] = Field(default=None)
+    password: Optional[str] = Field(default=None, sa_column=Column(Text))
+    createdAt: datetime = Field(default_factory=datetime.utcnow, nullable=False)
+    updatedAt: datetime = Field(default_factory=datetime.utcnow, nullable=False)
+
+
+class BetterAuthVerification(SQLModel, table=True):
+    """Better Auth verification table - created by SQLModel."""
+    __tablename__ = "verification"
+
+    id: str = Field(sa_column=Column(Text, primary_key=True))
+    identifier: str = Field(nullable=False, sa_column=Column(Text), index=True)
+    value: str = Field(nullable=False, sa_column=Column(Text))
+    expiresAt: datetime = Field(nullable=False)
+    createdAt: datetime = Field(default_factory=datetime.utcnow, nullable=False)
+    updatedAt: datetime = Field(default_factory=datetime.utcnow, nullable=False)
+
+
+# ============================================================================
+# User Profile Models (for API responses)
+# ============================================================================
+
 class UserRead(BaseModel):
     """Model for reading user data from Better Auth."""
-    id: str  # Better Auth uses TEXT for user IDs
+    id: str
     email: str
     name: Optional[str]
     emailVerified: bool
@@ -27,6 +90,10 @@ class UserRead(BaseModel):
     class Config:
         from_attributes = True
 
+
+# ============================================================================
+# Application Tables (Tasks, Analytics, etc.)
+# ============================================================================
 
 class TaskBase(SQLModel):
     """Base model for task with common attributes."""
