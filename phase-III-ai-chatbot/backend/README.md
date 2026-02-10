@@ -1,3 +1,13 @@
+---
+title: Todo Chatbot Backend
+emoji: 🤖
+colorFrom: blue
+colorTo: purple
+sdk: docker
+pinned: false
+app_port: 7860
+---
+
 # Phase III AI Chatbot Backend - Agent SDK with LiteLLM
 
 ## Overview
