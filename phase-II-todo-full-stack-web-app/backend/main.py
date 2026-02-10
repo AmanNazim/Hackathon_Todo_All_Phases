@@ -24,7 +24,14 @@ from routes.auth import router as auth_router
 from routes.analytics import router as analytics_router
 
 # Import all models to ensure they're registered with SQLModel
-from models import User, Task, PasswordResetToken, EmailVerificationToken, DailyAnalytics, AnalyticsCache
+from models import (
+    # Better Auth tables (created by SQLModel)
+    BetterAuthUser, BetterAuthSession, BetterAuthAccount, BetterAuthVerification,
+    # Application tables
+    Task, TaskTag, TaskHistory,
+    PasswordResetToken, EmailVerificationToken,
+    DailyAnalytics, AnalyticsCache
+)
 
 # Configure logging
 logging.basicConfig(

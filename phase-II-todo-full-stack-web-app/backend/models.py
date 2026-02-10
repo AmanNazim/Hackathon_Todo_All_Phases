@@ -9,7 +9,7 @@ from datetime import datetime
 from typing import Optional, List
 from uuid import UUID, uuid4
 from sqlmodel import SQLModel, Field, Column, Relationship
-from sqlalchemy import JSON, Text
+from sqlalchemy import JSON, Text, ForeignKey
 from pydantic import BaseModel, EmailStr
 
 
@@ -23,11 +23,11 @@ class BetterAuthUser(SQLModel, table=True):
 
     id: str = Field(sa_column=Column(Text, primary_key=True))
     email: str = Field(sa_column=Column(Text, nullable=False, unique=True))
-    emailVerified: bool = Field(default=False, nullable=False)
+    emailVerified: bool = Field(default=False)
     name: Optional[str] = Field(default=None, sa_column=Column(Text))
     image: Optional[str] = Field(default=None, sa_column=Column(Text))
-    createdAt: datetime = Field(default_factory=datetime.utcnow, nullable=False)
-    updatedAt: datetime = Field(default_factory=datetime.utcnow, nullable=False)
+    createdAt: datetime = Field(default_factory=datetime.utcnow)
+    updatedAt: datetime = Field(default_factory=datetime.utcnow)
 
 
 class BetterAuthSession(SQLModel, table=True):
@@ -35,13 +35,13 @@ class BetterAuthSession(SQLModel, table=True):
     __tablename__ = "session"
 
     id: str = Field(sa_column=Column(Text, primary_key=True))
-    userId: str = Field(foreign_key="user.id", nullable=False, index=True, sa_column=Column(Text))
-    expiresAt: datetime = Field(nullable=False)
+    userId: str = Field(sa_column=Column(Text, ForeignKey("user.id"), nullable=False, index=True))
+    expiresAt: datetime
     token: str = Field(sa_column=Column(Text, nullable=False, unique=True))
     ipAddress: Optional[str] = Field(default=None, sa_column=Column(Text))
     userAgent: Optional[str] = Field(default=None, sa_column=Column(Text))
-    createdAt: datetime = Field(default_factory=datetime.utcnow, nullable=False)
-    updatedAt: datetime = Field(default_factory=datetime.utcnow, nullable=False)
+    createdAt: datetime = Field(default_factory=datetime.utcnow)
+    updatedAt: datetime = Field(default_factory=datetime.utcnow)
 
 
 class BetterAuthAccount(SQLModel, table=True):
@@ -49,16 +49,16 @@ class BetterAuthAccount(SQLModel, table=True):
     __tablename__ = "account"
 
     id: str = Field(sa_column=Column(Text, primary_key=True))
-    userId: str = Field(foreign_key="user.id", nullable=False, index=True, sa_column=Column(Text))
-    accountId: str = Field(nullable=False, sa_column=Column(Text))
-    providerId: str = Field(nullable=False, sa_column=Column(Text))
+    userId: str = Field(sa_column=Column(Text, ForeignKey("user.id"), nullable=False, index=True))
+    accountId: str = Field(sa_column=Column(Text, nullable=False))
+    providerId: str = Field(sa_column=Column(Text, nullable=False))
     accessToken: Optional[str] = Field(default=None, sa_column=Column(Text))
     refreshToken: Optional[str] = Field(default=None, sa_column=Column(Text))
     idToken: Optional[str] = Field(default=None, sa_column=Column(Text))
     expiresAt: Optional[datetime] = Field(default=None)
     password: Optional[str] = Field(default=None, sa_column=Column(Text))
-    createdAt: datetime = Field(default_factory=datetime.utcnow, nullable=False)
-    updatedAt: datetime = Field(default_factory=datetime.utcnow, nullable=False)
+    createdAt: datetime = Field(default_factory=datetime.utcnow)
+    updatedAt: datetime = Field(default_factory=datetime.utcnow)
 
 
 class BetterAuthVerification(SQLModel, table=True):
@@ -66,11 +66,11 @@ class BetterAuthVerification(SQLModel, table=True):
     __tablename__ = "verification"
 
     id: str = Field(sa_column=Column(Text, primary_key=True))
-    identifier: str = Field(nullable=False, sa_column=Column(Text), index=True)
-    value: str = Field(nullable=False, sa_column=Column(Text))
-    expiresAt: datetime = Field(nullable=False)
-    createdAt: datetime = Field(default_factory=datetime.utcnow, nullable=False)
-    updatedAt: datetime = Field(default_factory=datetime.utcnow, nullable=False)
+    identifier: str = Field(sa_column=Column(Text, nullable=False, index=True))
+    value: str = Field(sa_column=Column(Text, nullable=False))
+    expiresAt: datetime
+    createdAt: datetime = Field(default_factory=datetime.utcnow)
+    updatedAt: datetime = Field(default_factory=datetime.utcnow)
 
 
 # ============================================================================
