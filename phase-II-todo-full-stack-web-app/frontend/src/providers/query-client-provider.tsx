@@ -8,16 +8,16 @@ interface CacheItem<T> {
   ttl: number; // Time to live in milliseconds
 }
 
-interface QueryClientContextType {
+interface CustomQueryClientContextType {
   get: <T>(key: string) => T | undefined;
   set: <T>(key: string, data: T, ttl?: number) => void;
   invalidate: (key: string) => void;
   clear: () => void;
 }
 
-const QueryClientContext = createContext<QueryClientContextType | undefined>(undefined);
+const CustomQueryClientContext = createContext<CustomQueryClientContextType | undefined>(undefined);
 
-export const QueryClientProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const CustomQueryClientProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [cache, setCache] = useState<Record<string, CacheItem<any>>>({});
 
   const get = <T,>(key: string): T | undefined => {
@@ -63,20 +63,23 @@ export const QueryClientProvider: React.FC<{ children: ReactNode }> = ({ childre
     setCache({});
   };
 
-  const value: QueryClientContextType = {
+  const value: CustomQueryClientContextType = {
     get,
     set,
     invalidate,
     clear,
   };
 
-  return <QueryClientContext.Provider value={value}>{children}</QueryClientContext.Provider>;
+  return <CustomQueryClientContext.Provider value={value}>{children}</CustomQueryClientContext.Provider>;
 };
 
-export const useQueryClient = (): QueryClientContextType => {
-  const context = useContext(QueryClientContext);
+export const useQueryClient = (): CustomQueryClientContextType => {
+  const context = useContext(CustomQueryClientContext);
   if (context === undefined) {
-    throw new Error('useQueryClient must be used within a QueryClientProvider');
+    throw new Error('useQueryClient must be used within a CustomQueryClientProvider');
   }
   return context;
 };
+
+// Keep old export for backward compatibility
+export const QueryClientProvider = CustomQueryClientProvider;
