@@ -5,13 +5,13 @@ import { AuthProvider } from "@/providers/better-auth-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { ToastProvider } from "@/providers/toast-provider";
 import { ReactQueryProvider } from "@/lib/react-query";
-import { QueryClientProvider } from "@/providers/query-client-provider";
+import { CustomQueryClientProvider } from "@/providers/query-client-provider";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ReactQueryProvider>
-      <QueryClientProvider>
+      <CustomQueryClientProvider>
         <ThemeProvider>
           <AuthProvider>
             <ToastProvider>
@@ -21,7 +21,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             </ToastProvider>
           </AuthProvider>
         </ThemeProvider>
-      </QueryClientProvider>
+      </CustomQueryClientProvider>
     </ReactQueryProvider>
   );
 }
