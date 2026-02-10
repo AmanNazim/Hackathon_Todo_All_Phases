@@ -95,6 +95,26 @@ class UserRead(BaseModel):
         from_attributes = True
 
 
+class ProfileRead(BaseModel):
+    """Model for reading user profile data."""
+    id: str
+    email: str
+    name: Optional[str]
+    emailVerified: bool
+    image: Optional[str]
+    createdAt: datetime
+    updatedAt: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class ProfileUpdate(BaseModel):
+    """Model for updating user profile data."""
+    name: Optional[str] = None
+    image: Optional[str] = None
+
+
 # ============================================================================
 # Application Tables (Tasks, Analytics, etc.)
 # ============================================================================
