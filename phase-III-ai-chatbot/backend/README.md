@@ -4,8 +4,10 @@ emoji: 🤖
 colorFrom: blue
 colorTo: purple
 sdk: docker
+sdk_version: "4.36.0"
+python_version: "3.11"
+app_file: main.py
 pinned: false
-app_port: 7860
 ---
 
 # Phase III AI Chatbot Backend - Agent SDK with LiteLLM
