@@ -10,6 +10,8 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 import logging
 
+import os
+
 # Import from local modules (absolute imports for entry point)
 import sys
 from pathlib import Path
@@ -39,6 +41,11 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+# Get allowed origins from environment variable
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:3001")
+allowed_origins_list = [origin.strip() for origin in ALLOWED_ORIGINS.split(",")]
+logger.info(f"CORS allowed origins: {allowed_origins_list}")
 
 
 @asynccontextmanager
@@ -75,7 +82,7 @@ app = FastAPI(
 # Add CORS middleware for frontend integration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:3001"],  # Frontend origins
+    allow_origins=allowed_origins_list,  # Read from environment variable
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
