@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/providers/better-auth-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { ToastProvider } from "@/providers/toast-provider";
+import { ReactQueryProvider } from "@/lib/react-query";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
 
 const geistSans = Geist({
@@ -31,17 +32,19 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 dark:bg-gray-900`}
       >
-        <ThemeProvider>
-          <AuthProvider>
-            <ToastProvider>
-              <ErrorBoundary>
-                <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-                  {children}
-                </div>
-              </ErrorBoundary>
-            </ToastProvider>
-          </AuthProvider>
-        </ThemeProvider>
+        <ReactQueryProvider>
+          <ThemeProvider>
+            <AuthProvider>
+              <ToastProvider>
+                <ErrorBoundary>
+                  <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+                    {children}
+                  </div>
+                </ErrorBoundary>
+              </ToastProvider>
+            </AuthProvider>
+          </ThemeProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );
