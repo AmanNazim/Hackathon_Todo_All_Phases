@@ -297,7 +297,7 @@ class UserPreferences(SQLModel, table=True):
     __tablename__ = "user_preferences"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
-    user_id: UUID = Field(foreign_key="users.id", nullable=False, unique=True, index=True)
+    user_id: str = Field(foreign_key="user.id", nullable=False, unique=True, index=True)  # References Better Auth's user table
     theme: str = Field(default="system", nullable=False, regex="^(light|dark|system)$")
     language: str = Field(default="en", nullable=False, max_length=10)
     notifications: dict = Field(default_factory=dict, sa_column=Column(JSON))
@@ -327,7 +327,7 @@ class PrivacySettings(BaseModel):
 class PreferencesRead(BaseModel):
     """Model for reading user preferences."""
     id: UUID
-    user_id: UUID
+    user_id: str  # Better Auth uses TEXT for user IDs
     theme: str
     language: str
     notifications: dict
