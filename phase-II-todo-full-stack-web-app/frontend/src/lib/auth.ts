@@ -1,23 +1,20 @@
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
 
-// Lazy initialization to prevent database connection during build time
+// Lazy initialization - auth instance is created ONLY when getAuth() is called
 let authInstance: ReturnType<typeof betterAuth> | null = null;
 
-function getAuthInstance() {
+export function getAuth() {
+  // Return cached instance if already initialized
   if (authInstance) {
     return authInstance;
   }
 
-  // Only initialize with database in production runtime (not during build)
-  const isProduction = process.env.NODE_ENV === 'production';
-  const hasDatabaseUrl = !!process.env.DATABASE_URL;
-  const isVercelBuild = process.env.VERCEL_ENV === undefined && isProduction;
-
+  // Initialize only at runtime (never during build)
   authInstance = betterAuth({
-    database: hasDatabaseUrl && !isVercelBuild ? {
+    database: process.env.DATABASE_URL ? {
       provider: "postgres",
-      url: process.env.DATABASE_URL!,
+      url: process.env.DATABASE_URL,
     } : undefined,
     emailAndPassword: {
       enabled: true,
@@ -37,11 +34,3 @@ function getAuthInstance() {
 
   return authInstance;
 }
-
-// Export a proxy that lazily initializes
-export const auth = new Proxy({} as ReturnType<typeof betterAuth>, {
-  get(target, prop) {
-    const instance = getAuthInstance();
-    return (instance as any)[prop];
-  }
-});
