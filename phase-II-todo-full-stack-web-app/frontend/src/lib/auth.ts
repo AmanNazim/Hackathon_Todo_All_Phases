@@ -10,16 +10,15 @@ export function getAuth() {
     return authInstance;
   }
 
-  // CRITICAL: Skip database initialization during build and client-side
-  // Check multiple indicators that we're in build mode or client-side
-  const isBuildOrClient =
+  // CRITICAL: Skip database initialization during build time
+  // We only skip during build phases, not at runtime
+  const isBuildPhase =
     process.env.NEXT_PHASE === 'phase-production-build' ||
-    process.env.NEXT_PHASE === 'phase-export' ||
-    typeof window !== 'undefined'; // Client-side check
+    process.env.NEXT_PHASE === 'phase-export';
 
-  // Initialize only at server-side runtime (never during build or on client)
+  // Initialize auth (database only enabled during runtime, not build)
   authInstance = betterAuth({
-    database: !isBuildOrClient && process.env.DATABASE_URL ? {
+    database: !isBuildPhase && process.env.DATABASE_URL ? {
       provider: "postgres",
       url: process.env.DATABASE_URL,
     } : undefined,
