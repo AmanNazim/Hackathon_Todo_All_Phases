@@ -8,6 +8,10 @@ import { apiClient } from '@/lib/api';
 import { useQueryClient } from '@/providers/query-client-provider';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export default function StatisticsPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);

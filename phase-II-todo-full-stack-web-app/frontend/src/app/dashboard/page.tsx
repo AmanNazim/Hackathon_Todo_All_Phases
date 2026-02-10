@@ -8,6 +8,10 @@ import { useQueryClient } from '@/providers/query-client-provider';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { usePathname } from 'next/navigation';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export default function DashboardPage() {
   const pathname = usePathname();
   const [tasks, setTasks] = useState<Task[]>([]);

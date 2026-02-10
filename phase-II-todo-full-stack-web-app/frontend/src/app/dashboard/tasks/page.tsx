@@ -9,6 +9,10 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { TaskCard } from '@/components/tasks/TaskCard';
 import { TaskForm } from '@/components/tasks/TaskForm';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export default function TasksPage() {
   const { tasks, loading, error, fetchTasks } = useTasks();
   const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
