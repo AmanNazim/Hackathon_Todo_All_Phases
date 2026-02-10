@@ -3,7 +3,7 @@
 # Core Framework
 sqlmodel==0.0.14
 sqlalchemy[asyncio]==2.0.25
-asyncpg==0.29.0
+asyncpg>=0.30.0
 
 # Database Migrations
 alembic==1.13.1

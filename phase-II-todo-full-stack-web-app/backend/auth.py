@@ -1,5 +1,6 @@
 """
 Authentication utilities for the Todo application.
+Integrates with Better Auth JWT tokens from the frontend.
 """
 
 from datetime import datetime, timedelta
@@ -17,10 +18,12 @@ load_dotenv()
 # Initialize password hashing context
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# Initialize JWT settings
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-change-in-production")
+# Initialize JWT settings for Better Auth integration
+BETTER_AUTH_SECRET = os.getenv("BETTER_AUTH_SECRET", "")
+if not BETTER_AUTH_SECRET:
+    raise ValueError("BETTER_AUTH_SECRET environment variable is required")
+
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 security = HTTPBearer()
 
@@ -57,31 +60,9 @@ def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
-    """
-    Create an access token with the provided data.
-
-    Args:
-        data: The data to encode in the token
-        expires_delta: Optional expiration time for the token
-
-    Returns:
-        Encoded JWT token
-    """
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
-
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
-
-
 def verify_token(token: str) -> Optional[TokenData]:
     """
-    Verify and decode a JWT token.
+    Verify and decode a Better Auth JWT token.
 
     Args:
         token: The JWT token to verify
@@ -90,11 +71,14 @@ def verify_token(token: str) -> Optional[TokenData]:
         TokenData if valid, None if invalid
     """
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: str = payload.get("user_id")
-        email: str = payload.get("email")
+        payload = jwt.decode(token, BETTER_AUTH_SECRET, algorithms=[ALGORITHM])
 
-        if user_id is None or email is None:
+        # Better Auth tokens may use different field names
+        # Try multiple possible field names for user ID
+        user_id = payload.get("sub") or payload.get("userId") or payload.get("id") or payload.get("user_id")
+        email = payload.get("email")
+
+        if user_id is None:
             return None
 
         token_data = TokenData(user_id=str(user_id), email=email)

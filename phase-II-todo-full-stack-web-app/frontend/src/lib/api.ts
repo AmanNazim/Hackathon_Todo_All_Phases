@@ -1,18 +1,18 @@
 import { AuthResponse, Task, User, LoginCredentials, RegisterCredentials, ApiResponse } from '../types';
+import { authClient } from './auth-client';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 class ApiClient {
-  private getToken(): string | null {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('auth-token');
-    }
-    return null;
+  private async getToken(): Promise<string | null> {
+    // Get token from Better Auth session
+    const session = await authClient.getSession();
+    return session.data?.session?.token || null;
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
     const url = `${API_BASE_URL}${endpoint}`;
-    const token = this.getToken();
+    const token = await this.getToken();
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -48,31 +48,6 @@ class ApiClient {
         status: 500,
       };
     }
-  }
-
-  // Authentication methods
-  async login(credentials: LoginCredentials): Promise<ApiResponse<AuthResponse>> {
-    return this.request<AuthResponse>('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify(credentials),
-    });
-  }
-
-  async register(credentials: RegisterCredentials): Promise<ApiResponse<AuthResponse>> {
-    return this.request<AuthResponse>('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify(credentials),
-    });
-  }
-
-  async logout(): Promise<ApiResponse<void>> {
-    return this.request('/auth/logout', {
-      method: 'POST',
-    });
-  }
-
-  async getCurrentUser(): Promise<ApiResponse<User>> {
-    return this.request<User>('/auth/me');
   }
 
   // Task methods
