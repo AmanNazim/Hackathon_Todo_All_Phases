@@ -75,9 +75,22 @@ export const CustomQueryClientProvider: React.FC<{ children: ReactNode }> = ({ c
 
 export const useQueryClient = (): CustomQueryClientContextType => {
   const context = useContext(CustomQueryClientContext);
+
+  // During SSR/build time, return a no-op implementation
   if (context === undefined) {
+    if (typeof window === 'undefined') {
+      // Server-side: return no-op functions
+      return {
+        get: () => undefined,
+        set: () => {},
+        invalidate: () => {},
+        clear: () => {},
+      };
+    }
+    // Client-side: this is an actual error
     throw new Error('useQueryClient must be used within a CustomQueryClientProvider');
   }
+
   return context;
 };
 
