@@ -10,9 +10,16 @@ export function getAuth() {
     return authInstance;
   }
 
+  // CRITICAL: Skip database initialization during build
+  // Check multiple indicators that we're in build mode
+  const isBuild =
+    process.env.NEXT_PHASE === 'phase-production-build' ||
+    process.env.NEXT_PHASE === 'phase-export' ||
+    !process.env.DATABASE_URL;
+
   // Initialize only at runtime (never during build)
   authInstance = betterAuth({
-    database: process.env.DATABASE_URL ? {
+    database: !isBuild && process.env.DATABASE_URL ? {
       provider: "postgres",
       url: process.env.DATABASE_URL,
     } : undefined,
