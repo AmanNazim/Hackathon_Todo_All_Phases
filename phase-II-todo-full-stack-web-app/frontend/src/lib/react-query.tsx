@@ -10,20 +10,20 @@ import {
 } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
-// Create a client
-export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
-
-// Provider component
+// Provider component - create QueryClient inside component for Next.js App Router
 export function ReactQueryProvider({ children }: { children: React.ReactNode }) {
+  // Create a new QueryClient instance for each request (Next.js App Router pattern)
+  const [queryClient] = React.useState(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 5 * 60 * 1000, // 5 minutes
+        gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+        retry: 1,
+        refetchOnWindowFocus: false,
+      },
+    },
+  }));
+
   return (
     <QueryClientProvider client={queryClient}>
       {children}
@@ -312,8 +312,8 @@ export function useCreateTemplate() {
   });
 }
 
-// Prefetch utilities
-export function prefetchTasks(filters?: any) {
+// Prefetch utilities - these should be called from within components that have access to queryClient
+export function prefetchTasks(queryClient: QueryClient, filters?: any) {
   return queryClient.prefetchQuery({
     queryKey: ['tasks', filters],
     queryFn: () => {
@@ -324,7 +324,7 @@ export function prefetchTasks(filters?: any) {
   });
 }
 
-export function prefetchTask(taskId: string) {
+export function prefetchTask(queryClient: QueryClient, taskId: string) {
   return queryClient.prefetchQuery({
     queryKey: ['tasks', taskId],
     queryFn: () => fetchAPI(`/api/tasks/${taskId}`),
