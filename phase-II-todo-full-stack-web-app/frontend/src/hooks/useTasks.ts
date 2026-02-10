@@ -1,46 +1,28 @@
 import { useState, useEffect } from 'react';
 import { Task, TaskFilters } from '@/types';
 import { apiClient } from '@/lib/api';
-import { useQueryClient } from '@/providers/query-client-provider';
 import { useToast } from '@/providers/toast-provider';
 
 export const useTasks = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
 
-  // Only access context after mount
-  const queryClient = mounted ? useQueryClient() : null;
   const { addToast } = useToast();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Fetch all tasks
   const fetchTasks = async () => {
-    if (!mounted) return;
-
     try {
       setLoading(true);
       setError(null);
 
-      // Check if data is in cache
-      const cachedTasks = queryClient?.get<Task[]>('tasks');
-      if (cachedTasks) {
-        setTasks(cachedTasks);
+      const response = await apiClient.getTasks();
+      if (response.data) {
+        setTasks(response.data);
       } else {
-        // Fetch from API
-        const response = await apiClient.getTasks();
-        if (response.data) {
-          setTasks(response.data);
-          queryClient?.set('tasks', response.data, 5 * 60 * 1000); // Cache for 5 minutes
-        } else {
-          const errorMsg = response.error || 'Failed to fetch tasks';
-          setError(errorMsg);
-          addToast(errorMsg, 'error');
-        }
+        const errorMsg = response.error || 'Failed to fetch tasks';
+        setError(errorMsg);
+        addToast(errorMsg, 'error');
       }
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'An unknown error occurred';
@@ -53,21 +35,14 @@ export const useTasks = () => {
 
   // Create a new task
   const createTask = async (taskData: Partial<Task>): Promise<Task | null> => {
-    if (!mounted) return null;
-
     try {
       setLoading(true);
       setError(null);
 
       const response = await apiClient.createTask(taskData);
       if (response.data) {
-        // Update local state and cache
         const newTask = response.data;
         setTasks(prev => [...prev, newTask]);
-
-        // Update cache
-        queryClient?.set('tasks', [...tasks, newTask], 5 * 60 * 1000);
-
         addToast('Task created successfully!', 'success');
         return newTask;
       } else {
@@ -88,25 +63,17 @@ export const useTasks = () => {
 
   // Update a task
   const updateTask = async (id: string, taskData: Partial<Task>): Promise<Task | null> => {
-    if (!mounted) return null;
-
     try {
       setLoading(true);
       setError(null);
 
       const response = await apiClient.updateTask(id, taskData);
       if (response.data) {
-        // Update local state and cache
         const updatedTask = response.data;
         const updatedTasks = tasks.map(task =>
           task.id === id ? updatedTask : task
         );
-
         setTasks(updatedTasks);
-
-        // Update cache
-        queryClient?.set('tasks', updatedTasks, 5 * 60 * 1000);
-
         addToast('Task updated successfully!', 'success');
         return updatedTask;
       } else {
@@ -127,13 +94,10 @@ export const useTasks = () => {
 
   // Toggle task completion status
   const toggleTaskStatus = async (id: string): Promise<Task | null> => {
-    if (!mounted) return null;
-
     try {
       setLoading(true);
       setError(null);
 
-      // Find the current task
       const currentTask = tasks.find(task => task.id === id);
       if (!currentTask) {
         const errorMsg = 'Task not found';
@@ -144,17 +108,11 @@ export const useTasks = () => {
 
       const response = await apiClient.updateTaskStatus(id, !currentTask.completed);
       if (response.data) {
-        // Update local state and cache
         const updatedTask = response.data;
         const updatedTasks = tasks.map(task =>
           task.id === id ? updatedTask : task
         );
-
         setTasks(updatedTasks);
-
-        // Update cache
-        queryClient?.set('tasks', updatedTasks, 5 * 60 * 1000);
-
         addToast(`Task marked as ${!currentTask.completed ? 'completed' : 'incomplete'}!`, 'success');
         return updatedTask;
       } else {
@@ -175,21 +133,14 @@ export const useTasks = () => {
 
   // Delete a task
   const deleteTask = async (id: string): Promise<boolean> => {
-    if (!mounted) return false;
-
     try {
       setLoading(true);
       setError(null);
 
       const response = await apiClient.deleteTask(id);
       if (response.status === 200) {
-        // Update local state and cache
         const updatedTasks = tasks.filter(task => task.id !== id);
         setTasks(updatedTasks);
-
-        // Update cache
-        queryClient?.set('tasks', updatedTasks, 5 * 60 * 1000);
-
         addToast('Task deleted successfully!', 'success');
         return true;
       } else {

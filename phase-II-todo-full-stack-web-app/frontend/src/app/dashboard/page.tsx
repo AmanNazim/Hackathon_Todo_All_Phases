@@ -4,19 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Task } from '@/types';
 import { apiClient } from '@/lib/api';
-import { useQueryClient } from '@/providers/query-client-provider';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import { usePathname } from 'next/navigation';
-
-// Force dynamic rendering
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
 
 export default function DashboardPage() {
-  const pathname = usePathname();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
-  const [mounted, setMounted] = useState(false);
   const [stats, setStats] = useState({
     total: 0,
     completed: 0,
@@ -24,31 +16,13 @@ export default function DashboardPage() {
     overdue: 0
   });
 
-  // Only access context after mount
-  const queryClient = mounted ? useQueryClient() : null;
-
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!mounted) return;
-
     const fetchDashboardData = async () => {
       try {
-        // Check if data is in cache
-        const cachedTasks = queryClient?.get<Task[]>('tasks');
-        if (cachedTasks) {
-          setTasks(cachedTasks);
-          calculateStats(cachedTasks);
-        } else {
-          // Fetch from API
-          const response = await apiClient.getTasks();
-          if (response.data) {
-            setTasks(response.data);
-            queryClient?.set('tasks', response.data, 5 * 60 * 1000); // Cache for 5 minutes
-            calculateStats(response.data);
-          }
+        const response = await apiClient.getTasks();
+        if (response.data) {
+          setTasks(response.data);
+          calculateStats(response.data);
         }
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
@@ -58,7 +32,7 @@ export default function DashboardPage() {
     };
 
     fetchDashboardData();
-  }, [mounted]);
+  }, []);
 
   const calculateStats = (tasks: Task[]) => {
     const total = tasks.length;
