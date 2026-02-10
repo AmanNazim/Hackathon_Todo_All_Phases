@@ -7,12 +7,10 @@ Handles chat interactions using OpenAI Agents SDK.
 from typing import Dict, Optional
 from uuid import UUID
 from datetime import datetime
-from src.agent_sdk import (
-    create_task_agent,
-    get_or_create_session,
-    create_function_tools,
-    run_agent
-)
+from src.agent_sdk.agent_service import create_task_agent
+from src.agent_sdk.session_service import get_or_create_session
+from src.agent_sdk.tool_adapter import create_function_tools
+from src.agent_sdk.runner_service import run_agent
 
 
 class ChatService:

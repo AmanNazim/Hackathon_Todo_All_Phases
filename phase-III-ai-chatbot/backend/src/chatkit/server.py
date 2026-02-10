@@ -6,12 +6,10 @@ ChatKitServer implementation that bridges Agent SDK with ChatKit interface.
 
 from typing import AsyncIterator, Dict, Any, Optional
 from uuid import UUID
-from src.agent_sdk import (
-    create_task_agent,
-    get_or_create_session,
-    create_function_tools,
-    run_agent_streamed
-)
+from src.agent_sdk.agent_service import create_task_agent
+from src.agent_sdk.session_service import get_or_create_session
+from src.agent_sdk.tool_adapter import create_function_tools
+from src.agent_sdk.runner_service import run_agent_streamed
 from .events import convert_to_chatkit_event, convert_text_event
 from .actions import (
     handle_complete_task,

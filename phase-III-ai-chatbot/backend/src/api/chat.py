@@ -5,12 +5,10 @@ from fastapi.responses import StreamingResponse
 from src.schemas.chat import ChatRequest, ChatResponse
 from src.services.chat_service import ChatService
 from src.api.dependencies import get_current_user
-from src.agent_sdk import (
-    create_task_agent,
-    get_or_create_session,
-    create_function_tools,
-    run_agent_streamed
-)
+from src.agent_sdk.agent_service import create_task_agent
+from src.agent_sdk.session_service import get_or_create_session
+from src.agent_sdk.tool_adapter import create_function_tools
+from src.agent_sdk.runner_service import run_agent_streamed
 from datetime import datetime
 import json
 
