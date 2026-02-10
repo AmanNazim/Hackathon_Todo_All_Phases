@@ -1,93 +1,31 @@
 """
 Database models for the Todo application using SQLModel.
+
+Note: User authentication is handled by Better Auth on the frontend.
+The backend only references Better Auth's user table via user_id (TEXT).
 """
 
 from datetime import datetime
 from typing import Optional, List
 from uuid import UUID, uuid4
-from sqlmodel import SQLModel, Field, Relationship, Column
+from sqlmodel import SQLModel, Field, Column, Relationship
 from sqlalchemy import JSON
 from pydantic import BaseModel, EmailStr
 
 
-class UserBase(SQLModel):
-    """Base model for user with common attributes."""
-    email: EmailStr = Field(unique=True, nullable=False, index=True)
-    first_name: str = Field(max_length=100, nullable=False)
-    last_name: str = Field(max_length=100, nullable=False)
-    display_name: Optional[str] = Field(default=None, max_length=100)
-    bio: Optional[str] = Field(default=None, max_length=500)
-    avatar_url: Optional[str] = Field(default=None, max_length=500)
-    avatar_thumbnail_url: Optional[str] = Field(default=None, max_length=500)
-    is_active: bool = Field(default=True, nullable=False)
-    email_verified: bool = Field(default=False, nullable=False)
-
-
-class User(UserBase, table=True):
-    """User model representing application users."""
-    __tablename__ = "users"
-
-    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
-    password_hash: str = Field(nullable=False)
-    last_login_at: Optional[datetime] = Field(default=None)
-    created_at: datetime = Field(default_factory=datetime.utcnow, nullable=False, index=True)
-    updated_at: datetime = Field(default_factory=datetime.utcnow, nullable=False, index=True)
-
-    # Relationship to tasks
-    tasks: List["Task"] = Relationship(back_populates="user", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
-
-
-class UserCreate(BaseModel):
-    """Model for creating new users."""
-    email: EmailStr
-    first_name: str
-    last_name: str
-    password: str
-
-
-class UserRead(UserBase):
-    """Model for reading user data."""
-    id: UUID
-    last_login_at: Optional[datetime]
-    created_at: datetime
-    updated_at: datetime
-
-
-class ProfileRead(BaseModel):
-    """Model for reading user profile data."""
-    id: UUID
-    email: EmailStr
-    first_name: str
-    last_name: str
-    display_name: Optional[str]
-    bio: Optional[str]
-    avatar_url: Optional[str]
-    avatar_thumbnail_url: Optional[str]
-    email_verified: bool
-    is_active: bool
-    last_login_at: Optional[datetime]
-    created_at: datetime
-    updated_at: datetime
+# User profile models (for API responses only - Better Auth manages actual users)
+class UserRead(BaseModel):
+    """Model for reading user data from Better Auth."""
+    id: str  # Better Auth uses TEXT for user IDs
+    email: str
+    name: Optional[str]
+    emailVerified: bool
+    image: Optional[str]
+    createdAt: datetime
+    updatedAt: datetime
 
     class Config:
         from_attributes = True
-
-
-class ProfileUpdate(BaseModel):
-    """Model for updating user profile data."""
-    first_name: Optional[str] = Field(default=None, min_length=1, max_length=100)
-    last_name: Optional[str] = Field(default=None, min_length=1, max_length=100)
-    display_name: Optional[str] = Field(default=None, min_length=1, max_length=100)
-    bio: Optional[str] = Field(default=None, max_length=500)
-
-
-class UserUpdate(SQLModel):
-    """Model for updating user data."""
-    email: Optional[EmailStr] = None
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    password: Optional[str] = None
-    is_active: Optional[bool] = None
 
 
 class TaskBase(SQLModel):
@@ -116,14 +54,12 @@ class Task(TaskBase, table=True):
     __tablename__ = "tasks"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
-    user_id: UUID = Field(foreign_key="users.id", nullable=False, index=True)
+    user_id: str = Field(foreign_key="user.id", nullable=False, index=True)  # References Better Auth's user table
     deleted: bool = Field(default=False, nullable=False, index=True)
     deleted_at: Optional[datetime] = Field(default=None)
     created_at: datetime = Field(default_factory=datetime.utcnow, nullable=False, index=True)
     updated_at: datetime = Field(default_factory=datetime.utcnow, nullable=False, index=True)
 
-    # Relationship to user
-    user: Optional[User] = Relationship(back_populates="tasks")
     # Relationship to tags
     tags: List["TaskTag"] = Relationship(back_populates="task", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
 
@@ -136,7 +72,7 @@ class TaskCreate(TaskBase):
 class TaskRead(TaskBase):
     """Model for reading task data."""
     id: UUID
-    user_id: UUID
+    user_id: str  # Better Auth uses TEXT for user IDs
     created_at: datetime
     updated_at: datetime
 
@@ -161,7 +97,7 @@ class PasswordResetToken(SQLModel, table=True):
     __tablename__ = "password_reset_tokens"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
-    user_id: UUID = Field(foreign_key="users.id", nullable=False, index=True)
+    user_id: str = Field(foreign_key="user.id", nullable=False, index=True)  # References Better Auth's user table
     token_hash: str = Field(nullable=False)
     expires_at: datetime = Field(nullable=False, index=True)
     used: bool = Field(default=False, nullable=False)
@@ -173,7 +109,7 @@ class EmailVerificationToken(SQLModel, table=True):
     __tablename__ = "email_verification_tokens"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
-    user_id: UUID = Field(foreign_key="users.id", nullable=False, index=True)
+    user_id: str = Field(foreign_key="user.id", nullable=False, index=True)  # References Better Auth's user table
     token_hash: str = Field(nullable=False)
     expires_at: datetime = Field(nullable=False, index=True)
     created_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
@@ -184,7 +120,7 @@ class DailyAnalytics(SQLModel, table=True):
     __tablename__ = "daily_analytics"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
-    user_id: UUID = Field(foreign_key="users.id", nullable=False, index=True)
+    user_id: str = Field(foreign_key="user.id", nullable=False, index=True)  # References Better Auth's user table
     date: datetime = Field(nullable=False, index=True)
     tasks_created: int = Field(default=0, nullable=False)
     tasks_completed: int = Field(default=0, nullable=False)
@@ -199,7 +135,7 @@ class AnalyticsCache(SQLModel, table=True):
     __tablename__ = "analytics_cache"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
-    user_id: UUID = Field(foreign_key="users.id", nullable=False, index=True)
+    user_id: str = Field(foreign_key="user.id", nullable=False, index=True)  # References Better Auth's user table
     metric_name: str = Field(max_length=100, nullable=False, index=True)
     metric_value: dict = Field(sa_column=Column(JSON, nullable=False))
     expires_at: datetime = Field(nullable=False, index=True)
@@ -225,7 +161,7 @@ class TaskHistory(SQLModel, table=True):
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
     task_id: UUID = Field(foreign_key="tasks.id", nullable=False, index=True)
-    user_id: UUID = Field(foreign_key="users.id", nullable=False)
+    user_id: str = Field(foreign_key="user.id", nullable=False)  # References Better Auth's user table
     change_type: str = Field(max_length=50, nullable=False)
     old_value: Optional[dict] = Field(default=None, sa_column=Column(JSON))
     new_value: Optional[dict] = Field(default=None, sa_column=Column(JSON))
@@ -244,7 +180,7 @@ class TaskHistoryRead(BaseModel):
     """Model for reading task history data."""
     id: UUID
     task_id: UUID
-    user_id: UUID
+    user_id: str  # Better Auth uses TEXT for user IDs
     change_type: str
     old_value: Optional[dict]
     new_value: Optional[dict]
