@@ -1,11 +1,15 @@
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
 
-// Skip database initialization during build time
-const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build';
+// Skip database initialization during build time or when DATABASE_URL is not set
+// This prevents "Failed to initialize database adapter" error during Vercel builds
+const shouldInitializeDatabase =
+  typeof window === 'undefined' && // Server-side only
+  process.env.DATABASE_URL && // Database URL is set
+  process.env.NODE_ENV !== 'test'; // Not in test environment
 
 export const auth = betterAuth({
-  database: !isBuildTime && process.env.DATABASE_URL ? {
+  database: shouldInitializeDatabase ? {
     provider: "postgres",
     url: process.env.DATABASE_URL,
   } : undefined,
