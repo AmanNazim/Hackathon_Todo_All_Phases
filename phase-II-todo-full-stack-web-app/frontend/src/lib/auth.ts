@@ -1,8 +1,11 @@
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
 
+// Skip database initialization during build time
+const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build';
+
 export const auth = betterAuth({
-  database: process.env.DATABASE_URL ? {
+  database: !isBuildTime && process.env.DATABASE_URL ? {
     provider: "postgres",
     url: process.env.DATABASE_URL,
   } : undefined,
