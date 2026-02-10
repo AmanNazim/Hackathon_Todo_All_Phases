@@ -21,6 +21,7 @@ export function getAuth() {
     database: !isBuildPhase && process.env.DATABASE_URL ? {
       provider: "postgres",
       url: process.env.DATABASE_URL,
+      autoMigrate: true, // Enable automatic table creation/migration
     } : undefined,
     emailAndPassword: {
       enabled: true,
