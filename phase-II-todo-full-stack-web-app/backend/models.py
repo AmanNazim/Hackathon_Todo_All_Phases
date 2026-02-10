@@ -30,6 +30,10 @@ class BetterAuthUser(SQLModel, table=True):
     updatedAt: datetime = Field(default_factory=datetime.utcnow)
 
 
+# Alias for backward compatibility with existing code
+User = BetterAuthUser
+
+
 class BetterAuthSession(SQLModel, table=True):
     """Better Auth session table - created by SQLModel."""
     __tablename__ = "session"
