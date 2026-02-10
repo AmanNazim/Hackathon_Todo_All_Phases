@@ -4,7 +4,7 @@ Tool Adapter
 Converts MCP tools to OpenAI Agents SDK function tools with user_id context injection.
 """
 
-from agents.decorators import function_tool
+from agents import function_tool
 from typing import List, Optional, Dict
 from src.services.task_service import TaskService
 

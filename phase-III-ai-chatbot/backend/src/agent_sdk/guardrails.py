@@ -4,8 +4,7 @@ Guardrails
 Input and output validation guardrails for safety and quality.
 """
 
-from agents.decorators import input_guardrail, output_guardrail
-from agents.types import GuardrailFunctionOutput
+from agents import input_guardrail, output_guardrail, GuardrailFunctionOutput
 from typing import Any
 
 
