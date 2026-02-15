@@ -29,8 +29,11 @@ export function getAuth() {
       }
     });
 
+    // Create Drizzle instance from the pool
+    const db = drizzle(pool);
+
     authInstance = betterAuth({
-      adapter: drizzleAdapter(pool, { provider: "pg" }), // Use drizzle adapter with PostgreSQL pool
+      adapter: drizzleAdapter(db, { provider: "pg" }), // Use drizzle adapter with Drizzle instance
       emailAndPassword: {
         enabled: true,
         requireEmailVerification: false,
