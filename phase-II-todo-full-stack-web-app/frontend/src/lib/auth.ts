@@ -1,8 +1,8 @@
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { Pool } from "pg";
-import { drizzle } from "drizzle-orm/node-postgres";
+import { neon, neonConfig } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
 
 // Lazy initialization - auth instance is created ONLY when getAuth() is called
 let authInstance: ReturnType<typeof betterAuth> | null = null;
@@ -21,16 +21,12 @@ export function getAuth() {
 
   // Initialize auth (database only enabled during runtime, not build)
   if (!isBuildPhase && process.env.DATABASE_URL) {
-    // Create a PostgreSQL pool for Neon compatibility
-    const pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
-      ssl: {
-        rejectUnauthorized: false // Required for Neon
-      }
-    });
+    // Configure Neon for serverless compatibility
+    neonConfig.fetchConnectionCache = true;
 
-    // Create Drizzle instance from the pool
-    const db = drizzle(pool);
+    // Create Neon HTTP client
+    const sql = neon(process.env.DATABASE_URL);
+    const db = drizzle(sql);
 
     authInstance = betterAuth({
       adapter: drizzleAdapter(db, { provider: "pg" }), // Use drizzle adapter with Drizzle instance
