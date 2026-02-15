@@ -9,20 +9,25 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "next": "16.1.6",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "date-fns": "^2.29.3",
-    "better-auth": "^1.0.0",
+    "@neondatabase/serverless": "^1.0.2",
     "@tanstack/react-query": "^5.0.0",
-    "@tanstack/react-query-devtools": "^5.0.0"
+    "@tanstack/react-query-devtools": "^5.0.0",
+    "better-auth": "^1.0.0",
+    "date-fns": "^2.29.3",
+    "dotenv": "^17.2.4",
+    "drizzle-kit": "^0.31.9",
+    "drizzle-orm": "^0.45.1",
+    "next": "16.1.6",
+    "pg": "^8.18.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/date-fns": "^2.6.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@types/date-fns": "^2.6.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
