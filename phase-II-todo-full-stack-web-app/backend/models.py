@@ -14,12 +14,13 @@ from pydantic import BaseModel, EmailStr
 
 
 # ============================================================================
-# Better Auth Tables (Created by SQLModel)
+# Better Auth Tables (Created by Better Auth - referenced by SQLModel)
 # ============================================================================
 
-class BetterAuthUser(SQLModel, table=True):
-    """Better Auth user table - created by SQLModel."""
+class BetterAuthUser(SQLModel):
+    """Better Auth user table reference - managed by Better Auth."""
     __tablename__ = "user"
+    # This is only for reference purposes for foreign keys, not for table creation
 
     id: str = Field(sa_column=Column(Text, primary_key=True))
     email: str = Field(sa_column=Column(Text, nullable=False, unique=True))
@@ -31,12 +32,14 @@ class BetterAuthUser(SQLModel, table=True):
 
 
 # Alias for backward compatibility with existing code
+# Using the BetterAuthUser reference (not creating table, just for type hinting)
 User = BetterAuthUser
 
 
-class BetterAuthSession(SQLModel, table=True):
-    """Better Auth session table - created by SQLModel."""
+class BetterAuthSession(SQLModel):
+    """Better Auth session table reference - managed by Better Auth."""
     __tablename__ = "session"
+    # This is only for reference purposes for foreign keys, not for table creation
 
     id: str = Field(sa_column=Column(Text, primary_key=True))
     userId: str = Field(sa_column=Column(Text, ForeignKey("user.id"), nullable=False, index=True))
@@ -48,9 +51,10 @@ class BetterAuthSession(SQLModel, table=True):
     updatedAt: datetime = Field(default_factory=datetime.utcnow)
 
 
-class BetterAuthAccount(SQLModel, table=True):
-    """Better Auth account table - created by SQLModel."""
+class BetterAuthAccount(SQLModel):
+    """Better Auth account table reference - managed by Better Auth."""
     __tablename__ = "account"
+    # This is only for reference purposes for foreign keys, not for table creation
 
     id: str = Field(sa_column=Column(Text, primary_key=True))
     userId: str = Field(sa_column=Column(Text, ForeignKey("user.id"), nullable=False, index=True))
@@ -65,9 +69,10 @@ class BetterAuthAccount(SQLModel, table=True):
     updatedAt: datetime = Field(default_factory=datetime.utcnow)
 
 
-class BetterAuthVerification(SQLModel, table=True):
-    """Better Auth verification table - created by SQLModel."""
+class BetterAuthVerification(SQLModel):
+    """Better Auth verification table reference - managed by Better Auth."""
     __tablename__ = "verification"
+    # This is only for reference purposes for foreign keys, not for table creation
 
     id: str = Field(sa_column=Column(Text, primary_key=True))
     identifier: str = Field(sa_column=Column(Text, nullable=False, index=True))
