@@ -7,7 +7,7 @@ import { drizzle } from 'drizzle-orm/neon-http';
 // Lazy initialization - auth instance is created ONLY when getAuth() is called
 let authInstance: ReturnType<typeof betterAuth> | null = null;
 
-export function getAuth() {
+export async function getAuth() {
   // Return cached instance if already initialized
   if (authInstance) {
     return authInstance;
@@ -28,6 +28,7 @@ export function getAuth() {
     const sql = neon(process.env.DATABASE_URL);
     const db = drizzle(sql);
 
+    // Initialize Better Auth with the drizzle adapter
     authInstance = betterAuth({
       adapter: drizzleAdapter(db, {
         provider: "pg",
@@ -47,6 +48,9 @@ export function getAuth() {
         process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
       ],
     });
+
+    // For debugging: Log that initialization occurred
+    console.log("Better Auth initialized with database connection");
   } else {
     // Initialize without database for build phases
     authInstance = betterAuth({
@@ -65,6 +69,9 @@ export function getAuth() {
         process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
       ],
     });
+
+    // For debugging: Log that initialization occurred without DB
+    console.log("Better Auth initialized without database (build phase)");
   }
 
   return authInstance;
