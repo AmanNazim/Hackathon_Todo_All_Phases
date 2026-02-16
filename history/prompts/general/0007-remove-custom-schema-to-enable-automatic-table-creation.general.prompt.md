@@ -4,7 +4,7 @@ title: remove-custom-schema-to-enable-automatic-table-creation
 stage: general
 date: 2026-02-16
 surface: agent
-model: if/qwen3-coder-plus[1m]
+model: claude-opus-4-6
 feature: none
 branch: main
 user: Claude Code
