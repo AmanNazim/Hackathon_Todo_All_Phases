@@ -62,20 +62,27 @@ async def get_async_session():
 
 
 def create_db_and_tables():
-    """Create all database tables (excluding Better Auth tables which are managed by Better Auth)."""
-    # Create only application-specific tables, not Better Auth tables
-    # Better Auth tables (user, session, account, verification) are managed by Better Auth itself
+    """Create only application-specific database tables (Better Auth tables are managed by Better Auth)."""
     application_tables = []
+
+    # Get all table names that SQLModel knows about
+    all_table_names = [table.name for table in SQLModel.metadata.tables.values()]
+    print(f"SQLModel knows about these tables: {all_table_names}")
+
     for table in SQLModel.metadata.tables.values():
-        # Skip Better Auth core tables since they're managed by Better Auth
-        # But we still need to create password_reset_tokens and email_verification_tokens which depend on Better Auth's user table
+        # Only create application-specific tables, not Better Auth tables
+        # Better Auth manages: user, session, account, verification tables
+        # Application tables that depend on Better Auth user table: password_reset_tokens, email_verification_tokens, tasks, etc.
         if table.name not in ['user', 'session', 'account', 'verification']:
+            print(f"Will create application table: {table.name}")
             application_tables.append(table)
+        else:
+            print(f"Skipping Better Auth table: {table.name} (Better Auth will manage this)")
 
     # Create only the application-specific tables
-    from sqlalchemy.schema import CreateTable
     for table in application_tables:
         table.create(engine, checkfirst=True)
+        print(f"Created/verified application table: {table.name}")
 
 
 async def create_db_and_tables_async():
