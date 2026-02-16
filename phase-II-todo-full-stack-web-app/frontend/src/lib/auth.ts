@@ -31,18 +31,6 @@ export function getAuth() {
     authInstance = betterAuth({
       adapter: drizzleAdapter(db, {
         provider: "pg",
-        schema: { // Define custom schema configuration for Neon compatibility
-          user: {
-            id: {
-              type: "string",
-              primary: true,
-            },
-            email: {
-              type: "string",
-              unique: true,
-            },
-          },
-        },
       }), // Use drizzle adapter with Drizzle instance
       emailAndPassword: {
         enabled: true,
