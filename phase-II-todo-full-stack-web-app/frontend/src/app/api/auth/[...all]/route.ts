@@ -7,14 +7,12 @@ export const runtime = 'nodejs';
 // Lazy handlers - getAuth() is only called when request actually comes in
 export async function GET(request: Request) {
   const { getAuth } = await import("@/lib/auth");
-  const auth = await getAuth();
-  const handler = toNextJsHandler(auth);
+  const handler = toNextJsHandler(getAuth());
   return handler.GET(request);
 }
 
 export async function POST(request: Request) {
   const { getAuth } = await import("@/lib/auth");
-  const auth = await getAuth();
-  const handler = toNextJsHandler(auth);
+  const handler = toNextJsHandler(getAuth());
   return handler.POST(request);
 }

@@ -1,13 +1,10 @@
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { neon, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-http';
 
 // Lazy initialization - auth instance is created ONLY when getAuth() is called
 let authInstance: ReturnType<typeof betterAuth> | null = null;
 
-export async function getAuth() {
+export function getAuth() {
   // Return cached instance if already initialized
   if (authInstance) {
     return authInstance;
@@ -21,20 +18,13 @@ export async function getAuth() {
 
   // Initialize auth (database only enabled during runtime, not build)
   if (!isBuildPhase && process.env.DATABASE_URL) {
-    // Configure Neon for serverless compatibility
-    neonConfig.fetchConnectionCache = true;
-
-    // Create Neon HTTP client
-    const sql = neon(process.env.DATABASE_URL);
-    const db = drizzle(sql);
-
-    console.log("Better Auth: Creating drizzle adapter with database connection");
-
-    // Initialize Better Auth with the drizzle adapter
+    // Initialize Better Auth with direct database configuration
     authInstance = betterAuth({
-      adapter: drizzleAdapter(db, {
-        provider: "pg",
-      }), // Use drizzle adapter with Drizzle instance
+      database: {
+        provider: "postgresql", // Use direct PostgreSQL connection
+        url: process.env.DATABASE_URL,
+        autoMigrate: true, // Enable automatic table creation/migration
+      },
       emailAndPassword: {
         enabled: true,
         requireEmailVerification: false,
@@ -52,7 +42,7 @@ export async function getAuth() {
     });
 
     // For debugging: Log that initialization occurred
-    console.log("Better Auth initialized with drizzle adapter database connection");
+    console.log("Better Auth initialized with direct database connection");
   } else {
     // Initialize without database for build phases
     authInstance = betterAuth({
