@@ -3,6 +3,7 @@ import { nextCookies } from "better-auth/next-js";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { neon, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
+import { users, sessions, accounts, verifications } from './better-auth-schema';
 
 // Lazy initialization - auth instance is created ONLY when getAuth() is called
 let authInstance: ReturnType<typeof betterAuth> | null = null;
@@ -35,6 +36,7 @@ export async function getAuth() {
       authInstance = betterAuth({
         adapter: drizzleAdapter(db, {
           provider: "pg",
+          schema: { users, sessions, accounts, verifications }, // Explicitly pass the schema
         }), // Use drizzle adapter with Drizzle instance
         emailAndPassword: {
           enabled: true,
