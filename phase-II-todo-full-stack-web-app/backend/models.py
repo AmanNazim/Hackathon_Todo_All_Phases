@@ -16,11 +16,12 @@ from pydantic import BaseModel, EmailStr
 # ============================================================================
 # Better Auth Tables (Created by Better Auth - referenced by SQLModel)
 # ============================================================================
+# These classes are only used for type hints and foreign key references
+# They are not used to create tables since Better Auth manages these tables
 
-class BetterAuthUser(SQLModel):
+class BetterAuthUser(SQLModel, table=False):
     """Better Auth user table reference - managed by Better Auth."""
     __tablename__ = "user"
-    # This is only for reference purposes for foreign keys, not for table creation
 
     id: str = Field(sa_column=Column(Text, primary_key=True))
     email: str = Field(sa_column=Column(Text, nullable=False, unique=True))
@@ -32,17 +33,15 @@ class BetterAuthUser(SQLModel):
 
 
 # Alias for backward compatibility with existing code
-# Using the BetterAuthUser reference (not creating table, just for type hinting)
 User = BetterAuthUser
 
 
-class BetterAuthSession(SQLModel):
+class BetterAuthSession(SQLModel, table=False):
     """Better Auth session table reference - managed by Better Auth."""
     __tablename__ = "session"
-    # This is only for reference purposes for foreign keys, not for table creation
 
     id: str = Field(sa_column=Column(Text, primary_key=True))
-    userId: str = Field(sa_column=Column(Text, ForeignKey("user.id"), nullable=False, index=True))
+    userId: str = Field(sa_column=Column(Text, nullable=False, index=True))  # Foreign key reference only
     expiresAt: datetime
     token: str = Field(sa_column=Column(Text, nullable=False, unique=True))
     ipAddress: Optional[str] = Field(default=None, sa_column=Column(Text))
@@ -51,13 +50,12 @@ class BetterAuthSession(SQLModel):
     updatedAt: datetime = Field(default_factory=datetime.utcnow)
 
 
-class BetterAuthAccount(SQLModel):
+class BetterAuthAccount(SQLModel, table=False):
     """Better Auth account table reference - managed by Better Auth."""
     __tablename__ = "account"
-    # This is only for reference purposes for foreign keys, not for table creation
 
     id: str = Field(sa_column=Column(Text, primary_key=True))
-    userId: str = Field(sa_column=Column(Text, ForeignKey("user.id"), nullable=False, index=True))
+    userId: str = Field(sa_column=Column(Text, nullable=False, index=True))  # Foreign key reference only
     accountId: str = Field(sa_column=Column(Text, nullable=False))
     providerId: str = Field(sa_column=Column(Text, nullable=False))
     accessToken: Optional[str] = Field(default=None, sa_column=Column(Text))
@@ -69,10 +67,9 @@ class BetterAuthAccount(SQLModel):
     updatedAt: datetime = Field(default_factory=datetime.utcnow)
 
 
-class BetterAuthVerification(SQLModel):
+class BetterAuthVerification(SQLModel, table=False):
     """Better Auth verification table reference - managed by Better Auth."""
     __tablename__ = "verification"
-    # This is only for reference purposes for foreign keys, not for table creation
 
     id: str = Field(sa_column=Column(Text, primary_key=True))
     identifier: str = Field(sa_column=Column(Text, nullable=False, index=True))
@@ -150,7 +147,7 @@ class Task(TaskBase, table=True):
     __tablename__ = "tasks"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
-    user_id: str = Field(foreign_key="user.id", nullable=False, index=True)  # References Better Auth's user table
+    user_id: str = Field(nullable=False, index=True)  # References Better Auth's user table (no foreign key constraint)
     deleted: bool = Field(default=False, nullable=False, index=True)
     deleted_at: Optional[datetime] = Field(default=None)
     created_at: datetime = Field(default_factory=datetime.utcnow, nullable=False, index=True)
@@ -193,7 +190,7 @@ class PasswordResetToken(SQLModel, table=True):
     __tablename__ = "password_reset_tokens"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
-    user_id: str = Field(foreign_key="user.id", nullable=False, index=True)  # References Better Auth's user table
+    user_id: str = Field(nullable=False, index=True)  # References Better Auth's user table (no foreign key constraint)
     token_hash: str = Field(nullable=False)
     expires_at: datetime = Field(nullable=False, index=True)
     used: bool = Field(default=False, nullable=False)
@@ -205,7 +202,7 @@ class EmailVerificationToken(SQLModel, table=True):
     __tablename__ = "email_verification_tokens"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
-    user_id: str = Field(foreign_key="user.id", nullable=False, index=True)  # References Better Auth's user table
+    user_id: str = Field(nullable=False, index=True)  # References Better Auth's user table (no foreign key constraint)
     token_hash: str = Field(nullable=False)
     expires_at: datetime = Field(nullable=False, index=True)
     created_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
@@ -216,7 +213,7 @@ class DailyAnalytics(SQLModel, table=True):
     __tablename__ = "daily_analytics"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
-    user_id: str = Field(foreign_key="user.id", nullable=False, index=True)  # References Better Auth's user table
+    user_id: str = Field(nullable=False, index=True)  # References Better Auth's user table (no foreign key constraint)
     date: datetime = Field(nullable=False, index=True)
     tasks_created: int = Field(default=0, nullable=False)
     tasks_completed: int = Field(default=0, nullable=False)
@@ -231,7 +228,7 @@ class AnalyticsCache(SQLModel, table=True):
     __tablename__ = "analytics_cache"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
-    user_id: str = Field(foreign_key="user.id", nullable=False, index=True)  # References Better Auth's user table
+    user_id: str = Field(nullable=False, index=True)  # References Better Auth's user table (no foreign key constraint)
     metric_name: str = Field(max_length=100, nullable=False, index=True)
     metric_value: dict = Field(sa_column=Column(JSON, nullable=False))
     expires_at: datetime = Field(nullable=False, index=True)
@@ -256,8 +253,8 @@ class TaskHistory(SQLModel, table=True):
     __tablename__ = "task_history"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
-    task_id: UUID = Field(foreign_key="tasks.id", nullable=False, index=True)
-    user_id: str = Field(foreign_key="user.id", nullable=False)  # References Better Auth's user table
+    task_id: UUID = Field(foreign_key="tasks.id", nullable=False, index=True)  # This table is in the same model, so foreign key is OK
+    user_id: str = Field(nullable=False)  # References Better Auth's user table (no foreign key constraint)
     change_type: str = Field(max_length=50, nullable=False)
     old_value: Optional[dict] = Field(default=None, sa_column=Column(JSON))
     new_value: Optional[dict] = Field(default=None, sa_column=Column(JSON))
@@ -302,7 +299,7 @@ class UserPreferences(SQLModel, table=True):
     __tablename__ = "user_preferences"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
-    user_id: str = Field(foreign_key="user.id", nullable=False, unique=True, index=True)  # References Better Auth's user table
+    user_id: str = Field(nullable=False, unique=True, index=True)  # References Better Auth's user table (no foreign key constraint)
     theme: str = Field(default="system", nullable=False, regex="^(light|dark|system)$")
     language: str = Field(default="en", nullable=False, max_length=10)
     notifications: dict = Field(default_factory=dict, sa_column=Column(JSON))
