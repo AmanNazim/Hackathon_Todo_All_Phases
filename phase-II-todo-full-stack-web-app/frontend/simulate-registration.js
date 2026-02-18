@@ -54,7 +54,7 @@ async function simulateRegistration() {
     });
 
     try {
-      const result = await auth.api.signUp({
+      const result = await auth.api.signUpEmail({
         body: {
           email: `test-${Date.now()}@example.com`,
           password: 'TestPassword123!',

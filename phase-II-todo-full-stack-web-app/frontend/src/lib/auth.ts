@@ -40,7 +40,6 @@ export async function getAuth() {
         session: {
           expiresIn: 60 * 60 * 24 * 7, // 7 days
           updateAge: 60 * 60 * 24, // 1 day
-          storeSessionInDatabase: true, // Ensure sessions are stored in DB for persistence
         },
         plugins: [nextCookies()],
         secret: process.env.BETTER_AUTH_SECRET || "dev-secret-change-in-production",
@@ -59,7 +58,7 @@ export async function getAuth() {
           defaultCookieAttributes: {
             sameSite: "lax",
           },
-        },
+        }
       });
 
       // For debugging: Log that initialization occurred

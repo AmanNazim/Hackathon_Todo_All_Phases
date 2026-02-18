@@ -26,9 +26,9 @@ export const auth = betterAuth({
   },
   plugins: [],
   secret: process.env.BETTER_AUTH_SECRET || "dev-secret-change-in-production",
-  baseURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+  baseURL: process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   trustedOrigins: [
-    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+    process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   ],
   // Apply security best practices from Better Auth skills
   rateLimit: {
@@ -42,6 +42,16 @@ export const auth = betterAuth({
       sameSite: "lax",
     },
   },
+  // Add database hooks to debug and ensure data persistence
+  databaseHooks: {
+    user: {
+      create: {
+        after: async ({ data, ctx }) => {
+          console.log("User created in database (CLI version):", data.email);
+        }
+      }
+    }
+  }
 });
 
 export default auth;
