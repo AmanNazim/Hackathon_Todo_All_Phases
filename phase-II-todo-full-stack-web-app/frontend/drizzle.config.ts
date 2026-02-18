@@ -7,4 +7,8 @@ export default defineConfig({
   dbCredentials: {
     url: process.env.DATABASE_URL!,
   },
+  // Enable table creation from schema
+  migrations: {
+    schema: './src/lib/better-auth-schema.ts',
+  },
 });
