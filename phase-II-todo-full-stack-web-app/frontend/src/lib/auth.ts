@@ -31,7 +31,6 @@ export async function getAuth() {
       authInstance = betterAuth({
         adapter: drizzleAdapter(db, {
           provider: "pg",
-          // Let Better Auth use its internal schema - no explicit schema needed
         }), // Use drizzle adapter with Drizzle instance
         emailAndPassword: {
           enabled: true,
