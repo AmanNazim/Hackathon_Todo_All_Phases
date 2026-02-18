@@ -42,16 +42,6 @@ export const auth = betterAuth({
       sameSite: "lax",
     },
   },
-  // Add database hooks to debug and ensure data persistence
-  databaseHooks: {
-    user: {
-      create: {
-        after: async ({ data, ctx }) => {
-          console.log("User created in database (CLI version):", data.email);
-        }
-      }
-    }
-  }
 });
 
 export default auth;
