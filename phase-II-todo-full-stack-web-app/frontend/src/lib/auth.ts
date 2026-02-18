@@ -13,14 +13,9 @@ export async function getAuth() {
     return authInstance;
   }
 
-  // CRITICAL: Skip database initialization during build time
-  // We only skip during build phases, not at runtime
-  const isBuildPhase =
-    process.env.NEXT_PHASE === 'phase-production-build' ||
-    process.env.NEXT_PHASE === 'phase-export';
-
-  // Initialize auth (database only enabled during runtime, not build)
-  if (!isBuildPhase && process.env.DATABASE_URL) {
+  // Initialize auth with database connection
+  // During serverless runtime, we always need the database connection
+  if (process.env.DATABASE_URL) {
     try {
       // Configure Neon for serverless compatibility
       neonConfig.fetchConnectionCache = true;
@@ -72,26 +67,9 @@ export async function getAuth() {
       throw error;
     }
   } else {
-    // Initialize without database for build phases
-    authInstance = betterAuth({
-      emailAndPassword: {
-        enabled: true,
-        requireEmailVerification: false,
-      },
-      session: {
-        expiresIn: 60 * 60 * 24 * 7, // 7 days
-        updateAge: 60 * 60 * 24, // 1 day
-      },
-      plugins: [nextCookies()],
-      secret: process.env.BETTER_AUTH_SECRET || "dev-secret-change-in-production",
-      baseURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
-      trustedOrigins: [
-        process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
-      ],
-    });
-
-    // For debugging: Log that initialization occurred without DB
-    console.log("Better Auth initialized without database (build phase)");
+    // This case should only happen if DATABASE_URL is not set
+    console.error("DATABASE_URL not set! Auth will not work properly.");
+    throw new Error("DATABASE_URL environment variable is required for Better Auth");
   }
 
   return authInstance;
