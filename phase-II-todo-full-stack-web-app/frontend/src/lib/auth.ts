@@ -31,6 +31,7 @@ export async function getAuth() {
       authInstance = betterAuth({
         adapter: drizzleAdapter(db, {
           provider: "pg",
+          // Let Better Auth use its internal schema - no explicit schema needed
         }), // Use drizzle adapter with Drizzle instance
         emailAndPassword: {
           enabled: true,
@@ -39,12 +40,13 @@ export async function getAuth() {
         session: {
           expiresIn: 60 * 60 * 24 * 7, // 7 days
           updateAge: 60 * 60 * 24, // 1 day
+          storeSessionInDatabase: true, // Ensure sessions are stored in DB for persistence
         },
         plugins: [nextCookies()],
         secret: process.env.BETTER_AUTH_SECRET || "dev-secret-change-in-production",
-        baseURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+        baseURL: process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
         trustedOrigins: [
-          process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+          process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
         ],
         // Apply security best practices from Better Auth skills
         rateLimit: {
