@@ -3,6 +3,7 @@ import { nextCookies } from "better-auth/next-js";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { neon, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
+import { baSchema } from './ba-schema';
 
 // Lazy initialization - auth instance is created ONLY when getAuth() is called
 let authInstance: ReturnType<typeof betterAuth> | null = null;
@@ -22,16 +23,14 @@ export async function getAuth() {
 
       // Create Neon HTTP client
       const sql = neon(process.env.DATABASE_URL);
-      const db = drizzle(sql);
+      const db = drizzle(sql, { schema: baSchema });
 
       console.log("Better Auth: Creating drizzle adapter with database connection");
 
       // Initialize Better Auth with the drizzle adapter
       // Based on Better Auth best practices from skills
       authInstance = betterAuth({
-        adapter: drizzleAdapter(db, {
-          provider: "pg",
-        }), // Use drizzle adapter with Drizzle instance
+        adapter: drizzleAdapter(db, {}),
         emailAndPassword: {
           enabled: true,
           requireEmailVerification: false,
