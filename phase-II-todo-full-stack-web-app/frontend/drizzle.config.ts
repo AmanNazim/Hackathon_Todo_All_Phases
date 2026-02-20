@@ -1,14 +1,13 @@
 import { defineConfig } from 'drizzle-kit';
 
 export default defineConfig({
-  schema: './src/lib/better-auth-schema.ts', // Point to schema for application tables (not Better Auth tables)
+  schema: './src/lib/app-schema.ts', // Point to schema for application tables only
   out: './drizzle',
   dialect: 'postgresql',
   dbCredentials: {
     url: process.env.DATABASE_URL!,
   },
-  // Enable table creation from schema for application tables only
   migrations: {
-    schema: './src/lib/better-auth-schema.ts',
+    schema: './src/lib/app-schema.ts',
   },
 });

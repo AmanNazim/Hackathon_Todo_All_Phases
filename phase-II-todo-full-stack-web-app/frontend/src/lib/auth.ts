@@ -57,7 +57,7 @@ export async function getAuth() {
           defaultCookieAttributes: {
             sameSite: "lax",
           },
-        }
+        },
       });
 
       // For debugging: Log that initialization occurred
