@@ -30,7 +30,10 @@ export async function getAuth() {
       // Initialize Better Auth with the drizzle adapter
       // Based on Better Auth best practices from skills
       authInstance = betterAuth({
-        adapter: drizzleAdapter(db),
+        adapter: drizzleAdapter(db, {
+          provider: "pg",
+          schema: baSchema
+        }),
         emailAndPassword: {
           enabled: true,
           requireEmailVerification: false,
