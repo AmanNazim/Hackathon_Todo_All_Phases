@@ -13,7 +13,7 @@ const db = drizzle(sql, { schema: baSchema });
 
 // Export auth configuration for Better Auth CLI and MCP
 export const auth = betterAuth({
-  adapter: drizzleAdapter(db, {}),
+  adapter: drizzleAdapter(db, { provider: "postgresql" }),
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false,
