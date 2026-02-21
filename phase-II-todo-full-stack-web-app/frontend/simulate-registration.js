@@ -8,7 +8,6 @@ import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { baSchema } from './src/lib/ba-schema';
 
 async function simulateRegistration() {
   console.log('Simulating registration to trigger Better Auth table creation...');
@@ -16,11 +15,13 @@ async function simulateRegistration() {
   try {
     // Create database connection directly
     const sql = neon(process.env.DATABASE_URL);
-    const db = drizzle(sql, { schema: baSchema });
+    const db = drizzle(sql);
 
     // Initialize Better Auth with the drizzle adapter
     const auth = betterAuth({
-      adapter: drizzleAdapter(db, {}),
+      adapter: drizzleAdapter(db, {
+        provider: "pg"
+      }),
       emailAndPassword: {
         enabled: true,
         requireEmailVerification: false,

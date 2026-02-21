@@ -24,6 +24,10 @@ export async function getAuth() {
       const sql = neon(process.env.DATABASE_URL);
       const db = drizzle(sql);
 
+      // Test database connection
+      const testQuery = await db.execute(`SELECT NOW()`);
+      console.log("DB connection working:", testQuery);
+
       console.log("Better Auth: Creating drizzle adapter with database connection");
 
       // Initialize Better Auth with the drizzle adapter
