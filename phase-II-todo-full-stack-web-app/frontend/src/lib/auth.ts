@@ -3,7 +3,6 @@ import { nextCookies } from "better-auth/next-js";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { neon, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { baSchema } from './ba-schema';
 
 // Configure Neon for serverless compatibility and transaction behavior
 // fetchConnectionCache improves connection caching performance in serverless environments
@@ -23,8 +22,8 @@ export async function getAuth() {
     try {
       // Create Neon HTTP client - this handles connections for serverless
       const sql = neon(process.env.DATABASE_URL);
-      // Create drizzle instance with proper schema for Better Auth tables
-      const db = drizzle(sql, { schema: baSchema });
+      // Create drizzle instance - Better Auth manages its own internal schema
+      const db = drizzle(sql);
 
       console.log("Better Auth: Creating drizzle adapter with database connection");
 
@@ -33,11 +32,11 @@ export async function getAuth() {
       // and ensure transactions work as expected with Neon
       authInstance = betterAuth({
         adapter: drizzleAdapter(db, {
-          provider: "pg"
+          provider: "pg",
         }),
         emailAndPassword: {
           enabled: true,
-          requireEmailVerification: process.env.NODE_ENV === 'production', // Only required in production
+          requireEmailVerification: false, // Disable email verification for development
         },
         session: {
           expiresIn: 60 * 60 * 24 * 7, // 7 days
@@ -55,7 +54,7 @@ export async function getAuth() {
           max: 100,
         },
         advanced: {
-          useSecureCookies: true,
+          useSecureCookies: false, // Disable secure cookies in development to allow HTTP (not HTTPS)
           defaultCookieAttributes: {
             sameSite: "lax",
           },
