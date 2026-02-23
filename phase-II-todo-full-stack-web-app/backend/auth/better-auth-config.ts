@@ -1,7 +1,27 @@
 import { betterAuth } from "better-auth";
-import { nextCookies } from "better-auth/next";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { Pool } from 'pg'; // Use traditional PostgreSQL client for stable transactions
+import { drizzle } from 'drizzle-orm/node-postgres';
+
+// Create PostgreSQL pool with Neon-compatible settings for backend
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false, // Required for Neon
+  },
+  // Connection pool settings for backend with Neon
+  max: 10,  // Backend can handle more connections
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+});
+
+// Create Drizzle instance with the PostgreSQL pool
+const db = drizzle(pool);
 
 export const auth = betterAuth({
+  adapter: drizzleAdapter(db, {
+    provider: "pg"
+  }),
   emailAndPassword: {
     enabled: true,
     async sendResetPassword(data, request) {
@@ -23,17 +43,11 @@ export const auth = betterAuth({
     },
   },
   plugins: [
-    nextCookies(),
+    // In backend context, don't use nextCookies - this is for frontend
   ],
-  database: {
-    // Configure your database connection here
-    // For production, use a proper database (PostgreSQL, MySQL, etc.)
-    // Example with Prisma:
-    // provider: "prisma",
-    // prisma: prismaClient,
-  },
-  /**
-   * IMPORTANT: Configure a database to persist user data in production.
-   * Without a database, user data will be stored in memory and lost on restart.
-   */
+  secret: process.env.BETTER_AUTH_SECRET || "dev-secret-change-in-production",
+  baseURL: process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+  trustedOrigins: [
+    process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+  ],
 });

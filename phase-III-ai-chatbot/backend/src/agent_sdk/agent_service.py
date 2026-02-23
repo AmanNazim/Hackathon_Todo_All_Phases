@@ -4,7 +4,7 @@ Agent Service
 Creates and configures the main task management agent using OpenAI Agents SDK with LiteLLM.
 """
 
-from agents import Agent, ModelSettings
+from agents import Agent, ModelSettings, SQLiteSession
 from agents.extensions.models.litellm_model import LitellmModel
 from typing import List, Optional
 from src.config.settings import settings

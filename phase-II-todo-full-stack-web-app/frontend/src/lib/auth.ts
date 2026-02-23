@@ -5,6 +5,10 @@ import { neon, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
 import { baSchema } from './ba-schema';
 
+// Configure Neon for serverless compatibility and transaction behavior
+// fetchConnectionCache improves connection caching performance in serverless environments
+neonConfig.fetchConnectionCache = true;
+
 // Lazy initialization - auth instance is created ONLY when getAuth() is called
 let authInstance: ReturnType<typeof betterAuth> | null = null;
 
@@ -15,31 +19,25 @@ export async function getAuth() {
   }
 
   // Initialize auth with database connection
-  // During serverless runtime, we always need the database connection
   if (process.env.DATABASE_URL) {
     try {
-      // Configure Neon for serverless compatibility
-      neonConfig.fetchConnectionCache = true;
-
-      // Create Neon HTTP client
+      // Create Neon HTTP client - this handles connections for serverless
       const sql = neon(process.env.DATABASE_URL);
+      // Create drizzle instance with proper schema for Better Auth tables
       const db = drizzle(sql, { schema: baSchema });
-
-      // Test database connection
-      const testQuery = await db.execute(`SELECT NOW()`);
-      console.log("DB connection working:", testQuery);
 
       console.log("Better Auth: Creating drizzle adapter with database connection");
 
       // Initialize Better Auth with the drizzle adapter
-      // Based on Better Auth best practices from skills
+      // The adapter needs the 'pg' provider to properly handle PostgreSQL-specific operations
+      // and ensure transactions work as expected with Neon
       authInstance = betterAuth({
         adapter: drizzleAdapter(db, {
           provider: "pg"
         }),
         emailAndPassword: {
           enabled: true,
-          requireEmailVerification: false,
+          requireEmailVerification: process.env.NODE_ENV === 'production', // Only required in production
         },
         session: {
           expiresIn: 60 * 60 * 24 * 7, // 7 days
@@ -51,10 +49,9 @@ export async function getAuth() {
         trustedOrigins: [
           process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
         ],
-        // Apply security best practices from Better Auth skills
         rateLimit: {
-          enabled: true,
-          window: 10,
+          enabled: process.env.NODE_ENV === 'production', // Only enable in production
+          window: 60, // 1 minute window
           max: 100,
         },
         advanced: {
@@ -65,14 +62,12 @@ export async function getAuth() {
         },
       });
 
-      // For debugging: Log that initialization occurred
       console.log("Better Auth initialized with drizzle adapter database connection");
     } catch (error) {
       console.error("Better Auth initialization error:", error);
       throw error;
     }
   } else {
-    // This case should only happen if DATABASE_URL is not set
     console.error("DATABASE_URL not set! Auth will not work properly.");
     throw new Error("DATABASE_URL environment variable is required for Better Auth");
   }
