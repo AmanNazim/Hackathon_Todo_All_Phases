@@ -72,29 +72,6 @@ export async function getAuth() {
             sameSite: "lax",
           },
         },
-        // Add hooks to debug registration process
-        hooks: {
-          before: [
-            {
-              matcher: (path) => path.includes('/sign-up'),
-              handler: async (ctx) => {
-                console.log("🔐 [AUTH DEBUG] BEFORE SIGN-UP HOOK TRIGGERED");
-                console.log("🔐 [AUTH DEBUG] Request path:", ctx.path);
-                console.log("🔐 [AUTH DEBUG] Request body:", ctx.context.request?.body || ctx.body);
-                console.log("🔐 [AUTH DEBUG] Request headers:", Object.fromEntries(ctx.context.request?.headers.entries() || []));
-              }
-            }
-          ],
-          after: [
-            {
-              matcher: (path) => path.includes('/sign-up'),
-              handler: async (ctx) => {
-                console.log("🔐 [AUTH DEBUG] AFTER SIGN-UP HOOK TRIGGERED");
-                console.log("🔐 [AUTH DEBUG] Response:", ctx.context.returned);
-              }
-            }
-          ]
-        },
         databaseHooks: {
           user: {
             create: {
