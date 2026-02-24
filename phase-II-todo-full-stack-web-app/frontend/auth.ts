@@ -18,20 +18,35 @@ import { neon, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
 import { baSchema } from './src/lib/ba-schema';
 
+console.log("🚀 [CLI AUTH DEBUG] Initializing CLI auth configuration");
+console.log("🔍 [CLI AUTH DEBUG] DATABASE_URL exists:", !!process.env.DATABASE_URL);
+console.log("🔍 [CLI AUTH DEBUG] BETTER_AUTH_SECRET exists:", !!process.env.BETTER_AUTH_SECRET);
+
 // Configure Neon for serverless compatibility to improve transaction handling
 neonConfig.fetchConnectionCache = true;
+console.log("⚙️ [CLI AUTH DEBUG] Neon configuration set");
 
 // Use a function to create a fresh database instance when needed
 // This helps ensure any transaction isolation issues are avoided
 const createDbInstance = () => {
+  console.log("📡 [CLI AUTH DEBUG] Creating database instance with URL:",
+    process.env.DATABASE_URL ? process.env.DATABASE_URL.replace(/\/\/[^:]+:([^@]+)@/, "//***:***@") : "NOT SET");
+
   const sql = neon(process.env.DATABASE_URL!);
-  return drizzle(sql, { schema: baSchema });
+  console.log("✅ [CLI AUTH DEBUG] Neon client created");
+
+  const dbInstance = drizzle(sql, { schema: baSchema });
+  console.log("✅ [CLI AUTH DEBUG] Drizzle instance created with schema");
+
+  return dbInstance;
 };
 
 // Create the database instance
 const db = createDbInstance();
+console.log("✅ [CLI AUTH DEBUG] Database instance created");
 
 // Configure Better Auth with proper transaction handling for Neon
+console.log("🔐 [CLI AUTH DEBUG] Initializing Better Auth with database connection...");
 export const auth = betterAuth({
   // Use the drizzle adapter with the proper provider and database instance
   adapter: drizzleAdapter(db, {
@@ -64,4 +79,5 @@ export const auth = betterAuth({
   },
 });
 
+console.log("✅ [CLI AUTH DEBUG] Better Auth CLI configuration completed");
 export default auth;

@@ -12,20 +12,33 @@ neonConfig.fetchConnectionCache = true;
 let authInstance: ReturnType<typeof betterAuth> | null = null;
 
 export async function getAuth() {
+  console.log("🚀 [AUTH DEBUG] getAuth() function called");
+
   // Return cached instance if already initialized
   if (authInstance) {
+    console.log("✅ [AUTH DEBUG] Returning cached auth instance");
     return authInstance;
   }
+
+  console.log("🔍 [AUTH DEBUG] DATABASE_URL exists:", !!process.env.DATABASE_URL);
+  console.log("🔍 [AUTH DEBUG] BETTER_AUTH_SECRET exists:", !!process.env.BETTER_AUTH_SECRET);
+  console.log("🔍 [AUTH DEBUG] BETTER_AUTH_URL exists:", !!process.env.BETTER_AUTH_URL);
+  console.log("🔍 [AUTH DEBUG] NEXT_PUBLIC_APP_URL exists:", !!process.env.NEXT_PUBLIC_APP_URL);
 
   // Initialize auth with database connection
   if (process.env.DATABASE_URL) {
     try {
+      console.log("📡 [AUTH DEBUG] Creating Neon client with URL:", process.env.DATABASE_URL.replace(/\/\/[^:]+:([^@]+)@/, "//***:***@"));
+
       // Create Neon HTTP client - this handles connections for serverless
       const sql = neon(process.env.DATABASE_URL);
+      console.log("✅ [AUTH DEBUG] Neon client created successfully");
+
       // Create drizzle instance - Better Auth manages its own internal schema
       const db = drizzle(sql);
+      console.log("✅ [AUTH DEBUG] Drizzle instance created");
 
-      console.log("Better Auth: Creating drizzle adapter with database connection");
+      console.log("📡 [AUTH DEBUG] Sending data to database URL, establishing connection...");
 
       // Initialize Better Auth with the drizzle adapter
       // The adapter needs the 'pg' provider to properly handle PostgreSQL-specific operations
@@ -59,17 +72,56 @@ export async function getAuth() {
             sameSite: "lax",
           },
         },
+        // Add hooks to debug registration process
+        hooks: {
+          before: [
+            {
+              matcher: (path) => path.includes('/sign-up'),
+              handler: async (ctx) => {
+                console.log("🔐 [AUTH DEBUG] BEFORE SIGN-UP HOOK TRIGGERED");
+                console.log("🔐 [AUTH DEBUG] Request path:", ctx.path);
+                console.log("🔐 [AUTH DEBUG] Request body:", ctx.context.request?.body || ctx.body);
+                console.log("🔐 [AUTH DEBUG] Request headers:", Object.fromEntries(ctx.context.request?.headers.entries() || []));
+              }
+            }
+          ],
+          after: [
+            {
+              matcher: (path) => path.includes('/sign-up'),
+              handler: async (ctx) => {
+                console.log("🔐 [AUTH DEBUG] AFTER SIGN-UP HOOK TRIGGERED");
+                console.log("🔐 [AUTH DEBUG] Response:", ctx.context.returned);
+              }
+            }
+          ]
+        },
+        databaseHooks: {
+          user: {
+            create: {
+              before: async ({ data, ctx }) => {
+                console.log("👤 [DB DEBUG] BEFORE USER CREATE - Attempting to create user:", data.email);
+                return data;
+              },
+              after: async ({ data, ctx }) => {
+                console.log("👤 [DB DEBUG] AFTER USER CREATE - User created successfully:", data.email);
+                console.log("👤 [DB DEBUG] User ID:", data.id);
+              }
+            }
+          }
+        }
       });
 
-      console.log("Better Auth initialized with drizzle adapter database connection");
+      console.log("✅ [AUTH DEBUG] Better Auth initialized with drizzle adapter database connection");
     } catch (error) {
-      console.error("Better Auth initialization error:", error);
+      console.error("❌ [AUTH DEBUG] Better Auth initialization error:", error);
+      console.error("❌ [AUTH DEBUG] Error stack:", error.stack);
       throw error;
     }
   } else {
-    console.error("DATABASE_URL not set! Auth will not work properly.");
+    console.error("❌ [AUTH DEBUG] DATABASE_URL not set! Auth will not work properly.");
     throw new Error("DATABASE_URL environment variable is required for Better Auth");
   }
 
+  console.log("✅ [AUTH DEBUG] getAuth() completed successfully");
   return authInstance;
 }
