@@ -1,7 +1,7 @@
 import { defineConfig } from 'drizzle-kit';
 
 export default defineConfig({
-  schema: './src/lib/app-schema.ts', // For application-specific tables migration only
+  schema: './src/lib/ba-schema.ts', // Use Better Auth schema for table creation
   out: './drizzle',
   dialect: 'postgresql',
   dbCredentials: {
