@@ -71,20 +71,6 @@ export async function getAuth() {
           defaultCookieAttributes: {
             sameSite: "lax",
           },
-        },
-        databaseHooks: {
-          user: {
-            create: {
-              before: async ({ data, ctx }) => {
-                console.log("👤 [DB DEBUG] BEFORE USER CREATE - Attempting to create user:", data.email);
-                return data;
-              },
-              after: async ({ data, ctx }) => {
-                console.log("👤 [DB DEBUG] AFTER USER CREATE - User created successfully:", data.email);
-                console.log("👤 [DB DEBUG] User ID:", data.id);
-              }
-            }
-          }
         }
       });
 
