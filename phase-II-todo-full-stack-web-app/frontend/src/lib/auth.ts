@@ -76,8 +76,8 @@ export async function getAuth() {
 
       console.log("✅ [AUTH DEBUG] Better Auth initialized with drizzle adapter database connection");
     } catch (error) {
-      console.error("❌ [AUTH DEBUG] Better Auth initialization error:", error);
-      console.error("❌ [AUTH DEBUG] Error stack:", error.stack);
+      console.error("❌ [AUTH DEBUG] Better Auth initialization error:", (error as Error).message || error);
+      console.error("❌ [AUTH DEBUG] Error stack:", (error as Error).stack);
       throw error;
     }
   } else {
