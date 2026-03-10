@@ -8,17 +8,9 @@ import { drizzle } from 'drizzle-orm/neon-http';
 // fetchConnectionCache improves connection caching performance in serverless environments
 neonConfig.fetchConnectionCache = true;
 
-// Lazy initialization - auth instance is created ONLY when getAuth() is called
-let authInstance: ReturnType<typeof betterAuth> | null = null;
-
 export async function getAuth() {
   console.log("🚀 [AUTH DEBUG] getAuth() function called");
-
-  // Return cached instance if already initialized
-  if (authInstance) {
-    console.log("✅ [AUTH DEBUG] Returning cached auth instance");
-    return authInstance;
-  }
+  console.log("🔄 [AUTH DEBUG] Creating FRESH auth instance (no caching for serverless compatibility)");
 
   console.log("🔍 [AUTH DEBUG] DATABASE_URL exists:", !!process.env.DATABASE_URL);
   console.log("🔍 [AUTH DEBUG] BETTER_AUTH_SECRET exists:", !!process.env.BETTER_AUTH_SECRET);
@@ -30,6 +22,9 @@ export async function getAuth() {
     try {
       console.log("📡 [AUTH DEBUG] Creating Neon client with URL:", process.env.DATABASE_URL.replace(/\/\/[^:]+:([^@]+)@/, "//***:***@"));
 
+      // Configure Neon for serverless compatibility
+      neonConfig.fetchConnectionCache = true;
+
       // Create Neon HTTP client - this handles connections for serverless
       const sql = neon(process.env.DATABASE_URL);
       console.log("✅ [AUTH DEBUG] Neon client created successfully");
@@ -38,12 +33,12 @@ export async function getAuth() {
       const db = drizzle(sql);
       console.log("✅ [AUTH DEBUG] Drizzle instance created");
 
-      console.log("📡 [AUTH DEBUG] Sending data to database URL, establishing connection...");
+      console.log("📡 [AUTH DEBUG] Initializing Better Auth with fresh database connection...");
 
-      // Initialize Better Auth with the drizzle adapter
+      // Initialize Better Auth with the drizzle adapter (no caching for serverless)
       // The adapter needs the 'pg' provider to properly handle PostgreSQL-specific operations
       // and ensure transactions work as expected with Neon
-      authInstance = betterAuth({
+      const freshAuthInstance = betterAuth({
         adapter: drizzleAdapter(db, {
           provider: "pg",
         }),
@@ -74,7 +69,8 @@ export async function getAuth() {
         }
       });
 
-      console.log("✅ [AUTH DEBUG] Better Auth initialized with drizzle adapter database connection");
+      console.log("✅ [AUTH DEBUG] Better Auth FRESH instance created with drizzle adapter database connection");
+      return freshAuthInstance;
     } catch (error) {
       console.error("❌ [AUTH DEBUG] Better Auth initialization error:", (error as Error).message || error);
       console.error("❌ [AUTH DEBUG] Error stack:", (error as Error).stack);
@@ -84,7 +80,4 @@ export async function getAuth() {
     console.error("❌ [AUTH DEBUG] DATABASE_URL not set! Auth will not work properly.");
     throw new Error("DATABASE_URL environment variable is required for Better Auth");
   }
-
-  console.log("✅ [AUTH DEBUG] getAuth() completed successfully");
-  return authInstance;
 }
