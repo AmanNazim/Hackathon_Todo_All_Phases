@@ -71,13 +71,13 @@ export async function getAuth() {
         databaseHooks: {
           user: {
             create: {
-              before: async ({ data, context }) => {
-                console.log("👤 [DB HOOK] BEFORE USER CREATE - About to create user:", data.email);
-                return data;
+              before: async (user, context) => {
+                console.log("👤 [DB HOOK] BEFORE USER CREATE - About to create user:", user.email);
+                return user;
               },
-              after: async ({ data, context }) => {
-                console.log("👤 [DB HOOK] AFTER USER CREATE - Successfully created user in database:", data.email);
-                console.log("👤 [DB HOOK] Created user ID:", data.id);
+              after: async (user, context) => {
+                console.log("👤 [DB HOOK] AFTER USER CREATE - Successfully created user in database:", user.email);
+                console.log("👤 [DB HOOK] Created user ID:", user.id);
               }
             }
           }
