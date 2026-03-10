@@ -10,6 +10,10 @@ export async function GET(request: Request) {
   console.log("📞 [API DEBUG] GET request to auth API");
   console.log("📞 [API DEBUG] Request URL:", request.url);
   console.log("📞 [API DEBUG] Request headers:", Object.fromEntries(request.headers.entries()));
+  console.log("🔧 [ENV DEBUG] DATABASE_URL in API route:", process.env.DATABASE_URL ? "SET" : "NOT SET");
+  if (process.env.DATABASE_URL) {
+    console.log("🔧 [ENV DEBUG] DATABASE_URL (masked):", process.env.DATABASE_URL.replace(/\/\/[^:]+:([^@]+)@/, "//***:***@"));
+  }
 
   const { getAuth } = await import("@/lib/auth");
   console.log("📞 [API DEBUG] Importing getAuth function");
@@ -30,6 +34,10 @@ export async function POST(request: Request) {
   console.log("📞 [API DEBUG] POST request to auth API");
   console.log("📞 [API DEBUG] Request URL:", request.url);
   console.log("📞 [API DEBUG] Request method:", request.method);
+  console.log("🔧 [ENV DEBUG] DATABASE_URL in POST API route:", process.env.DATABASE_URL ? "SET" : "NOT SET");
+  if (process.env.DATABASE_URL) {
+    console.log("🔧 [ENV DEBUG] DATABASE_URL (masked):", process.env.DATABASE_URL.replace(/\/\/[^:]+:([^@]+)@/, "//***:***@"));
+  }
 
   // Get the raw body to log it before processing
   const rawBody = await request.text();
