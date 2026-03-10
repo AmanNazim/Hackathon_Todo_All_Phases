@@ -73,7 +73,7 @@ export async function getAuth() {
             create: {
               before: async (user, context) => {
                 console.log("👤 [DB HOOK] BEFORE USER CREATE - About to create user:", user.email);
-                return user;
+                return { data: user }; // Return in the expected format
               },
               after: async (user, context) => {
                 console.log("👤 [DB HOOK] AFTER USER CREATE - Successfully created user in database:", user.email);
