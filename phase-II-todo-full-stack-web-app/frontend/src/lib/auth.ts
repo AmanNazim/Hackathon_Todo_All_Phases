@@ -66,6 +66,21 @@ export async function getAuth() {
           defaultCookieAttributes: {
             sameSite: "lax",
           },
+        },
+        // Add database hooks to track actual database operations
+        databaseHooks: {
+          user: {
+            create: {
+              before: async ({ data, context }) => {
+                console.log("👤 [DB HOOK] BEFORE USER CREATE - About to create user:", data.email);
+                return data;
+              },
+              after: async ({ data, context }) => {
+                console.log("👤 [DB HOOK] AFTER USER CREATE - Successfully created user in database:", data.email);
+                console.log("👤 [DB HOOK] Created user ID:", data.id);
+              }
+            }
+          }
         }
       });
 
