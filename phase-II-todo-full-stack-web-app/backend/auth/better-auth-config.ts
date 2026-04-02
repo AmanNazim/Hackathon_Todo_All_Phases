@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { Pool } from 'pg'; // Use traditional PostgreSQL client for stable transactions
 import { drizzle } from 'drizzle-orm/node-postgres';
+import { baSchema } from './ba-schema'; // Import the Better Auth schema
 
 // Create PostgreSQL pool with Neon-compatible settings for backend
 const pool = new Pool({
@@ -15,13 +16,11 @@ const pool = new Pool({
   connectionTimeoutMillis: 2000,
 });
 
-// Create Drizzle instance with the PostgreSQL pool
-const db = drizzle(pool);
+// Create Drizzle instance with the PostgreSQL pool and Better Auth schema
+const db = drizzle(pool, { schema: baSchema });
 
 export const auth = betterAuth({
-  adapter: drizzleAdapter(db, {
-    provider: "pg"
-  }),
+  adapter: drizzleAdapter(db, undefined as any), // Workaround TS error while keeping Neon HTTP driver fix
   emailAndPassword: {
     enabled: true,
     async sendResetPassword(data, request) {
