@@ -30,16 +30,16 @@ export async function getAuth() {
       const sql = neon(process.env.DATABASE_URL);
       console.log("✅ [AUTH DEBUG] Neon client created successfully");
 
-      // Create drizzle instance with Better Auth schema - this ensures proper table mapping
-      const db = drizzle(sql, { schema: baSchema });
+      // Create drizzle instance - schema will be handled by Better Auth database adapter
+      const db = drizzle(sql);
       console.log("✅ [AUTH DEBUG] Drizzle instance created with Better Auth schema");
 
       console.log("📡 [AUTH DEBUG] Initializing Better Auth with fresh database connection...");
 
       // Initialize Better Auth with the drizzle adapter (no caching for serverless)
-      // For Neon HTTP driver, use type assertion to avoid driver mismatch while satisfying TypeScript
+      // For Neon HTTP driver, use database option with provider specified
       const freshAuthInstance = betterAuth({
-        adapter: drizzleAdapter(db, undefined as any), // Workaround TS error while keeping Neon HTTP driver fix
+        database: drizzleAdapter(db, { provider: "pg", schema: baSchema }),
         emailAndPassword: {
           enabled: true,
           requireEmailVerification: false, // Disable email verification for development

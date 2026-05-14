@@ -6,7 +6,7 @@
 import { pgTable, text, timestamp, boolean, pgEnum } from "drizzle-orm/pg-core";
 
 // User table - matching Better Auth's expected structure
-export const users = pgTable("user", {
+export const user = pgTable("user", {
   id: text("id").primaryKey(),
   email: text("email").notNull().unique(),
   emailVerified: boolean("emailVerified").default(false),
@@ -17,7 +17,7 @@ export const users = pgTable("user", {
 });
 
 // Session table - matching Better Auth's expected structure
-export const sessions = pgTable("session", {
+export const session = pgTable("session", {
   id: text("id").primaryKey(),
   userId: text("userId").notNull(),
   expiresAt: timestamp("expiresAt", { mode: 'date' }).notNull(),
@@ -29,7 +29,7 @@ export const sessions = pgTable("session", {
 });
 
 // Account table - matching Better Auth's expected structure
-export const accounts = pgTable("account", {
+export const account = pgTable("account", {
   id: text("id").primaryKey(),
   userId: text("userId").notNull(),
   accountId: text("accountId").notNull(),
@@ -44,7 +44,7 @@ export const accounts = pgTable("account", {
 });
 
 // Verification table - matching Better Auth's expected structure
-export const verifications = pgTable("verification", {
+export const verification = pgTable("verification", {
   id: text("id").primaryKey(),
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
@@ -55,8 +55,8 @@ export const verifications = pgTable("verification", {
 
 // Export all schema for use with drizzle
 export const baSchema = {
-  users,
-  sessions,
-  accounts,
-  verifications
+  user,
+  session,
+  account,
+  verification
 };
