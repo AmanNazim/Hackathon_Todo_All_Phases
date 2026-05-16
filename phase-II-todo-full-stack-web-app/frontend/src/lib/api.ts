@@ -10,6 +10,12 @@ class ApiClient {
     return session.data?.session?.token || null;
   }
 
+  private async getUserId(): Promise<string | null> {
+    // Get user ID from Better Auth session
+    const session = await authClient.getSession();
+    return session.data?.user?.id || null;
+  }
+
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
     const url = `${API_BASE_URL}${endpoint}`;
     const token = await this.getToken();
@@ -29,6 +35,18 @@ class ApiClient {
         headers,
       });
 
+      // Check if response is JSON before parsing
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        // If not JSON, get the text to see what we got
+        const text = await response.text();
+        console.error('[API ERROR] Non-JSON response:', text.substring(0, 200));
+        return {
+          error: `Expected JSON response but received: ${text.substring(0, 100)}`,
+          status: response.status,
+        };
+      }
+
       const data = await response.json();
 
       if (!response.ok) {
@@ -43,6 +61,7 @@ class ApiClient {
         status: response.status,
       };
     } catch (error) {
+      console.error('[API ERROR]', error);
       return {
         error: error instanceof Error ? error.message : 'Network error occurred',
         status: 500,
@@ -50,37 +69,61 @@ class ApiClient {
     }
   }
 
-  // Task methods
+  // Task methods - include user ID in path for backend requirement
   async getTasks(): Promise<ApiResponse<Task[]>> {
-    return this.request<Task[]>('/tasks');
+    const userId = await this.getUserId();
+    if (!userId) {
+      return { error: 'User not authenticated', status: 401 };
+    }
+    return this.request<Task[]>(`/v1/users/${userId}/tasks`);
   }
 
   async createTask(task: Partial<Task>): Promise<ApiResponse<Task>> {
-    return this.request<Task>('/tasks', {
+    const userId = await this.getUserId();
+    if (!userId) {
+      return { error: 'User not authenticated', status: 401 };
+    }
+    return this.request<Task>(`/v1/users/${userId}/tasks`, {
       method: 'POST',
       body: JSON.stringify(task),
     });
   }
 
   async getTaskById(id: string): Promise<ApiResponse<Task>> {
-    return this.request<Task>(`/tasks/${id}`);
+    const userId = await this.getUserId();
+    if (!userId) {
+      return { error: 'User not authenticated', status: 401 };
+    }
+    return this.request<Task>(`/v1/users/${userId}/tasks/${id}`);
   }
 
   async updateTask(id: string, task: Partial<Task>): Promise<ApiResponse<Task>> {
-    return this.request<Task>(`/tasks/${id}`, {
+    const userId = await this.getUserId();
+    if (!userId) {
+      return { error: 'User not authenticated', status: 401 };
+    }
+    return this.request<Task>(`/v1/users/${userId}/tasks/${id}`, {
       method: 'PUT',
       body: JSON.stringify(task),
     });
   }
 
   async deleteTask(id: string): Promise<ApiResponse<void>> {
-    return this.request(`/tasks/${id}`, {
+    const userId = await this.getUserId();
+    if (!userId) {
+      return { error: 'User not authenticated', status: 401 };
+    }
+    return this.request(`/v1/users/${userId}/tasks/${id}`, {
       method: 'DELETE',
     });
   }
 
   async updateTaskStatus(id: string, completed: boolean): Promise<ApiResponse<Task>> {
-    return this.request<Task>(`/tasks/${id}/status`, {
+    const userId = await this.getUserId();
+    if (!userId) {
+      return { error: 'User not authenticated', status: 401 };
+    }
+    return this.request<Task>(`/v1/users/${userId}/tasks/${id}/complete`, {
       method: 'PATCH',
       body: JSON.stringify({ completed }),
     });
