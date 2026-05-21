@@ -1,7 +1,14 @@
 import { AuthResponse, Task, User, LoginCredentials, RegisterCredentials, ApiResponse } from '../types';
 import { authClient } from './auth-client';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+// Ensure API base URL always has the /api prefix
+const getApiBaseUrl = () => {
+  const envUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  // If the URL already ends with /api, use it as-is, otherwise add /api
+  return envUrl.endsWith('/api') ? envUrl : `${envUrl}/api`;
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 class ApiClient {
   private async getToken(): Promise<string | null> {
